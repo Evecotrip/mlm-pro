@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   TrendingUp, LogOut, Users, DollarSign, Network, 
-  Plus, Copy, Check, UserCheck 
+  Plus, Copy, Check, UserCheck, Activity 
 } from 'lucide-react';
 import { 
   mockUsers, mockInvestments, getDirectReferrals, 
@@ -234,13 +234,22 @@ export default function DashboardPage() {
                     Including <span className="font-semibold">{directReferrals.length}</span> direct referrals
                   </p>
                 </div>
-                <button
-                  onClick={() => router.push('/hierarchy')}
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl"
-                >
-                  <Network className="w-6 h-6" />
-                  View Hierarchy Board
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => router.push('/hierarchy-flow')}
+                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg hover:shadow-xl"
+                  >
+                    <Network className="w-5 h-5" />
+                    Tree View
+                  </button>
+                  <button
+                    onClick={() => router.push('/hierarchy-flow')}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors font-semibold shadow-lg hover:shadow-xl"
+                  >
+                    <Activity className="w-5 h-5" />
+                    Interactive Flow
+                  </button>
+                </div>
               </div>
             )}
           </div>
