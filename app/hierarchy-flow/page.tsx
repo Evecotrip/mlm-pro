@@ -159,31 +159,34 @@ export default function HierarchyFlowPage() {
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-lg shadow-sm z-30">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Dashboard</span>
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="font-medium text-sm sm:text-base hidden sm:inline">Dashboard</span>
               </button>
-              <div className="h-8 w-px bg-gray-300" />
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
-                  <TrendingUp className="w-6 h-6 text-white" />
+              <div className="h-6 sm:h-8 w-px bg-gray-300 hidden sm:block" />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+                  <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-lg font-bold text-gray-900">Interactive Network Flow</h1>
+                <div className="hidden md:block">
+                  <h1 className="text-base sm:text-lg font-bold text-gray-900">Interactive Network Flow</h1>
                   <p className="text-xs text-gray-500">Drag, zoom, and explore your network</p>
+                </div>
+                <div className="md:hidden">
+                  <h1 className="text-sm font-bold text-gray-900">Network</h1>
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
-              {/* Stats */}
-              <div className="flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-1 sm:gap-3">
+              {/* Stats - Hidden on mobile */}
+              <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="text-center">
                   <p className="text-xs text-blue-600">Members</p>
                   <p className="text-lg font-bold text-blue-700">{allDownline.length + 1}</p>
@@ -195,7 +198,7 @@ export default function HierarchyFlowPage() {
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="text-right hidden md:block">
                 <p className="text-xs text-gray-500">Logged in as</p>
                 <p className="font-semibold text-gray-900 flex items-center gap-2">
                   <Crown className="w-4 h-4 text-yellow-500" />
@@ -205,10 +208,10 @@ export default function HierarchyFlowPage() {
               
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all shadow-md hover:shadow-lg"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all shadow-md hover:shadow-lg"
               >
                 <LogOut className="w-4 h-4" />
-                <span className="font-medium">Logout</span>
+                <span className="font-medium text-sm sm:text-base hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
@@ -263,12 +266,12 @@ export default function HierarchyFlowPage() {
             position="bottom-right"
           />
           
-          <Panel position="top-right" className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-3 m-4 border border-gray-200">
-            <div className="text-sm space-y-1">
+          <Panel position="top-right" className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-2 sm:p-3 m-2 sm:m-4 border border-gray-200">
+            <div className="text-xs sm:text-sm space-y-1">
               <p className="font-bold text-gray-900">Controls:</p>
-              <p className="text-gray-600">🖱️ Drag to pan</p>
-              <p className="text-gray-600">🔍 Scroll to zoom</p>
-              <p className="text-gray-600">👆 Click node for details</p>
+              <p className="text-gray-600 hidden sm:block">🖱️ Drag to pan</p>
+              <p className="text-gray-600 hidden sm:block">🔍 Scroll to zoom</p>
+              <p className="text-gray-600">👆 Click node</p>
               <p className="text-xs text-purple-600 mt-2">Edges: {edges.length}</p>
             </div>
           </Panel>
@@ -276,7 +279,7 @@ export default function HierarchyFlowPage() {
 
         {/* Sidebar Panel */}
         {showSidebar && selectedUser && (
-          <div className="absolute top-4 right-4 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[1000]">
+          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 w-[calc(100vw-1rem)] sm:w-80 max-w-sm bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[1000]">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">

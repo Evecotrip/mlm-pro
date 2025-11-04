@@ -75,23 +75,23 @@ export default function RequestsPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-red-50">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Dashboard</span>
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="font-medium text-sm sm:text-base hidden sm:inline">Back to Dashboard</span>
             </button>
-            <div className="h-8 w-px bg-gray-300" />
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center shadow-lg">
-                <UserCheck className="w-6 h-6 text-white" />
+            <div className="h-6 sm:h-8 w-px bg-gray-300 hidden sm:block" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center shadow-lg">
+                <UserCheck className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Approval Requests</h1>
-                <p className="text-xs text-gray-500">Manage pending referrals</p>
+                <h1 className="text-base sm:text-xl font-bold text-gray-900">Approval Requests</h1>
+                <p className="text-xs text-gray-500 hidden sm:block">Manage pending referrals</p>
               </div>
             </div>
           </div>
@@ -99,20 +99,20 @@ export default function RequestsPage() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Stats Banner */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-xl p-6 mb-8 text-white">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-xl p-4 sm:p-6 mb-6 sm:mb-8 text-white">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
                 {pendingUsers.length} Pending {pendingUsers.length === 1 ? 'Request' : 'Requests'}
               </h2>
               <p className="text-orange-100">
                 Review and approve new members to your network
               </p>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4">
-              <Clock className="w-12 h-12" />
+            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 sm:p-4">
+              <Clock className="w-8 h-8 sm:w-12 sm:h-12" />
             </div>
           </div>
         </div>
@@ -142,17 +142,17 @@ export default function RequestsPage() {
                 key={user.id}
                 className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 hover:border-orange-300 transition-all overflow-hidden"
               >
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-start gap-4 flex-1">
+                <div className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-3">
+                    <div className="flex items-start gap-3 sm:gap-4 flex-1 w-full">
                       {/* Avatar */}
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white text-lg sm:text-2xl font-bold shadow-lg flex-shrink-0">
                         {user.name.charAt(0)}
                       </div>
                       
                       {/* User Info */}
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-1">{user.name}</h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{user.name}</h3>
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-gray-600">
                             <Mail className="w-4 h-4" />
@@ -216,11 +216,11 @@ export default function RequestsPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-stretch gap-2 sm:gap-3">
                     <button
                       onClick={() => handleApprove(user.id)}
                       disabled={approving === user.id}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                     >
                       {approving === user.id ? (
                         <>

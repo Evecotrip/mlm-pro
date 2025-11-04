@@ -22,36 +22,36 @@ export default function QueuePage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-8 h-8 text-blue-600" />
-            <span className="text-2xl font-bold text-gray-900">MLM Investment</span>
+            <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
+            <span className="text-lg sm:text-2xl font-bold text-gray-900">MLM Investment</span>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-20">
+      <main className="container mx-auto px-3 sm:px-4 py-8 sm:py-20">
         <div className="max-w-2xl mx-auto">
           {/* Pending Approval Card */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
-            <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Clock className="w-10 h-10 text-yellow-600" />
+          <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-8 border border-gray-100 text-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Clock className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-600" />
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
               Account Pending Approval
             </h1>
 
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
               Your registration is complete! Your account is currently waiting for approval from your referrer.
             </p>
 
             {/* User Info */}
-            <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left">
+            <div className="bg-gray-50 rounded-lg p-4 sm:p-6 mb-6 sm:mb-8 text-left">
               <h2 className="font-semibold text-gray-900 mb-4">Your Account Details</h2>
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -103,7 +103,7 @@ export default function QueuePage() {
           </div>
 
           {/* Timeline */}
-          <div className="mt-12 bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <div className="mt-8 sm:mt-12 bg-white rounded-xl shadow-lg p-4 sm:p-6 border border-gray-100">
             <h3 className="font-bold text-gray-900 mb-6">Registration Timeline</h3>
             <div className="space-y-4">
               <div className="flex gap-4">
