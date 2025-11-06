@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   TrendingUp, LogOut, Users, DollarSign, Network, 
-  Plus, Copy, Check, UserCheck, Activity 
+  Plus, Copy, Check, UserCheck, Activity, Wallet 
 } from 'lucide-react';
 import { 
   mockUsers, mockInvestments, getDirectReferrals, 
-  getAllDownline, getUserInvestments, User 
+  getAllDownline, getUserInvestments, User, getUserWalletBalance 
 } from '@/lib/mockData';
 import InvestmentForm from '@/components/InvestmentForm';
 
@@ -41,6 +41,9 @@ export default function DashboardPage() {
   
   // Get pending referrals (users waiting for approval)
   const pendingReferrals = directReferrals.filter(user => !user.isApproved);
+  
+  // Get wallet balance
+  const walletBalance = getUserWalletBalance(currentUser.id);
 
   const handleLogout = () => {
     logout();
@@ -64,6 +67,18 @@ export default function DashboardPage() {
               <span className="text-lg sm:text-2xl font-bold text-gray-900">MLM Investment</span>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
+              {/* Wallet Button */}
+              <button
+                onClick={() => router.push('/wallet')}
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />
+                <div className="flex flex-col items-start">
+                  <span className="text-xs hidden sm:block opacity-90">Wallet</span>
+                  <span className="text-xs sm:text-sm font-bold">₹{walletBalance.toLocaleString('en-IN')}</span>
+                </div>
+              </button>
+
               {/* Requests Button */}
               {pendingReferrals.length > 0 && (
                 <button

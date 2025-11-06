@@ -20,9 +20,9 @@ import {
 import '@xyflow/react/dist/style.css';
 import { 
   TrendingUp, LogOut, ArrowLeft, Users, DollarSign, 
-  Activity, Crown, Phone, Mail, Target, Zap
+  Activity, Crown, Phone, Mail, Target, Zap, Wallet
 } from 'lucide-react';
-import { User, getDirectReferrals, getUserStats, getAllDownline } from '@/lib/mockData';
+import { User, getDirectReferrals, getUserStats, getAllDownline, getUserWalletBalance } from '@/lib/mockData';
 
 // Custom Node Component
 function UserNode({ data }: { data: any }) {
@@ -154,6 +154,7 @@ export default function HierarchyFlowPage() {
 
   const allDownline = getAllDownline(currentUser.id);
   const networkStats = getNetworkStats(currentUser);
+  const walletBalance = getUserWalletBalance(currentUser.id);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -185,6 +186,14 @@ export default function HierarchyFlowPage() {
             </div>
             
             <div className="flex items-center gap-1 sm:gap-3">
+              {/* Wallet Button */}
+              <button
+                onClick={() => router.push('/wallet')}
+                className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="text-xs sm:text-sm font-bold">₹{walletBalance.toLocaleString('en-IN')}</span>
+              </button>
               {/* Stats - Hidden on mobile */}
               <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="text-center">

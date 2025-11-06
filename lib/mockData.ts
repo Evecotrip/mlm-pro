@@ -263,7 +263,7 @@ export const mockInvestments: Investment[] = [
     baseReturn: 1000,
     lockInBonus: 200,
     totalReturn: 11200,
-    status: 'active',
+    status: 'matured',
     createdAt: '2024-02-05T00:00:00Z',
     approvedAt: '2024-02-06T00:00:00Z',
     maturityDate: '2024-04-05T00:00:00Z',
@@ -537,4 +537,369 @@ export function getUserStats(userId: string) {
     .reduce((sum, inv) => sum + inv.totalReturn, 0);
   
   return { totalInvested, totalReturns, investmentCount: investments.length };
+}
+
+// Wallet Transaction Interface
+export interface WalletTransaction {
+  id: string;
+  userId: string;
+  type: 'credit' | 'debit';
+  category: 'deposit' | 'withdrawal' | 'investment' | 'return' | 'referral_bonus' | 'maturity';
+  amount: number;
+  balance: number;
+  description: string;
+  status: 'completed' | 'pending' | 'failed';
+  createdAt: string;
+  relatedId?: string; // Investment ID or referral ID
+}
+
+// Mock wallet transactions
+export const mockWalletTransactions: WalletTransaction[] = [
+  {
+    id: 'txn-1',
+    userId: 'user-2',
+    type: 'credit',
+    category: 'deposit',
+    amount: 50000,
+    balance: 50000,
+    description: 'Initial deposit',
+    status: 'completed',
+    createdAt: '2024-02-01T10:00:00Z',
+  },
+  {
+    id: 'txn-2',
+    userId: 'user-2',
+    type: 'debit',
+    category: 'investment',
+    amount: 10000,
+    balance: 40000,
+    description: 'Investment in High Risk plan',
+    status: 'completed',
+    createdAt: '2024-02-05T00:00:00Z',
+    relatedId: 'inv-1',
+  },
+  {
+    id: 'txn-3',
+    userId: 'user-2',
+    type: 'credit',
+    category: 'referral_bonus',
+    amount: 500,
+    balance: 40500,
+    description: 'Referral bonus from User C',
+    status: 'completed',
+    createdAt: '2024-03-01T12:00:00Z',
+    relatedId: 'user-3',
+  },
+  {
+    id: 'txn-4',
+    userId: 'user-2',
+    type: 'debit',
+    category: 'investment',
+    amount: 8000,
+    balance: 32500,
+    description: 'Investment in Moderate Risk plan',
+    status: 'completed',
+    createdAt: '2024-05-10T00:00:00Z',
+    relatedId: 'inv-12',
+  },
+  {
+    id: 'txn-5',
+    userId: 'user-2',
+    type: 'credit',
+    category: 'referral_bonus',
+    amount: 500,
+    balance: 33000,
+    description: 'Referral bonus from User D',
+    status: 'completed',
+    createdAt: '2024-03-15T14:30:00Z',
+    relatedId: 'user-4',
+  },
+  {
+    id: 'txn-6',
+    userId: 'user-3',
+    type: 'credit',
+    category: 'deposit',
+    amount: 25000,
+    balance: 25000,
+    description: 'Initial deposit',
+    status: 'completed',
+    createdAt: '2024-03-01T09:00:00Z',
+  },
+  {
+    id: 'txn-7',
+    userId: 'user-3',
+    type: 'debit',
+    category: 'investment',
+    amount: 5000,
+    balance: 20000,
+    description: 'Investment in Moderate Risk plan',
+    status: 'completed',
+    createdAt: '2024-03-05T00:00:00Z',
+    relatedId: 'inv-2',
+  },
+  {
+    id: 'txn-8',
+    userId: 'user-3',
+    type: 'credit',
+    category: 'maturity',
+    amount: 3180,
+    balance: 23180,
+    description: 'Investment maturity return',
+    status: 'completed',
+    createdAt: '2024-05-01T00:00:00Z',
+    relatedId: 'inv-13',
+  },
+  {
+    id: 'txn-9',
+    userId: 'user-3',
+    type: 'debit',
+    category: 'investment',
+    amount: 3000,
+    balance: 20180,
+    description: 'Investment in Low Risk plan',
+    status: 'completed',
+    createdAt: '2024-04-01T00:00:00Z',
+    relatedId: 'inv-13',
+  },
+  {
+    id: 'txn-10',
+    userId: 'user-3',
+    type: 'credit',
+    category: 'referral_bonus',
+    amount: 500,
+    balance: 20680,
+    description: 'Referral bonus from User G',
+    status: 'completed',
+    createdAt: '2024-04-20T11:00:00Z',
+    relatedId: 'user-7',
+  },
+  {
+    id: 'txn-11',
+    userId: 'user-1',
+    type: 'credit',
+    category: 'deposit',
+    amount: 100000,
+    balance: 100000,
+    description: 'Initial deposit',
+    status: 'completed',
+    createdAt: '2024-01-01T08:00:00Z',
+  },
+  {
+    id: 'txn-12',
+    userId: 'user-1',
+    type: 'credit',
+    category: 'referral_bonus',
+    amount: 500,
+    balance: 100500,
+    description: 'Referral bonus from User B',
+    status: 'completed',
+    createdAt: '2024-02-01T10:00:00Z',
+    relatedId: 'user-2',
+  },
+  {
+    id: 'txn-13',
+    userId: 'user-1',
+    type: 'credit',
+    category: 'referral_bonus',
+    amount: 500,
+    balance: 101000,
+    description: 'Referral bonus from User E',
+    status: 'completed',
+    createdAt: '2024-04-01T10:00:00Z',
+    relatedId: 'user-5',
+  },
+  {
+    id: 'txn-14',
+    userId: 'user-4',
+    type: 'credit',
+    category: 'deposit',
+    amount: 30000,
+    balance: 30000,
+    description: 'Initial deposit',
+    status: 'completed',
+    createdAt: '2024-03-15T10:00:00Z',
+  },
+  {
+    id: 'txn-15',
+    userId: 'user-4',
+    type: 'debit',
+    category: 'investment',
+    amount: 15000,
+    balance: 15000,
+    description: 'Investment in High Risk plan',
+    status: 'completed',
+    createdAt: '2024-03-20T00:00:00Z',
+    relatedId: 'inv-3',
+  },
+  {
+    id: 'txn-16',
+    userId: 'user-5',
+    type: 'credit',
+    category: 'deposit',
+    amount: 20000,
+    balance: 20000,
+    description: 'Initial deposit',
+    status: 'completed',
+    createdAt: '2024-04-01T09:00:00Z',
+  },
+  {
+    id: 'txn-17',
+    userId: 'user-5',
+    type: 'debit',
+    category: 'investment',
+    amount: 8000,
+    balance: 12000,
+    description: 'Investment in Moderate Risk plan',
+    status: 'completed',
+    createdAt: '2024-04-05T00:00:00Z',
+    relatedId: 'inv-4',
+  },
+];
+
+// Helper function to get user wallet balance
+export function getUserWalletBalance(userId: string): number {
+  const transactions = mockWalletTransactions
+    .filter(txn => txn.userId === userId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  
+  return transactions.length > 0 ? transactions[0].balance : 0;
+}
+
+// Helper function to get user wallet transactions
+export function getUserWalletTransactions(userId: string): WalletTransaction[] {
+  return mockWalletTransactions
+    .filter(txn => txn.userId === userId)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+// Withdrawal Request Interface
+export interface WithdrawalRequest {
+  id: string;
+  userId: string;
+  amount: number;
+  method: 'online' | 'physical';
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  requestedAt: string;
+  approvedAt?: string;
+  approvedBy?: string; // Referrer ID
+  bankDetails?: {
+    accountHolderName: string;
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
+    accountType: 'savings' | 'current';
+  };
+  transactionProof?: string; // URL or base64 of screenshot
+  transactionReference?: string; // UTR number
+  remarks?: string;
+}
+
+// Mock withdrawal requests
+export const mockWithdrawalRequests: WithdrawalRequest[] = [
+  {
+    id: 'wd-1',
+    userId: 'user-2',
+    amount: 2500,
+    method: 'online',
+    status: 'approved',
+    requestedAt: '2024-10-15T10:30:00Z',
+    approvedAt: '2024-10-15T11:15:00Z',
+    approvedBy: 'user-1',
+    bankDetails: {
+      accountHolderName: 'User B',
+      bankName: 'HDFC Bank',
+      accountNumber: '12345678901234',
+      ifscCode: 'HDFC0001234',
+      accountType: 'savings',
+    },
+    transactionReference: 'UTR123456789',
+    remarks: 'First withdrawal',
+  },
+  {
+    id: 'wd-2',
+    userId: 'user-3',
+    amount: 1500,
+    method: 'physical',
+    status: 'completed',
+    requestedAt: '2024-10-20T14:00:00Z',
+    approvedAt: '2024-10-20T16:30:00Z',
+    approvedBy: 'user-2',
+  },
+];
+
+// Helper function to get user withdrawal requests
+export function getUserWithdrawalRequests(userId: string): WithdrawalRequest[] {
+  return mockWithdrawalRequests
+    .filter(req => req.userId === userId)
+    .sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+}
+
+// Helper function to get pending withdrawal requests for referrer
+export function getPendingWithdrawalsForReferrer(referrerId: string): WithdrawalRequest[] {
+  const directReferrals = getDirectReferrals(referrerId);
+  const referralIds = directReferrals.map(u => u.id);
+  
+  return mockWithdrawalRequests
+    .filter(req => referralIds.includes(req.userId) && req.status === 'pending')
+    .sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+}
+
+// Helper function to calculate available balance for withdrawal
+export function getAvailableWithdrawalBalance(userId: string): {
+  totalReturns: number;
+  availableBalance: number;
+  withdrawalPercentage: number;
+  canWithdraw: boolean;
+  message: string;
+} {
+  const investments = getUserInvestments(userId);
+  const user = getUserById(userId);
+  
+  if (!user) {
+    return {
+      totalReturns: 0,
+      availableBalance: 0,
+      withdrawalPercentage: 0,
+      canWithdraw: false,
+      message: 'User not found',
+    };
+  }
+
+  // Calculate total returns from matured investments
+  const totalReturns = investments
+    .filter(inv => inv.status === 'matured')
+    .reduce((sum, inv) => sum + inv.totalReturn, 0);
+
+  // Calculate months since user approval
+  const approvalDate = new Date(user.createdAt);
+  const now = new Date();
+  const monthsSinceApproval = (now.getTime() - approvalDate.getTime()) / (1000 * 60 * 60 * 24 * 30);
+
+  let withdrawalPercentage = 0;
+  let message = '';
+  let canWithdraw = false;
+
+  if (monthsSinceApproval < 3) {
+    withdrawalPercentage = 0;
+    message = 'Withdrawals available after 3 months from approval';
+    canWithdraw = false;
+  } else if (monthsSinceApproval < 6) {
+    withdrawalPercentage = 50;
+    message = 'You can withdraw up to 50% of your returns';
+    canWithdraw = true;
+  } else {
+    withdrawalPercentage = 100;
+    message = 'You can withdraw your full balance';
+    canWithdraw = true;
+  }
+
+  const availableBalance = (totalReturns * withdrawalPercentage) / 100;
+
+  return {
+    totalReturns,
+    availableBalance,
+    withdrawalPercentage,
+    canWithdraw,
+    message,
+  };
 }
