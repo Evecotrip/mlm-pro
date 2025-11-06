@@ -1,4 +1,4 @@
-# MLM Investment Platform - Usage Guide
+# AuramX Platform - Usage Guide
 
 ## Quick Start
 

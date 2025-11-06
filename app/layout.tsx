@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MLM Investment Platform",
+  title: "AuramX Platform",
   description: "Multi-Level Marketing Investment Platform",
 };
 

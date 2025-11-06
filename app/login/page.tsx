@@ -43,7 +43,7 @@ export default function LoginPage() {
         <div className="text-center mb-6 sm:mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
             <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-blue-600" />
-            <span className="text-2xl sm:text-3xl font-bold text-gray-900">MLM Investment</span>
+            <span className="text-2xl sm:text-3xl font-bold text-gray-900">AuramX</span>
           </div>
           <p className="text-sm sm:text-base text-gray-600">Sign in to your account</p>
         </div>

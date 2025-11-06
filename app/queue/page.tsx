@@ -28,7 +28,7 @@ export default function QueuePage() {
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
-            <span className="text-lg sm:text-2xl font-bold text-gray-900">MLM Investment</span>
+            <span className="text-lg sm:text-2xl font-bold text-gray-900">AuramX</span>
           </div>
         </div>
       </header>
