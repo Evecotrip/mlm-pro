@@ -19,9 +19,10 @@ import {
   XCircle,
   ArrowLeftRight
 } from 'lucide-react';
-import { getUserWalletBalance, getUserWalletTransactions, WalletTransaction } from '@/lib/mockData';
+import { getUserWalletBalance, getUserWalletTransactions, WalletTransaction, getDirectReferrals } from '@/lib/mockData';
 import TransferForm from '@/components/TransferForm';
 import WithdrawalForm from '@/components/WithdrawalForm';
+import Navbar from '@/components/Navbar';
 
 export default function WalletPage() {
   const router = useRouter();
@@ -112,40 +113,24 @@ export default function WalletPage() {
     });
   };
 
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
+  const directReferrals = getDirectReferrals(currentUser.id);
+  const pendingReferrals = directReferrals.filter(user => !user.isApproved);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-4">
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="font-medium text-sm sm:text-base hidden sm:inline">Back to Dashboard</span>
-              </button>
-              <div className="h-6 sm:h-8 w-px bg-gray-300 hidden sm:block" />
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
-                  <Wallet className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-base sm:text-xl font-bold text-gray-900">My Wallet</h1>
-                  <p className="text-xs text-gray-500 hidden sm:block">Manage your funds</p>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={logout}
-              className="px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Navbar */}
+      <Navbar
+        currentUser={currentUser}
+        walletBalance={balance}
+        pendingRequestsCount={pendingReferrals.length}
+        onLogout={handleLogout}
+        showWalletButton={false}
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">

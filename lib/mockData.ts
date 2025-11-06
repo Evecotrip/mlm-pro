@@ -825,6 +825,80 @@ export const mockWithdrawalRequests: WithdrawalRequest[] = [
     approvedAt: '2024-10-20T16:30:00Z',
     approvedBy: 'user-2',
   },
+  {
+    id: 'wd-3',
+    userId: 'user-1',
+    amount: 5000,
+    method: 'online',
+    status: 'pending',
+    requestedAt: '2024-11-01T09:00:00Z',
+    bankDetails: {
+      accountHolderName: 'User A',
+      bankName: 'SBI',
+      accountNumber: '98765432109876',
+      ifscCode: 'SBIN0001234',
+      accountType: 'savings',
+    },
+    remarks: 'Monthly withdrawal',
+  },
+];
+
+// Transfer Request Interface
+export interface TransferRequest {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  amount: number;
+  type: 'send' | 'receive';
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  requestedAt: string;
+  completedAt?: string;
+  notes?: string;
+}
+
+// Mock transfer requests
+export const mockTransferRequests: TransferRequest[] = [
+  {
+    id: 'tr-1',
+    fromUserId: 'user-3',
+    toUserId: 'user-2',
+    amount: 1000,
+    type: 'send',
+    status: 'completed',
+    requestedAt: '2024-10-25T14:30:00Z',
+    completedAt: '2024-10-25T15:00:00Z',
+    notes: 'Payment for services',
+  },
+  {
+    id: 'tr-2',
+    fromUserId: 'user-4',
+    toUserId: 'user-1',
+    amount: 2000,
+    type: 'receive',
+    status: 'pending',
+    requestedAt: '2024-11-02T10:00:00Z',
+    notes: 'Loan repayment',
+  },
+  {
+    id: 'tr-3',
+    fromUserId: 'user-2',
+    toUserId: 'user-1',
+    amount: 1500,
+    type: 'send',
+    status: 'pending',
+    requestedAt: '2024-11-03T11:30:00Z',
+  },
+  {
+    id: 'tr-4',
+    fromUserId: 'user-1',
+    toUserId: 'user-5',
+    amount: 3000,
+    type: 'receive',
+    status: 'approved',
+    requestedAt: '2024-10-28T16:00:00Z',
+    completedAt: '2024-10-28T17:00:00Z',
+    notes: 'Investment return',
+  },
 ];
 
 // Helper function to get user withdrawal requests
@@ -902,4 +976,21 @@ export function getAvailableWithdrawalBalance(userId: string): {
     canWithdraw,
     message,
   };
+}
+
+// Helper function to get user transfer requests (sent and received)
+export function getUserTransferRequests(userId: string): TransferRequest[] {
+  return mockTransferRequests
+    .filter(req => req.fromUserId === userId || req.toUserId === userId)
+    .sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+}
+
+// Helper function to get pending transfer requests for user
+export function getPendingTransferRequests(userId: string): TransferRequest[] {
+  return mockTransferRequests
+    .filter(req => 
+      (req.toUserId === userId || req.fromUserId === userId) && 
+      req.status === 'pending'
+    )
+    .sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
 }

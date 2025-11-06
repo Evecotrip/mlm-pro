@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Send, Download, User, Phone, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
-import { getUserByReferralCode, User as UserType } from '@/lib/mockData';
+import { getUserByReferralCode, User as UserType, getAvailableWithdrawalBalance } from '@/lib/mockData';
 
 interface TransferFormProps {
   onClose: () => void;
@@ -14,15 +14,20 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
   const [mode, setMode] = useState<'send' | 'receive'>('send');
   const [referralCode, setReferralCode] = useState('');
   const [amount, setAmount] = useState('');
+  const [notes, setNotes] = useState('');
   const [receiverUser, setReceiverUser] = useState<UserType | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Get transfer balance from matured investment returns
+  const transferBalance = getAvailableWithdrawalBalance(currentUser.id).totalReturns;
+
   // Reset form when mode changes
   useEffect(() => {
     setReferralCode('');
     setAmount('');
+    setNotes('');
     setReceiverUser(null);
     setError('');
     setSuccess(false);
@@ -64,7 +69,7 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
       return;
     }
 
-    if (mode === 'send' && transferAmount > currentBalance) {
+    if (mode === 'send' && transferAmount > transferBalance) {
       setError('Insufficient balance');
       return;
     }
@@ -149,8 +154,9 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
           {/* Current Balance (for Send mode) */}
           {mode === 'send' && (
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-600 mb-1">Available Balance</p>
-              <p className="text-2xl font-bold text-blue-700">₹{currentBalance.toLocaleString('en-IN')}</p>
+              <p className="text-sm text-blue-600 mb-1">Transfer Balance</p>
+              <p className="text-2xl font-bold text-blue-700">₹{transferBalance.toLocaleString('en-IN')}</p>
+              <p className="text-xs text-blue-600 mt-1">Returns from matured investments</p>
             </div>
           )}
 
@@ -214,7 +220,7 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
                 disabled={loading || success || !receiverUser}
               />
             </div>
-            {mode === 'send' && amount && parseFloat(amount) > currentBalance && (
+            {mode === 'send' && amount && parseFloat(amount) > transferBalance && (
               <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Insufficient balance
@@ -230,12 +236,31 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
                   key={quickAmount}
                   type="button"
                   onClick={() => setAmount(quickAmount.toString())}
-                  disabled={loading || success || (mode === 'send' && quickAmount > currentBalance)}
+                  disabled={loading || success || (mode === 'send' && quickAmount > transferBalance)}
                   className="py-2 px-3 bg-gray-100 text-gray-900 hover:bg-blue-100 hover:text-blue-600 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   ₹{quickAmount}
                 </button>
               ))}
+            </div>
+          )}
+
+          {/* Notes/Reason (for Request mode) */}
+          {mode === 'receive' && receiverUser && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Reason for Request (Optional)
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="e.g., Payment for services, loan repayment, etc."
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-gray-900 resize-none"
+                rows={3}
+                maxLength={150}
+                disabled={loading || success}
+              />
+              <p className="text-xs text-gray-500 mt-1">{notes.length}/150 characters</p>
             </div>
           )}
 
@@ -268,8 +293,14 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
                   <div className="flex justify-between items-center pt-2 border-t border-blue-200">
                     <span className="text-gray-600">Balance After Transfer</span>
                     <span className="font-semibold text-gray-900">
-                      ₹{(currentBalance - parseFloat(amount)).toLocaleString('en-IN')}
+                      ₹{(transferBalance - parseFloat(amount)).toLocaleString('en-IN')}
                     </span>
+                  </div>
+                )}
+                {mode === 'receive' && notes && (
+                  <div className="pt-2 border-t border-purple-200">
+                    <span className="text-gray-600 text-sm">Reason</span>
+                    <p className="text-gray-900 mt-1 text-sm">{notes}</p>
                   </div>
                 )}
               </div>

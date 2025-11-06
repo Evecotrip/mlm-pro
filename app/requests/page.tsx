@@ -7,11 +7,12 @@ import {
   ArrowLeft, UserCheck, Mail, Phone, Calendar, CheckCircle, 
   XCircle, Clock, User as UserIcon, AlertCircle
 } from 'lucide-react';
-import { getDirectReferrals, User } from '@/lib/mockData';
+import { getDirectReferrals, User, getUserWalletBalance } from '@/lib/mockData';
+import Navbar from '@/components/Navbar';
 
 export default function RequestsPage() {
   const router = useRouter();
-  const { currentUser, isAuthenticated } = useAuth();
+  const { currentUser, isAuthenticated, logout } = useAuth();
   const [pendingUsers, setPendingUsers] = useState<User[]>([]);
   const [approving, setApproving] = useState<string | null>(null);
 
@@ -71,32 +72,23 @@ export default function RequestsPage() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
+  const walletBalance = getUserWalletBalance(currentUser.id);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-red-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-          <div className="flex items-center gap-2 sm:gap-4">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="font-medium text-sm sm:text-base hidden sm:inline">Back to Dashboard</span>
-            </button>
-            <div className="h-6 sm:h-8 w-px bg-gray-300 hidden sm:block" />
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center shadow-lg">
-                <UserCheck className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-base sm:text-xl font-bold text-gray-900">Approval Requests</h1>
-                <p className="text-xs text-gray-500 hidden sm:block">Manage pending referrals</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Navbar */}
+      <Navbar
+        currentUser={currentUser}
+        walletBalance={walletBalance}
+        pendingRequestsCount={pendingUsers.length}
+        onLogout={handleLogout}
+        showRequestsButton={false}
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">

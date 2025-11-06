@@ -23,6 +23,7 @@ import {
   Activity, Crown, Phone, Mail, Target, Zap, Wallet
 } from 'lucide-react';
 import { User, getDirectReferrals, getUserStats, getAllDownline, getUserWalletBalance } from '@/lib/mockData';
+import Navbar from '@/components/Navbar';
 
 // Custom Node Component
 function UserNode({ data }: { data: any }) {
@@ -155,77 +156,18 @@ export default function HierarchyFlowPage() {
   const allDownline = getAllDownline(currentUser.id);
   const networkStats = getNetworkStats(currentUser);
   const walletBalance = getUserWalletBalance(currentUser.id);
+  const directReferrals = getDirectReferrals(currentUser.id);
+  const pendingReferrals = directReferrals.filter(user => !user.isApproved);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-lg shadow-sm z-30">
-        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2 sm:gap-4">
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="font-medium text-sm sm:text-base hidden sm:inline">Dashboard</span>
-              </button>
-              <div className="h-6 sm:h-8 w-px bg-gray-300 hidden sm:block" />
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
-                  <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
-                </div>
-                <div className="hidden md:block">
-                  <h1 className="text-base sm:text-lg font-bold text-gray-900">Interactive Network Flow</h1>
-                  <p className="text-xs text-gray-500">Drag, zoom, and explore your network</p>
-                </div>
-                <div className="md:hidden">
-                  <h1 className="text-sm font-bold text-gray-900">Network</h1>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-1 sm:gap-3">
-              {/* Wallet Button */}
-              <button
-                onClick={() => router.push('/wallet')}
-                className="flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="text-xs sm:text-sm font-bold">₹{walletBalance.toLocaleString('en-IN')}</span>
-              </button>
-              {/* Stats - Hidden on mobile */}
-              <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-center">
-                  <p className="text-xs text-blue-600">Members</p>
-                  <p className="text-lg font-bold text-blue-700">{allDownline.length + 1}</p>
-                </div>
-                <div className="w-px h-8 bg-blue-300"></div>
-                <div className="text-center">
-                  <p className="text-xs text-green-600">Investment</p>
-                  <p className="text-lg font-bold text-green-700">₹{(networkStats.totalInvestment / 1000).toFixed(0)}K</p>
-                </div>
-              </div>
-
-              <div className="text-right hidden md:block">
-                <p className="text-xs text-gray-500">Logged in as</p>
-                <p className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-yellow-500" />
-                  {currentUser.name}
-                </p>
-              </div>
-              
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition-all shadow-md hover:shadow-lg"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="font-medium text-sm sm:text-base hidden sm:inline">Logout</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Navbar */}
+      <Navbar
+        currentUser={currentUser}
+        walletBalance={walletBalance}
+        pendingRequestsCount={pendingReferrals.length}
+        onLogout={handleLogout}
+      />
 
       {/* React Flow Container */}
       <div className="flex-1 relative">
