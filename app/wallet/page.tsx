@@ -157,6 +157,14 @@ export default function WalletPage() {
                 <span>Transfer</span>
               </button>
               <button 
+                onClick={() => router.push('/add-money')}
+                className="flex-1 bg-white/20 backdrop-blur-sm text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-white/30 transition-all hover:scale-105 flex items-center justify-center gap-2"
+              >
+                <ArrowUpRight className="w-4 h-4" />
+                <span className="hidden sm:inline">Add Money</span>
+                <span className="sm:hidden">Add Money</span>
+              </button>
+              <button 
                 onClick={() => setShowWithdrawalForm(true)}
                 className="flex-1 bg-white/20 backdrop-blur-sm text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-white/30 transition-all hover:scale-105 flex items-center justify-center gap-2"
               >

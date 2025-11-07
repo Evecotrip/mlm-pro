@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { TrendingUp, LogOut, UserCheck, Wallet, Sparkles, HandCoins } from 'lucide-react';
+import Image from 'next/image';
+import { LogOut, UserCheck, Wallet, Sparkles, HandCoins } from 'lucide-react';
 import { User } from '@/lib/mockData';
 
 interface NavbarProps {
@@ -32,9 +33,15 @@ export default function Navbar({
             onClick={() => router.push('/dashboard')}
             className="flex items-center gap-2 group"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
-              <TrendingUp className="relative w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
+            <div className="relative w-8 h-8 sm:w-12 sm:h-12">
+              <Image
+                src="/14386.gif"
+                alt="AuramX Logo"
+                width={48}
+                height={48}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-transparent bg-clip-text">
               AuramX
