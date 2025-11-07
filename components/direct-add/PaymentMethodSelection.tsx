@@ -44,12 +44,14 @@ export default function PaymentMethodSelection({
             <span className="text-gray-600">Amount to Add:</span>
             <span className="font-bold text-gray-900 text-lg">₹{amountValue.toLocaleString('en-IN')}</span>
           </div>
+          {/* 
           {bonus > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">Bonus:</span>
               <span className="font-semibold text-green-600">+₹{bonus.toLocaleString('en-IN')}</span>
             </div>
           )}
+          */}
           <div className="flex justify-between pt-2 border-t-2 border-gray-300">
             <span className="font-bold text-gray-900">Total Credit:</span>
             <span className="font-bold text-green-600 text-xl">₹{totalCredit.toLocaleString('en-IN')}</span>

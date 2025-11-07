@@ -12,6 +12,7 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
 
+  /* 
   const calculateBonus = (amt: number): number => {
     // Example: 10% bonus up to ₹1,000
     const bonus = Math.min(amt * 0.1, 1000);
@@ -20,6 +21,7 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
 
   const bonus = amount ? calculateBonus(parseFloat(amount)) : 0;
   const totalCredit = amount ? parseFloat(amount) + bonus : 0;
+  */
 
   const handleContinue = () => {
     setError('');
@@ -43,8 +45,8 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
           <div>
             <p className="font-bold text-yellow-900 mb-2">⭐ SPECIAL OFFER ⭐</p>
             <ul className="text-sm text-yellow-800 space-y-1">
-              <li>• Get up to 10% bonus on adding money</li>
-              <li>• OR Bonus up to ₹1,000</li>
+              <li>• Earn up to 10% bonus when you add money</li>
+              <li>• Get a bonus of up to ₹1,000</li>
             </ul>
           </div>
         </div>
@@ -85,7 +87,7 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
         ))}
       </div>
 
-      {/* Bonus Calculation Display */}
+      {/* Bonus Calculation Display 
       {amount && parseFloat(amount) > 0 && (
         <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
           <div className="space-y-2">
@@ -106,6 +108,7 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
           </div>
         </div>
       )}
+        */}
 
       {/* Error Message */}
       {error && (

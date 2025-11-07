@@ -86,12 +86,14 @@ export default function DirectAddConfirmation({
             <span className="text-gray-600">Amount:</span>
             <span className="font-bold text-gray-900">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
           </div>
+          {/*
           {bonus > 0 && (
             <div className="flex justify-between">
               <span className="text-gray-600">Bonus:</span>
               <span className="font-semibold text-green-600">+₹{bonus.toLocaleString('en-IN')}</span>
             </div>
           )}
+            */}
           <div className="flex justify-between">
             <span className="text-gray-600">Total Credit:</span>
             <span className="font-bold text-green-600 text-lg">₹{totalCredit.toLocaleString('en-IN')}</span>

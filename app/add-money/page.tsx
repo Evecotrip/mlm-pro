@@ -100,9 +100,9 @@ export default function AddMoneyPage() {
   const handleDirectInitialContinue = (directAmount: string) => {
     setAmount(directAmount);
     const amountValue = parseFloat(directAmount);
-    const calculatedBonus = Math.min(amountValue * 0.1, 1000);
-    setBonus(calculatedBonus);
-    setTotalCredit(amountValue + calculatedBonus);
+    // No bonus calculation - totalCredit equals amount
+    setBonus(0);
+    setTotalCredit(amountValue);
     setDirectStep('payment-method');
   };
 
