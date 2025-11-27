@@ -2,25 +2,36 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser } from '@clerk/nextjs';
 import { TrendingUp, Shield, Users, ArrowRight, Sparkles, Zap, Target } from 'lucide-react';
+import { handleUserRegistrationFlow } from '@/api/register-user-api';
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, currentUser } = useAuth();
+  const { user, isLoaded } = useUser();
   const [isVisible, setIsVisible] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
-    if (isAuthenticated && currentUser) {
-      // Redirect based on approval status
-      if (currentUser.isApproved) {
-        router.push('/dashboard');
-      } else {
-        router.push('/queue');
-      }
+  }, []);
+
+  // Check if user is authenticated and redirect accordingly
+  useEffect(() => {
+    if (!isLoaded || isRedirecting) return;
+
+    if (user) {
+      setIsRedirecting(true);
+      handleUserRegistrationFlow(user.id)
+        .then((result) => {
+          router.push(result.redirectTo);
+        })
+        .catch((error) => {
+          console.error('Error checking user status:', error);
+          // Don't reset isRedirecting to prevent infinite loop
+        });
     }
-  }, [isAuthenticated, currentUser, router]);
+  }, [isLoaded, user, router]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">

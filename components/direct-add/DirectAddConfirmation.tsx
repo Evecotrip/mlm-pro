@@ -8,6 +8,7 @@ interface DirectAddConfirmationProps {
   amount: string;
   bonus: number;
   totalCredit: number;
+  currency: string;
   paymentType: 'cash' | 'qr-code' | 'bank-details';
 }
 
@@ -15,7 +16,8 @@ export default function DirectAddConfirmation({
   requestId, 
   amount, 
   bonus, 
-  totalCredit, 
+  totalCredit,
+  currency, 
   paymentType 
 }: DirectAddConfirmationProps) {
   const router = useRouter();
@@ -83,20 +85,12 @@ export default function DirectAddConfirmation({
             <span className="font-bold text-gray-900 font-mono">{requestId}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Amount:</span>
-            <span className="font-bold text-gray-900">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
+            <span className="text-gray-600">Amount ({currency}):</span>
+            <span className="font-bold text-gray-900">{parseFloat(amount).toLocaleString('en-IN')}</span>
           </div>
-          {/*
-          {bonus > 0 && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">Bonus:</span>
-              <span className="font-semibold text-green-600">+₹{bonus.toLocaleString('en-IN')}</span>
-            </div>
-          )}
-            */}
           <div className="flex justify-between">
-            <span className="text-gray-600">Total Credit:</span>
-            <span className="font-bold text-green-600 text-lg">₹{totalCredit.toLocaleString('en-IN')}</span>
+            <span className="text-gray-600">Total Credit (USDT):</span>
+            <span className="font-bold text-green-600 text-lg">{totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Payment Method:</span>

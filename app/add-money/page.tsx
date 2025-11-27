@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { ArrowLeft, Wallet, HandCoins, X } from 'lucide-react';
+import { useUser, useClerk } from '@clerk/nextjs';
+import { ArrowLeft, Wallet, HandCoins, X, Loader2 } from 'lucide-react';
 import { getUserWalletBalance, getDirectReferrals } from '@/lib/mockData';
 import Navbar from '@/components/Navbar';
 import BorrowLenderDetails from '@/components/borrow/BorrowLenderDetails';
@@ -15,6 +15,15 @@ import DirectAddInitial from '@/components/direct-add/DirectAddInitial';
 import PaymentMethodSelection, { DirectPaymentMethod } from '@/components/direct-add/PaymentMethodSelection';
 import DigitalPaymentOptions, { DigitalOption } from '@/components/direct-add/DigitalPaymentOptions';
 import DirectAddConfirmation from '@/components/direct-add/DirectAddConfirmation';
+import { 
+  calculateConversion, 
+  createAddMoneyRequest,
+  getBankDetailsForCurrency,
+  type ConversionCalculation,
+  type CurrencyBankDetails
+} from '@/api/direct-add-money-api';
+import { useUserStore } from '@/store/useUserStore';
+import { useWalletStore } from '@/store/useWalletStore';
 
 type AddMoneyMethod = 'borrow' | 'direct' | null;
 type BorrowStep = 'lender-details' | 'payment-method' | 'payment-details' | 'confirmation';
@@ -22,7 +31,11 @@ type DirectStep = 'initial' | 'payment-method' | 'digital-options' | 'details' |
 
 export default function AddMoneyPage() {
   const router = useRouter();
-  const { isAuthenticated, currentUser, logout } = useAuth();
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  
+  // Mock data for now
+  const currentUser = { id: user?.id || '', name: user?.fullName || 'User', isApproved: true };
   
   // Main state
   const [selectedMethod, setSelectedMethod] = useState<AddMoneyMethod>(null);
@@ -41,21 +54,35 @@ export default function AddMoneyPage() {
   const [digitalOption, setDigitalOption] = useState<DigitalOption>(null);
   const [bonus, setBonus] = useState(0);
   const [totalCredit, setTotalCredit] = useState(0);
+  const [currency, setCurrency] = useState('INR');
+  const [conversionData, setConversionData] = useState<ConversionCalculation | null>(null);
+  const [bankDetails, setBankDetails] = useState<CurrencyBankDetails | null>(null);
+  const [createdRequestId, setCreatedRequestId] = useState<string>('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoaded) return;
+    if (!user) {
       router.push('/login');
-    } else if (currentUser && !currentUser.isApproved) {
-      router.push('/queue');
     }
-  }, [isAuthenticated, currentUser, router]);
+  }, [isLoaded, user, router]);
 
-  if (!currentUser) {
-    return null;
+  if (!isLoaded || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-green-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    const { clearUserData } = await import('@/store/useUserStore').then(m => m.useUserStore.getState());
+    const { clearWallet } = await import('@/store/useWalletStore').then(m => m.useWalletStore.getState());
+    clearUserData();
+    clearWallet();
+    await signOut();
     router.push('/');
   };
 
@@ -97,70 +124,121 @@ export default function AddMoneyPage() {
   };
 
   // Direct Add handlers
-  const handleDirectInitialContinue = (directAmount: string) => {
+  const handleDirectInitialContinue = async (directAmount: string, selectedCurrency: string) => {
     setAmount(directAmount);
-    const amountValue = parseFloat(directAmount);
-    // No bonus calculation - totalCredit equals amount
-    setBonus(0);
-    setTotalCredit(amountValue);
-    setDirectStep('payment-method');
+    setCurrency(selectedCurrency);
+    setLoading(true);
+    
+    try {
+      // Calculate conversion with backend
+      const response = await calculateConversion(selectedCurrency, parseFloat(directAmount));
+      
+      if (response.success && response.data) {
+        setConversionData(response.data);
+        // Use only USDT amount without bonus
+        setBonus(0);
+        setTotalCredit(parseFloat(response.data.usdtAmount));
+        setDirectStep('payment-method');
+      } else {
+        alert(response.message || 'Failed to calculate conversion');
+      }
+    } catch (error) {
+      console.error('Error calculating conversion:', error);
+      alert('Failed to calculate conversion. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDirectPaymentMethodContinue = (method: DirectPaymentMethod) => {
+  const handleDirectPaymentMethodContinue = async (method: DirectPaymentMethod) => {
     setDirectPaymentMethod(method);
     if (method === 'digital') {
       setDirectStep('digital-options');
     } else {
-      // For cash, submit directly
-      setLoading(true);
-      setTimeout(() => {
-        const reqId = 'CR' + Date.now();
-        setRequestId(reqId);
-        setLoading(false);
-        setDirectStep('confirmation');
-      }, 1500);
+      // For cash, create request directly
+      await createDirectAddRequest('BANK_TRANSFER');
     }
   };
 
-  const handleDigitalOptionContinue = (option: DigitalOption) => {
+  const handleDigitalOptionContinue = async (option: DigitalOption) => {
     setDigitalOption(option);
+    // Both QR code and bank details use UPI method
+    await createDirectAddRequest('UPI');
+  };
+  
+  const createDirectAddRequest = async (method: 'UPI' | 'BANK_TRANSFER') => {
     setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      const reqId = option === 'qr-code' ? 'QR' + Date.now() : 'BD' + Date.now();
-      setRequestId(reqId);
+    
+    try {
+      // Create add money request
+      const requestResponse = await createAddMoneyRequest({
+        currency: currency,
+        currencyAmount: parseFloat(amount),
+        method: method,
+        paymentDetails: {
+          upiId: method === 'UPI' ? 'user@paytm' : undefined,
+        },
+        userNotes: 'Direct add money request'
+      });
+      
+      if (requestResponse.success && requestResponse.data) {
+        // Redirect to direct add money page with request ID
+        router.push(`/direct-add-money?requestId=${requestResponse.data.id}`);
+      } else {
+        alert(requestResponse.message || 'Failed to create add money request');
+      }
+    } catch (error) {
+      console.error('Error creating add money request:', error);
+      alert('Failed to create request. Please try again.');
+    } finally {
       setLoading(false);
-      setDirectStep('confirmation');
-    }, 1500);
+    }
   };
 
   const resetForm = () => {
     setSelectedMethod(null);
     setBorrowStep('lender-details');
+    setDirectStep('initial');
     setLenderUser(null);
     setAmount('');
     setPaymentMethod(null);
+    setDirectPaymentMethod(null);
+    setDigitalOption(null);
     setRequestId('');
+    setCreatedRequestId('');
+    setBonus(0);
+    setTotalCredit(0);
+    setCurrency('INR');
+    setConversionData(null);
+    setBankDetails(null);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
       <Navbar
-        currentUser={currentUser}
-        walletBalance={walletBalance}
-        pendingRequestsCount={pendingReferrals.length}
         onLogout={handleLogout}
       />
 
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <div className="mb-6 sm:mb-8">
-          <button
-            onClick={() => router.push('/wallet')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back to Wallet</span>
-          </button>
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={() => router.push('/wallet')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Back to Wallet</span>
+            </button>
+            <button
+              onClick={() => router.push('/my-add-money-requests')}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors shadow-lg"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="hidden sm:inline">My Requests</span>
+            </button>
+          </div>
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text mb-2">
             💵 Add Money to Wallet
           </h1>
@@ -172,7 +250,7 @@ export default function AddMoneyPage() {
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Borrow Money */}
             <button
-              onClick={() => setSelectedMethod('borrow')}
+              onClick={() => router.push('/borrow-add-money')}
               className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border-2 border-gray-200 hover:border-purple-400 p-6 sm:p-8 transition-all hover:shadow-2xl hover:scale-105 text-left"
             >
               <div className="flex items-start justify-between mb-4">
@@ -188,7 +266,7 @@ export default function AddMoneyPage() {
 
             {/* Direct Add */}
             <button
-              onClick={() => setSelectedMethod('direct')}
+              onClick={() => router.push('/direct-add-money')}
               className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border-2 border-gray-200 hover:border-green-400 p-6 sm:p-8 transition-all hover:shadow-2xl hover:scale-105 text-left"
             >
               <div className="flex items-start justify-between mb-4">
@@ -312,6 +390,7 @@ export default function AddMoneyPage() {
                     amount={amount}
                     bonus={bonus}
                     totalCredit={totalCredit}
+                    currency={currency}
                     onContinue={handleDirectPaymentMethodContinue}
                     onBack={() => setDirectStep('initial')}
                   />
@@ -322,6 +401,7 @@ export default function AddMoneyPage() {
                     amount={amount}
                     bonus={bonus}
                     totalCredit={totalCredit}
+                    currency={currency}
                     onContinue={handleDigitalOptionContinue}
                     onBack={() => setDirectStep('payment-method')}
                   />
@@ -333,6 +413,7 @@ export default function AddMoneyPage() {
                     amount={amount}
                     bonus={bonus}
                     totalCredit={totalCredit}
+                    currency={currency}
                     paymentType={
                       directPaymentMethod === 'cash' 
                         ? 'cash' 

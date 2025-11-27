@@ -1,23 +1,82 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { Clock, AlertCircle, TrendingUp } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { Clock, AlertCircle, TrendingUp, Loader2 } from 'lucide-react';
+import { getUserProfile, getTokenFromCookies, handleUserRegistrationFlow } from '@/api/register-user-api';
 
 export default function QueuePage() {
   const router = useRouter();
-  const { currentUser, isAuthenticated } = useAuth();
+  const { user, isLoaded } = useUser();
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Load user profile
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    } else if (currentUser?.isApproved) {
-      router.push('/dashboard');
-    }
-  }, [isAuthenticated, currentUser, router]);
+    if (!isLoaded) return;
 
-  if (!currentUser) {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    loadUserProfile();
+  }, [isLoaded, user, router]);
+
+  const loadUserProfile = async () => {
+    if (!user) return;
+
+    setIsLoading(true);
+    try {
+      const token = getTokenFromCookies();
+      if (!token) {
+        // No token, check registration status
+        const result = await handleUserRegistrationFlow(user.id);
+        router.push(result.redirectTo);
+        return;
+      }
+
+      const profileResponse = await getUserProfile(token);
+      if (profileResponse.success && profileResponse.data) {
+        const profile = profileResponse.data;
+        setUserProfile(profile);
+
+        // Check if user is now active
+        if (profile.status === 'ACTIVE') {
+          router.push('/dashboard');
+        }
+      } else {
+        // Token might be invalid, check registration status
+        const result = await handleUserRegistrationFlow(user.id);
+        router.push(result.redirectTo);
+      }
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadUserProfile();
+    setIsRefreshing(false);
+  };
+
+  if (!isLoaded || isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userProfile) {
     return null;
   }
 
@@ -56,15 +115,15 @@ export default function QueuePage() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Name:</span>
-                  <span className="font-medium text-gray-900">{currentUser.name}</span>
+                  <span className="font-medium text-gray-900">{userProfile.firstName} {userProfile.lastName}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Email:</span>
-                  <span className="font-medium text-gray-900">{currentUser.email}</span>
+                  <span className="font-medium text-gray-900">{userProfile.email}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Your Referral Code:</span>
-                  <span className="font-mono font-bold text-blue-600">{currentUser.referralCode}</span>
+                  <span className="font-mono font-bold text-blue-600">{userProfile.referralCode}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Status:</span>
@@ -93,10 +152,18 @@ export default function QueuePage() {
             {/* Action Buttons */}
             <div className="mt-8 space-y-3">
               <button
-                onClick={() => window.location.reload()}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Refresh Status
+                {isRefreshing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Refreshing...
+                  </>
+                ) : (
+                  'Refresh Status'
+                )}
               </button>
               
             </div>

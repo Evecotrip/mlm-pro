@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { 
   Wallet, 
   ArrowLeft, 
@@ -17,73 +17,115 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  ArrowLeftRight
+  ArrowLeftRight,
+  Loader2
 } from 'lucide-react';
-import { getUserWalletBalance, getUserWalletTransactions, WalletTransaction, getDirectReferrals } from '@/lib/mockData';
 import TransferForm from '@/components/TransferForm';
 import WithdrawalForm from '@/components/WithdrawalForm';
 import Navbar from '@/components/Navbar';
+import { useWalletStore } from '@/store/useWalletStore';
+import { TransactionType, TransactionStatus } from '@/types';
 
 export default function WalletPage() {
   const router = useRouter();
-  const { isAuthenticated, currentUser, logout } = useAuth();
-  const [balance, setBalance] = useState(0);
-  const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
-  const [filter, setFilter] = useState<'all' | 'credit' | 'debit'>('all');
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  
+  // Wallet store
+  const balance = useWalletStore(state => state.balance);
+  const earnings = useWalletStore(state => state.earnings);
+  const statistics = useWalletStore(state => state.statistics);
+  const transactions = useWalletStore(state => state.transactions);
+  const isLoadingWallet = useWalletStore(state => state.isLoadingWallet);
+  const isLoadingTransactions = useWalletStore(state => state.isLoadingTransactions);
+  const fetchWallet = useWalletStore(state => state.fetchWallet);
+  const fetchTransactions = useWalletStore(state => state.fetchTransactions);
+  
+  const [filter, setFilter] = useState<string>('all');
   const [showTransferForm, setShowTransferForm] = useState(false);
   const [showWithdrawalForm, setShowWithdrawalForm] = useState(false);
 
+  // Check authentication
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoaded) return;
+    if (!user) {
       router.push('/login');
-    } else if (currentUser && !currentUser.isApproved) {
-      router.push('/queue');
-    } else if (currentUser) {
-      setBalance(getUserWalletBalance(currentUser.id));
-      setTransactions(getUserWalletTransactions(currentUser.id));
     }
-  }, [isAuthenticated, currentUser, router]);
+  }, [isLoaded, user, router]);
 
-  if (!currentUser) {
+  // Fetch wallet data
+  useEffect(() => {
+    if (user?.id) {
+      fetchWallet();
+      fetchTransactions(1, 50);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  if (!isLoaded || isLoadingWallet) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading wallet...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
     return null;
   }
 
-  const filteredTransactions = transactions.filter(txn => {
+  const filteredTransactions = (transactions || []).filter(txn => {
     if (filter === 'all') return true;
     return txn.type === filter;
   });
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'deposit':
+  const availableBalance = parseFloat(balance?.available || '0');
+  const totalEarnings = parseFloat(earnings?.total || '0');
+  const totalInvested = parseFloat(statistics?.totalInvested || '0');
+
+  const getTypeIcon = (type: TransactionType) => {
+    switch (type) {
+      case 'ADD_MONEY':
         return <Plus className="w-4 h-4" />;
-      case 'withdrawal':
+      case 'WITHDRAWAL':
         return <ArrowUpRight className="w-4 h-4" />;
-      case 'investment':
+      case 'INVESTMENT':
         return <TrendingUp className="w-4 h-4" />;
-      case 'return':
-      case 'maturity':
+      case 'MATURITY_PAYOUT':
         return <ArrowDownRight className="w-4 h-4" />;
-      case 'referral_bonus':
+      case 'REFERRAL_BONUS':
+      case 'BONUS':
         return <CreditCard className="w-4 h-4" />;
+      case 'COMMISSION':
+        return <CreditCard className="w-4 h-4" />;
+      case 'TRANSFER_IN':
+      case 'TRANSFER_OUT':
+        return <ArrowLeftRight className="w-4 h-4" />;
       default:
         return <Wallet className="w-4 h-4" />;
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'deposit':
+  const getTypeColor = (type: TransactionType) => {
+    switch (type) {
+      case 'ADD_MONEY':
         return 'bg-green-100 text-green-700';
-      case 'withdrawal':
+      case 'WITHDRAWAL':
         return 'bg-orange-100 text-orange-700';
-      case 'investment':
+      case 'INVESTMENT':
         return 'bg-blue-100 text-blue-700';
-      case 'return':
-      case 'maturity':
+      case 'MATURITY_PAYOUT':
         return 'bg-purple-100 text-purple-700';
-      case 'referral_bonus':
+      case 'REFERRAL_BONUS':
+      case 'BONUS':
+      case 'COMMISSION':
         return 'bg-pink-100 text-pink-700';
+      case 'TRANSFER_IN':
+      case 'TRANSFER_OUT':
+        return 'bg-indigo-100 text-indigo-700';
       default:
         return 'bg-gray-100 text-gray-700';
     }
@@ -113,21 +155,31 @@ export default function WalletPage() {
     });
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    const { clearWallet } = await import('@/store/useWalletStore').then(m => m.useWalletStore.getState());
+    const { clearUserData } = await import('@/store/useUserStore').then(m => m.useUserStore.getState());
+    clearWallet();
+    clearUserData();
+    await signOut();
     router.push('/');
   };
 
-  const directReferrals = getDirectReferrals(currentUser.id);
-  const pendingReferrals = directReferrals.filter(user => !user.isApproved);
+  const isCredit = (type: TransactionType) => {
+    return ['ADD_MONEY', 'TRANSFER_IN', 'COMMISSION', 'BONUS', 'REFERRAL_BONUS', 'MATURITY_PAYOUT'].includes(type);
+  };
+
+  const totalCredit = (transactions || [])
+    .filter(t => isCredit(t.type))
+    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
+  const totalDebit = (transactions || [])
+    .filter(t => !isCredit(t.type))
+    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       {/* Navbar */}
       <Navbar
-        currentUser={currentUser}
-        walletBalance={balance}
-        pendingRequestsCount={pendingReferrals.length}
         onLogout={handleLogout}
         showWalletButton={false}
       />
@@ -142,7 +194,8 @@ export default function WalletPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-blue-100 text-sm mb-1">Available Balance</p>
-                <h2 className="text-3xl sm:text-4xl font-bold">₹{balance.toLocaleString('en-IN')}</h2>
+                <h2 className="text-3xl sm:text-4xl font-bold">{availableBalance.toLocaleString('en-IN')} USDT</h2>
+                <p className="text-blue-200 text-xs mt-1">Total: {parseFloat(balance?.total || '0').toLocaleString('en-IN')} USDT</p>
               </div>
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
                 <Wallet className="w-6 h-6 sm:w-8 sm:h-8" />
@@ -186,7 +239,7 @@ export default function WalletPage() {
               <span className="text-xs text-gray-500">Total Credit</span>
             </div>
             <p className="text-lg sm:text-xl font-bold text-gray-900">
-              ₹{transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0).toLocaleString('en-IN')}
+              {totalCredit.toLocaleString('en-IN')} USDT
             </p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
@@ -197,7 +250,7 @@ export default function WalletPage() {
               <span className="text-xs text-gray-500">Total Debit</span>
             </div>
             <p className="text-lg sm:text-xl font-bold text-gray-900">
-              ₹{transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0).toLocaleString('en-IN')}
+              {totalDebit.toLocaleString('en-IN')} USDT
             </p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100 col-span-2 sm:col-span-1">
@@ -207,7 +260,7 @@ export default function WalletPage() {
               </div>
               <span className="text-xs text-gray-500">Transactions</span>
             </div>
-            <p className="text-lg sm:text-xl font-bold text-gray-900">{transactions.length}</p>
+            <p className="text-lg sm:text-xl font-bold text-gray-900">{(transactions || []).length}</p>
           </div>
         </div>
 
@@ -219,30 +272,38 @@ export default function WalletPage() {
               <p className="text-sm text-gray-500">View all your wallet transactions</p>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <div className="flex bg-gray-100 rounded-lg p-1 flex-1 sm:flex-none">
+              <div className="flex bg-gray-100 rounded-lg p-1 flex-1 sm:flex-none overflow-x-auto">
                 <button
                   onClick={() => setFilter('all')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                     filter === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
                   }`}
                 >
                   All
                 </button>
                 <button
-                  onClick={() => setFilter('credit')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    filter === 'credit' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  onClick={() => setFilter('COMMISSION')}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+                    filter === 'COMMISSION' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
                   }`}
                 >
-                  Credit
+                  Commission
                 </button>
                 <button
-                  onClick={() => setFilter('debit')}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                    filter === 'debit' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  onClick={() => setFilter('INVESTMENT')}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+                    filter === 'INVESTMENT' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
                   }`}
                 >
-                  Debit
+                  Investment
+                </button>
+                <button
+                  onClick={() => setFilter('WITHDRAWAL')}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+                    filter === 'WITHDRAWAL' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  }`}
+                >
+                  Withdrawal
                 </button>
               </div>
               <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors hidden sm:block">
@@ -270,27 +331,38 @@ export default function WalletPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 flex-1">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getCategoryColor(txn.category)}`}>
-                      {getCategoryIcon(txn.category)}
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${getTypeColor(txn.type)}`}>
+                      {getTypeIcon(txn.type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{txn.description}</h4>
+                        <h4 className="font-semibold text-gray-900 text-sm sm:text-base">
+                          {txn.description || txn.type.replace(/_/g, ' ')}
+                        </h4>
                         {getStatusIcon(txn.status)}
                       </div>
                       <p className="text-xs sm:text-sm text-gray-500">{formatDate(txn.createdAt)}</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(txn.category)}`}>
-                          {txn.category.replace('_', ' ')}
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getTypeColor(txn.type)}`}>
+                          {txn.type.replace(/_/g, ' ')}
+                        </span>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                          txn.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
+                          txn.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {txn.status}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={`text-base sm:text-lg font-bold ${txn.type === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
-                      {txn.type === 'credit' ? '+' : '-'}₹{txn.amount.toLocaleString('en-IN')}
+                    <p className={`text-base sm:text-lg font-bold ${isCredit(txn.type) ? 'text-green-600' : 'text-red-600'}`}>
+                      {isCredit(txn.type) ? '+' : '-'}{parseFloat(txn.amount).toLocaleString('en-IN')} USDT
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">Balance: ₹{txn.balance.toLocaleString('en-IN')}</p>
+                    {txn.fee && parseFloat(txn.fee) > 0 && (
+                      <p className="text-xs text-gray-500 mt-1">Fee: {parseFloat(txn.fee).toLocaleString('en-IN')} USDT</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -303,8 +375,8 @@ export default function WalletPage() {
       {showTransferForm && (
         <TransferForm
           onClose={() => setShowTransferForm(false)}
-          currentUser={currentUser}
-          currentBalance={balance}
+          currentUser={{ id: user.id, name: user.fullName || 'User' } as any}
+          currentBalance={availableBalance}
         />
       )}
 
@@ -312,7 +384,7 @@ export default function WalletPage() {
       {showWithdrawalForm && (
         <WithdrawalForm
           onClose={() => setShowWithdrawalForm(false)}
-          currentUser={currentUser}
+          currentUser={{ id: user.id, name: user.fullName || 'User' } as any}
         />
       )}
     </div>

@@ -1,0 +1,1247 @@
+// This is your Prisma schema file
+// Optimized for MLM Investment Platform with PostgreSQL
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  USER
+  ADMIN
+  MASTER_NODE
+  SUPPORT
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  BLOCKED
+  DELETED
+}
+
+enum KYCStatus {
+  NOT_SUBMITTED
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum InvestmentProfile {
+  BRONZE // 5-8% return - ₹10,000 to ₹49,999 - 12 months lock-in - 5 levels hierarchy
+  SILVER // 7-12% return - ₹50,000 to ₹999,999 - 9 months lock-in - 8 levels hierarchy
+  GOLD // 10-15% return - ₹100,000 to ₹1,999,999 - 6 months lock-in - 10 levels hierarchy
+  DIAMOND // 15-20% return - ₹200,000+ - 3 months lock-in - 15 levels hierarchy
+}
+
+enum BonusType {
+  REFERRAL_INSTANT // Instant referral bonus
+  REFERRAL_DELAYED // Delayed referral bonus (after 30 days)
+  PROFIT_DISTRIBUTION // Profit sharing on maturity
+  REFERRAL_ADDITIONAL // Additional referral bonus
+  PROFIT_ADDITIONAL // Additional profit bonus
+}
+
+enum CommissionStatus {
+  PENDING
+  SCHEDULED // For delayed payments
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum InvestmentStatus {
+  PENDING_APPROVAL
+  APPROVED
+  ACTIVE
+  MATURED
+  WITHDRAWN
+  CANCELLED
+  REJECTED
+}
+
+enum TransactionType {
+  INVESTMENT
+  WITHDRAWAL
+  TRANSFER_IN
+  TRANSFER_OUT
+  COMMISSION
+  BONUS
+  BORROW_REQUEST
+  BORROW_PAYMENT
+  ADD_MONEY
+  REFERRAL_BONUS
+  MATURITY_PAYOUT
+  PENALTY
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REVERSED
+}
+
+enum PaymentMethod {
+  ONLINE_TRANSFER
+  PHYSICAL_CASH
+  UPI
+  BANK_TRANSFER
+  NEFT
+  RTGS
+  IMPS
+}
+
+enum ApprovalType {
+  INVESTMENT
+  WITHDRAWAL
+  BORROW
+  TRANSFER
+  ADD_MONEY
+  USER_REGISTRATION
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  WHATSAPP
+  IN_APP
+  PUSH
+}
+
+enum RequestType {
+  WITHDRAWAL
+  BORROW
+  ADD_MONEY
+  TRANSFER
+}
+
+enum MoneyRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+// ==================== MODELS ====================
+
+// User Model with optimized indexes
+model User {
+  id         String  @id @default(uuid())
+  clerkId    String? @unique @db.VarChar(255) // Clerk authentication ID
+  uniqueCode String  @unique @db.VarChar(20) // VIB12345AB format
+  email      String  @unique @db.VarChar(255)
+  phone      String  @unique @db.VarChar(20)
+  password   String? // Optional since Clerk handles auth
+
+  // Personal Information
+  firstName   String    @db.VarChar(100)
+  lastName    String    @db.VarChar(100)
+  dateOfBirth DateTime? @db.Date
+
+  // Address (JSON for flexibility)
+  address Json? // {street, city, state, pinCode, country}
+
+  // KYC Information
+  kycStatus          KYCStatus @default(NOT_SUBMITTED)
+  kycDocuments       Json? // {aadhaar, pan, photo, etc.}
+  kycVerifiedAt      DateTime?
+  kycRejectionReason String?   @db.Text
+
+  // Role and Status
+  role   UserRole   @default(USER)
+  status UserStatus @default(PENDING_VERIFICATION)
+
+  // Referral System
+  referralCode     String  @unique @db.VarChar(20)
+  referredById     String?
+  referredBy       User?   @relation("DirectReferral", fields: [referredById], references: [id], onDelete: SetNull)
+  referredUsers    User[]  @relation("DirectReferral")
+
+  // Legacy Hierarchy Fields (kept for backward compatibility)
+  hierarchyLevel Int      @default(0) @db.SmallInt
+  hierarchyPath  String[] @default([]) // Array of ancestor IDs
+
+  // Authentication
+  emailVerified    Boolean @default(false)
+  phoneVerified    Boolean @default(false)
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+
+  // Timestamps
+  lastLoginAt       DateTime?
+  passwordChangedAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime? // Soft delete
+
+  // Relations
+  wallet                   Wallet?
+  investments              Investment[]
+  sentTransactions         Transaction[]          @relation("SentTransactions")
+  receivedTransactions     Transaction[]          @relation("ReceivedTransactions")
+  approvalsMade            Approval[]             @relation("ApproverRelation")
+  approvalsReceived        Approval[]             @relation("RequesterRelation")
+  notifications            Notification[]
+  sessions                 Session[]
+  investmentCommissions    InvestmentCommission[] @relation("BeneficiaryRelation")
+  withdrawalRequests       WithdrawalRequest[]
+  borrowRequestsMade       BorrowRequest[]        @relation("BorrowerRelation")
+  borrowRequestsReceived   BorrowRequest[]        @relation("LenderRelation")
+  transferRequestsSent     TransferRequest[]      @relation("SenderRelation")
+  transferRequestsReceived TransferRequest[]      @relation("ReceiverRelation")
+  addMoneyRequests         AddMoneyRequest[]
+  activityLogs             ActivityLog[]
+
+  // Hierarchy Relations
+  ancestorRelations   UserHierarchy[]     @relation("DescendantRelation")
+  descendantRelations UserHierarchy[]     @relation("AncestorRelation")
+  hierarchyStats      UserHierarchyStats?
+
+  @@index([clerkId])
+  @@index([email])
+  @@index([phone])
+  @@index([referralCode])
+  @@index([referredById])
+  @@index([status])
+  @@index([role])
+  @@index([hierarchyLevel])
+  @@index([createdAt(sort: Desc)])
+  @@map("users")
+}
+
+// Wallet Model for balance management
+model Wallet {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Balance Management
+  totalBalance     Decimal @default(0) @db.Decimal(20, 8) // Changed to 8 decimals for USDT precision
+  availableBalance Decimal @default(0) @db.Decimal(20, 8)
+  lockedBalance    Decimal @default(0) @db.Decimal(20, 8)
+  investedAmount   Decimal @default(0) @db.Decimal(20, 8)
+
+  // Earnings (in USDT)
+  totalEarnings    Decimal @default(0) @db.Decimal(20, 8)
+  totalCommissions Decimal @default(0) @db.Decimal(20, 8)
+  totalReturns     Decimal @default(0) @db.Decimal(20, 8)
+  totalBonus       Decimal @default(0) @db.Decimal(20, 8)
+
+  // Statistics (in USDT)
+  totalInvested        Decimal   @default(0) @db.Decimal(20, 8)
+  totalWithdrawn       Decimal   @default(0) @db.Decimal(20, 8)
+  lastWithdrawalAt     DateTime?
+  withdrawalUnlockedAt DateTime? // Based on time restrictions
+
+  // Statistics
+  totalTransferred Decimal @default(0) @db.Decimal(20, 8)
+  totalBorrowed    Decimal @default(0) @db.Decimal(20, 8)
+  totalLent        Decimal @default(0) @db.Decimal(20, 8)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  transactions Transaction[]
+  balanceLogs  BalanceLog[]
+
+  @@index([userId])
+  @@index([availableBalance])
+  @@map("wallets")
+}
+
+// Investment Model
+model Investment {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Investment Details
+  amount  Decimal           @db.Decimal(20, 8)
+  profile InvestmentProfile // BRONZE, SILVER, GOLD, DIAMOND
+
+  // Return Rates (configurable range)
+  minReturnRate    Decimal  @db.Decimal(5, 2) // Minimum guaranteed return %
+  maxReturnRate    Decimal  @db.Decimal(5, 2) // Maximum possible return %
+  actualReturnRate Decimal? @db.Decimal(5, 2) // Actual return rate (set on maturity)
+
+  // Lock-in Configuration
+  lockInMonths   Int @db.SmallInt // 12, 9, 6, or 3 months
+  hierarchyDepth Int @db.SmallInt // 5, 8, 10, or 15 levels
+
+  // Calculated Values
+  expectedMinReturn Decimal  @db.Decimal(20, 8) // Based on min rate
+  expectedMaxReturn Decimal  @db.Decimal(20, 8) // Based on max rate
+  actualReturn      Decimal? @db.Decimal(20, 8) // Set on maturity
+  maturityAmount    Decimal? @db.Decimal(20, 8) // Principal + Actual Return
+  maturityDate      DateTime
+
+  // Status Tracking
+  status      InvestmentStatus @default(PENDING_APPROVAL)
+  approvedBy  String?
+  approvedAt  DateTime?
+  activatedAt DateTime?
+  maturedAt   DateTime?
+  withdrawnAt DateTime?
+
+  // Profile Configuration Snapshot (to maintain history)
+  profileConfig Json // Snapshot of ProfileConfiguration at investment time
+
+  // Additional Info
+  referenceId String  @unique @db.VarChar(50) // INV-YYYYMMDD-XXXX
+  notes       String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  transactions Transaction[]
+  approval     Approval?     @relation("ApprovalInvestment")
+  returns      InvestmentReturn[]
+  commissions  InvestmentCommission[]
+
+  @@index([userId])
+  @@index([profile])
+  @@index([status])
+  @@index([maturityDate])
+  @@index([createdAt(sort: Desc)])
+  @@map("investments")
+}
+
+// Investment Returns (for tracking periodic returns)
+model InvestmentReturn {
+  id           String     @id @default(uuid())
+  investmentId String
+  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+
+  amount       Decimal   @db.Decimal(20, 8)
+  returnType   String // MONTHLY, QUARTERLY, MATURITY, BONUS
+  calculatedAt DateTime
+  creditedAt   DateTime?
+
+  transactionId String?      @unique
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([investmentId])
+  @@index([returnType])
+  @@map("investment_returns")
+}
+
+// Transaction Model - Core financial record
+model Transaction {
+  id String @id @default(uuid())
+
+  // Transaction Parties
+  senderId   String?
+  sender            User?             @relation("SentTransactions", fields: [senderId], references: [id], onDelete: SetNull)
+  receiverId String?
+  receiver          User?             @relation("ReceivedTransactions", fields: [receiverId], references: [id], onDelete: SetNull)
+
+  // Transaction Details
+  type      TransactionType
+  amount    Decimal         @db.Decimal(20, 8)
+  fee       Decimal         @default(0) @db.Decimal(10, 8)
+  netAmount Decimal         @db.Decimal(20, 8) // Amount after fee
+
+  // Reference Information
+  referenceId String  @unique @db.VarChar(50) // TXN-YYYYMMDD-XXXX
+  externalRef String? @db.VarChar(100) // UTR, Bank Reference etc.
+
+  // Status and Method
+  status        TransactionStatus @default(PENDING)
+  paymentMethod PaymentMethod?
+
+  // Related Entities
+  walletId     String?
+  wallet       Wallet?     @relation(fields: [walletId], references: [id])
+  investmentId String?
+  investment   Investment? @relation(fields: [investmentId], references: [id])
+
+  // Screenshot/Proof
+  screenshotUrl        String?   @db.Text
+  screenshotUploadedAt DateTime?
+  screenshotVerifiedAt DateTime?
+
+  // Metadata
+  metadata    Json? // Additional transaction data
+  description String? @db.Text
+  notes       String? @db.Text
+
+  // Timestamps
+  processedAt DateTime?
+  completedAt DateTime?
+  failedAt    DateTime?
+  reversedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  approval              Approval?             @relation("ApprovalTransaction")
+  investmentCommission  InvestmentCommission? @relation("CommissionTransaction")
+  balanceLogs           BalanceLog[]
+  investmentReturn      InvestmentReturn?
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([type])
+  @@index([status])
+  @@index([referenceId])
+  @@index([createdAt(sort: Desc)])
+  @@map("transactions")
+}
+
+// Balance Log for audit trail
+model BalanceLog {
+  id       String @id @default(uuid())
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  transactionId String?
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+
+  previousBalance Decimal @db.Decimal(20, 8)
+  amount          Decimal @db.Decimal(20, 8) // Can be positive or negative
+  newBalance      Decimal @db.Decimal(20, 8)
+
+  operation   String // CREDIT, DEBIT, LOCK, UNLOCK
+  description String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([walletId])
+  @@index([transactionId])
+  @@index([operation])
+  @@index([createdAt(sort: Desc)])
+  @@map("balance_logs")
+}
+
+// Approval Model for workflow management
+model Approval {
+  id String @id @default(uuid())
+
+  // Type and Status
+  type   ApprovalType
+  status ApprovalStatus @default(PENDING)
+
+  // Requester and Approver
+  requesterId String
+  requester   User   @relation("RequesterRelation", fields: [requesterId], references: [id], onDelete: Cascade)
+  approverId  String
+  approver    User   @relation("ApproverRelation", fields: [approverId], references: [id], onDelete: Cascade)
+
+  // Related Entity (polymorphic)
+  entityId   String @unique // ID of investment, withdrawal, etc. 
+  entityType String // INVESTMENT, WITHDRAWAL, etc.
+
+  // Approval Details
+  requestData  Json // Original request data
+  responseData Json? // Approver's response
+
+  // Screenshot for payment proof
+  screenshotUrl String? @db.Text
+
+  // Notes and Reasons
+  requestNotes    String? @db.Text
+  approvalNotes   String? @db.Text
+  rejectionReason String? @db.Text
+
+  // Timestamps
+  requestedAt DateTime  @default(now())
+  respondedAt DateTime?
+  expiresAt   DateTime?
+
+  // Relations
+  // investment  Investment?  @relation(fields: [entityId], references: [id])
+  // transaction Transaction? @relation(fields: [entityId], references: [id])
+  investment  Investment?  @relation("ApprovalInvestment", fields: [entityId], references: [id], map: "approval_investment_fkey")
+ transaction Transaction? @relation("ApprovalTransaction", fields: [entityId], references: [id], map: "approval_transaction_fkey")
+
+  @@unique([entityId, entityType])
+  @@index([requesterId])
+  @@index([approverId])
+  @@index([type])
+  @@index([status])
+  @@index([entityType])
+  @@map("approvals")
+}
+
+// Withdrawal Request Model
+model WithdrawalRequest {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Request Details
+  amount Decimal            @db.Decimal(20, 8)
+  method PaymentMethod
+  status MoneyRequestStatus @default(PENDING)
+
+  // Bank Details (for online transfer)
+  bankDetails Json? // {accountName, bankName, accountNumber, ifsc}
+
+  // Contact Details (for cash pickup)
+  contactDetails Json? // {phone, address, preferredTime}
+
+  // Processing Information
+  processedBy String?
+  processedAt DateTime?
+
+  // Screenshot/Proof
+  paymentProof   String? @db.Text
+  transactionRef String? @db.VarChar(100)
+
+  // Notes
+  userNotes       String? @db.Text
+  adminNotes      String? @db.Text
+  rejectionReason String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("withdrawal_requests")
+}
+
+// Borrow Request Model
+model BorrowRequest {
+  id String @id @default(uuid())
+
+  // Borrower and Lender
+  borrowerId String
+  borrower   User   @relation("BorrowerRelation", fields: [borrowerId], references: [id], onDelete: Cascade)
+  lenderId   String
+  lender     User   @relation("LenderRelation", fields: [lenderId], references: [id], onDelete: Cascade)
+
+  // Request Details
+  amount        Decimal            @db.Decimal(20, 8)
+  paymentMethod PaymentMethod // SOFT_CASH or HARD_CASH
+  status        MoneyRequestStatus @default(PENDING)
+
+  // Payment Details
+  borrowerDetails Json // Bank or contact details
+  lenderDetails   Json? // Lender's response details
+
+  // Processing
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
+  completedAt DateTime?
+
+  // Proof
+  paymentProof      String? @db.Text
+  confirmationProof String? @db.Text
+
+  // Notes
+  borrowerNotes String? @db.Text
+  lenderNotes   String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([borrowerId])
+  @@index([lenderId])
+  @@index([status])
+  @@map("borrow_requests")
+}
+
+// Transfer Request Model
+model TransferRequest {
+  id String @id @default(uuid())
+
+  // Sender and Receiver
+  senderId   String
+  sender     User   @relation("SenderRelation", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User   @relation("ReceiverRelation", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  // Transfer Details
+  amount Decimal            @db.Decimal(20, 8)
+  status MoneyRequestStatus @default(PENDING)
+
+  // Processing
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
+  completedAt DateTime?
+
+  // Notes
+  senderNotes     String? @db.Text
+  receiverNotes   String? @db.Text
+  rejectionReason String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+  @@map("transfer_requests")
+}
+
+// Add Money Request Model
+model AddMoneyRequest {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // ✅ ADD: Currency Selection
+  currency       String  @db.VarChar(10) // INR, USD, EUR, GBP, etc.
+  currencyAmount Decimal @db.Decimal(20, 2) // Amount in selected currency
+
+  // ✅ ADD: USDT Conversion
+  usdtAmount         Decimal   @db.Decimal(20, 8) // Converted USDT amount
+  exchangeRate       Decimal   @db.Decimal(20, 8) // Exchange rate used (e.g., 1 USD = 1.00 USDT, 1 INR = 0.012 USDT)
+  exchangeRateSource String?   @db.VarChar(100) // API source: "CoinGecko", "Binance", etc.
+  rateTimestamp      DateTime? // When rate was fetched
+
+  // Request Details (OLD - keep for backward compatibility or remove)
+  amount      Decimal @db.Decimal(20, 8) // DEPRECATED: Use usdtAmount instead
+  bonusAmount Decimal @default(0) @db.Decimal(20, 8)
+  totalAmount Decimal @db.Decimal(20, 8) // usdtAmount + bonusAmount
+
+  // ✅ ADD: Bank Details Management
+  bankDetailsProvided Json? // Bank account details sent by owner to user
+  bankDetailsSentAt   DateTime? // When owner sent bank details
+  bankDetailsSentBy   String? // Master node who sent details
+
+  // Payment Method
+  method String // BANK_TRANSFER, UPI, CASH, etc.
+  status MoneyRequestStatus @default(PENDING)
+
+  // Payment Details (user's payment info if needed)
+  paymentDetails Json? // User's payment reference, UTR, etc.
+
+  // Processing
+  masterNodeId String? // Who processed/verified this
+  processedAt  DateTime?
+  verifiedAt   DateTime? // When screenshot was verified
+
+  // ✅ UPDATE: Screenshot/Proof fields
+  paymentProof         String?   @db.Text // Screenshot URL from user
+  screenshotUploadedAt DateTime? // When user uploaded screenshot
+  screenshotVerifiedAt DateTime? // When owner verified screenshot
+
+  transactionRef String? @db.VarChar(100) // User's payment reference/UTR
+
+  // Notes
+  userNotes       String? @db.Text
+  adminNotes      String? @db.Text
+  rejectionReason String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([method])
+  @@index([currency])
+  @@index([createdAt(sort: Desc)])
+  @@map("add_money_requests")
+}
+
+// Currency Bank Account - Store owner's bank details per currency
+model CurrencyBankAccount {
+  id String @id @default(uuid())
+
+  // Currency Information
+  currency       String @unique @db.VarChar(10) // INR, USD, EUR, GBP, etc.
+  currencyName   String @db.VarChar(50) // "Indian Rupee", "US Dollar", etc.
+  currencySymbol String @db.VarChar(10) // ₹, $, €, £, etc.
+
+  // Bank Account Details (JSON for flexibility - multiple accounts per currency)
+  bankAccounts Json // Array of { accountName, bankName, accountNumber, ifscCode, swiftCode, branch, upiId }
+
+  // QR Code (if applicable)
+  qrCodeUrl      String? @db.Text
+  qrCodeProvider String? @db.VarChar(50) // "PhonePe", "GooglePay", "Paytm", etc.
+
+  // Payment Instructions
+  instructions String? @db.Text // Special instructions for this currency
+
+  // Status
+  isActive Boolean @default(true)
+  priority Int     @default(0) @db.SmallInt // Display order
+
+  // Limits (optional)
+  minAmount Decimal? @db.Decimal(20, 2) // Minimum amount for this currency
+  maxAmount Decimal? @db.Decimal(20, 2) // Maximum amount for this currency
+
+  // Metadata
+  countryCode    String? @db.VarChar(3) // ISO country code: IN, US, GB, etc.
+  processingTime String? @db.VarChar(100) // "Instant", "1-2 hours", etc.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String? // Admin who updated
+
+  @@index([currency])
+  @@index([isActive])
+  @@map("currency_bank_accounts")
+}
+
+// Exchange Rate Log - Track historical currency conversion rates
+model ExchangeRateLog {
+  id String @id @default(uuid())
+
+  // Currency Pair
+  fromCurrency String @db.VarChar(10) // INR, USD, EUR, etc.
+  toCurrency   String @db.VarChar(10) // Always "USDT" for this system
+
+  // Rate Information
+  rate   Decimal @db.Decimal(20, 8) // Conversion rate
+  source String  @db.VarChar(100) // "CoinGecko", "Binance", "Manual", etc.
+
+  // Metadata
+  requestId    String? // Link to AddMoneyRequest if used
+  isManualRate Boolean @default(false) // Was this manually set by admin?
+  setBy        String? // Admin who set manual rate
+
+  createdAt DateTime @default(now())
+
+  @@index([fromCurrency, toCurrency])
+  @@index([createdAt(sort: Desc)])
+  @@index([requestId])
+  @@map("exchange_rate_logs")
+}
+
+// Notification Model
+model Notification {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Notification Details
+  type    NotificationType
+  title   String           @db.VarChar(255)
+  message String           @db.Text
+
+  // Delivery Status
+  sent        Boolean   @default(false)
+  sentAt      DateTime?
+  delivered   Boolean   @default(false)
+  deliveredAt DateTime?
+  read        Boolean   @default(false)
+  readAt      DateTime?
+
+  // Error Handling
+  failed        Boolean @default(false)
+  failureReason String? @db.Text
+  retryCount    Int     @default(0) @db.SmallInt
+
+  // Metadata
+  metadata Json? // Additional data
+  priority Int   @default(0) @db.SmallInt // 0 = normal, 1 = high
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([sent])
+  @@index([read])
+  @@index([priority])
+  @@index([createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+// Session Model for authentication
+model Session {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token        String  @unique @db.Text
+  refreshToken String? @unique @db.Text
+
+  // Device Information
+  userAgent  String? @db.Text
+  ipAddress  String? @db.VarChar(45)
+  deviceId   String? @db.VarChar(100)
+  deviceType String? @db.VarChar(50) // MOBILE, WEB, TABLET
+
+  // Session Management
+  isActive       Boolean  @default(true)
+  lastActivityAt DateTime @default(now())
+  expiresAt      DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+  @@index([refreshToken])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+// Activity Log for audit trail
+model ActivityLog {
+  id     String  @id @default(uuid())
+  userId String?
+  user              User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Activity Details
+  action     String  @db.VarChar(100) // LOGIN, INVESTMENT_CREATED, etc.
+  entityType String? @db.VarChar(50) // USER, INVESTMENT, etc.
+  entityId   String? @db.VarChar(50)
+
+  // Request Information
+  ipAddress String? @db.VarChar(45)
+  userAgent String? @db.Text
+  method    String? @db.VarChar(10) // GET, POST, etc.
+  endpoint  String? @db.VarChar(255)
+
+  // Additional Data
+  oldData  Json? // Previous state
+  newData  Json? // New state
+  metadata Json? // Additional context
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt(sort: Desc)])
+  @@map("activity_logs")
+}
+
+// System Configuration Model (for dynamic settings)
+model SystemConfig {
+  id          String  @id @default(uuid())
+  key         String  @unique @db.VarChar(100)
+  value       Json
+  description String? @db.Text
+
+  // Categorization
+  category String  @db.VarChar(50) // COMMISSION, LIMITS, FEATURES, etc.
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String? // Admin user ID
+
+  @@index([key])
+  @@index([category])
+  @@map("system_configs")
+}
+
+// Screenshot Tracking Model
+model Screenshot {
+  id String @id @default(uuid())
+
+  // Reference
+  entityType String @db.VarChar(50) // TRANSACTION, WITHDRAWAL, etc.
+  entityId   String
+
+  // File Information
+  url          String  @db.Text
+  cloudinaryId String? @db.VarChar(255)
+  fileName     String  @db.VarChar(255)
+  fileSize     Int // in bytes
+  mimeType     String  @db.VarChar(50)
+
+  // Upload Information
+  uploadedBy String
+  uploadedAt DateTime @default(now())
+
+  // Verification
+  isVerified Boolean   @default(false)
+  verifiedBy String?
+  verifiedAt DateTime?
+
+  // Deletion Schedule
+  scheduledForDeletion DateTime?
+  deletedAt            DateTime?
+
+  @@index([entityType, entityId])
+  @@index([uploadedBy])
+  @@index([scheduledForDeletion])
+  @@map("screenshots")
+}
+
+// ==================== OPTIMIZED HIERARCHY MODELS ====================
+// Using Closure Table Pattern for efficient MLM hierarchy queries
+
+// User Hierarchy - Closure Table for all ancestor-descendant relationships
+// This table stores ALL relationships in the tree, not just direct parent-child
+model UserHierarchy {
+  id String @id @default(uuid())
+
+  // Ancestor and Descendant
+  ancestorId String // Upper level user
+  ancestor   User   @relation("AncestorRelation", fields: [ancestorId], references: [id], onDelete: Cascade)
+
+  descendantId String // Lower level user
+  descendant   User   @relation("DescendantRelation", fields: [descendantId], references: [id], onDelete: Cascade)
+
+  // Depth from ancestor to descendant
+  depth Int @db.SmallInt // 0 for self, 1 for direct child, 2 for grandchild, etc.
+
+  // Path through the hierarchy (for reconstruction if needed)
+  path String[] @default([]) // Array of user IDs from ancestor to descendant
+
+  // Additional relationship info
+  position Int?    @db.SmallInt // Position among siblings (for ordered trees)
+  isActive Boolean @default(true) // For soft-delete of relationships
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ancestorId, descendantId])
+  @@index([ancestorId, depth])
+  @@index([descendantId, depth])
+  @@index([depth])
+  @@index([isActive])
+  @@map("user_hierarchy")
+}
+
+// User Hierarchy Stats - Denormalized data for fast queries
+model UserHierarchyStats {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Direct Statistics
+  directReferralCount Int @default(0)
+  totalDescendants    Int @default(0) // Total users in downline
+
+  // Level-wise counts (stored as JSON for flexibility)
+  levelCounts Json @default("{}") // {1: 5, 2: 15, 3: 45, ...}
+
+  // Performance Metrics
+  totalTeamInvestment Decimal @default(0) @db.Decimal(20, 8)
+  totalTeamCommission Decimal @default(0) @db.Decimal(20, 8)
+  activeTeamMembers   Int     @default(0)
+
+  // Depth Information
+  maxDepth Int @default(0) @db.SmallInt // Deepest level in downline
+
+  // Monthly Snapshots (for historical tracking)
+  monthlyStats Json @default("[]") // Array of monthly performance
+
+  // Last Calculation Times
+  lastCalculatedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([totalDescendants])
+  @@index([totalTeamInvestment])
+  @@map("user_hierarchy_stats")
+}
+
+// Commission Rate Configuration - Dynamic commission rates per level
+model CommissionRate {
+  id String @id @default(uuid())
+
+  level      Int     @unique @db.SmallInt // 1, 2, 3, etc.
+  percentage Decimal @db.Decimal(5, 2) // Commission percentage
+
+  // Conditions (optional)
+  minInvestment Decimal? @db.Decimal(20, 8) // Minimum investment to qualify
+  minTeamSize   Int?     @db.SmallInt // Minimum team size to qualify
+
+  // Status
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([level])
+  @@index([isActive])
+  @@map("commission_rates")
+}
+
+// Rank Achievement Model - For MLM rank/level achievements
+model RankAchievement {
+  id     String @id @default(uuid())
+  userId String
+
+  rankName  String @db.VarChar(100) // Bronze, Silver, Gold, etc.
+  rankLevel Int    @db.SmallInt
+
+  // Achievement Criteria Met
+  personalInvestment Decimal @db.Decimal(20, 8)
+  teamInvestment     Decimal @db.Decimal(20, 8)
+  directReferrals    Int
+  totalTeamSize      Int
+
+  // Rewards
+  bonusAmount     Decimal @default(0) @db.Decimal(20, 8)
+  commissionBoost Decimal @default(0) @db.Decimal(5, 2) // Extra commission %
+
+  achievedAt DateTime  @default(now())
+  expiresAt  DateTime? // If ranks need renewal
+
+  @@index([userId])
+  @@index([rankLevel])
+  @@index([achievedAt])
+  @@map("rank_achievements")
+}
+
+// ==================== NEW COMMISSION & PROFILE MODELS ====================
+
+// Profile Configuration - Admin configurable investment profiles
+model ProfileConfiguration {
+  id      String            @id @default(uuid())
+  profile InvestmentProfile @unique
+
+  // Investment Range
+  minInvestment Decimal  @db.Decimal(20, 8)
+  maxInvestment Decimal? @db.Decimal(20, 8) // Null for unlimited
+
+  // Return Rates
+  minReturnRate Decimal @db.Decimal(5, 2) // e.g., 5%
+  maxReturnRate Decimal @db.Decimal(5, 2) // e.g., 8%
+
+  // Lock-in Period
+  lockInMonths Int @db.SmallInt // 12, 9, 6, 3
+
+  // Hierarchy Configuration
+  maxHierarchyDepth Int @db.SmallInt // 5, 8, 10, 15 levels
+
+  // Status
+  isActive Boolean @default(true)
+  priority Int     @default(0) // Display order
+
+  // Metadata
+  description String? @db.Text
+  features    Json? // Additional features/benefits
+
+  // Version Control
+  version   Int     @default(1)
+  updatedBy String? // Admin who updated
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profile])
+  @@index([isActive])
+  @@map("profile_configurations")
+}
+
+// Referral Bonus Configuration - Admin configurable
+model ReferralBonusConfig {
+  id String @id @default(uuid())
+
+  level Int @unique @db.SmallInt // 1, 2, 3, 4
+
+  // Percentage Configuration
+  totalPercentage   Decimal @db.Decimal(5, 2) // e.g., 7.5% for level 1
+  instantPercentage Decimal @db.Decimal(5, 2) // e.g., 5% instant
+  delayedPercentage Decimal @db.Decimal(5, 2) // e.g., 2.5% delayed
+
+  // Delay Configuration
+  delayDays Int @default(30) // Days to wait for delayed payment
+
+  // For levels 2-4, percentage of parent level
+  parentMultiplier Decimal? @db.Decimal(5, 2) // e.g., 10% of 7.5% for level 2
+
+  // Status
+  isActive Boolean @default(true)
+
+  // Version Control
+  version   Int     @default(1)
+  updatedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([level])
+  @@index([isActive])
+  @@map("referral_bonus_configs")
+}
+
+// Profit Distribution Configuration - Admin configurable
+model ProfitDistributionConfig {
+  id String @id @default(uuid())
+
+  level      Int     @unique @db.SmallInt // 1-15
+  percentage Decimal @db.Decimal(5, 2) // Percentage of profit to distribute
+
+  // Formula Configuration (for automatic calculation)
+  formula String? @db.VarChar(255) // e.g., "10 / (2^(level-1))"
+
+  // Status
+  isActive Boolean @default(true)
+
+  // Version Control
+  version   Int     @default(1)
+  updatedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([level])
+  @@index([isActive])
+  @@map("profit_distribution_configs")
+}
+
+// Investment Commission - Tracks all commission types for an investment
+model InvestmentCommission {
+  id String @id @default(uuid())
+
+  // Source Investment
+  investmentId String
+  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+
+  // Beneficiary
+  beneficiaryId String // User receiving the commission
+  beneficiary   User   @relation("BeneficiaryRelation", fields: [beneficiaryId], references: [id], onDelete: Cascade)
+
+  // Commission Details
+  bonusType BonusType // REFERRAL_INSTANT, REFERRAL_DELAYED, PROFIT_DISTRIBUTION, etc.
+  level     Int       @db.SmallInt // Hierarchy level (1, 2, 3, etc.)
+
+  // Amount Calculation
+  baseAmount Decimal @db.Decimal(20, 8) // Investment or profit amount
+  percentage Decimal @db.Decimal(5, 2) // Commission percentage
+  amount     Decimal @db.Decimal(20, 8) // Calculated commission amount
+
+  // Payment Schedule
+  status        CommissionStatus @default(PENDING)
+  scheduledDate DateTime? // For delayed payments
+  paidAt        DateTime? // Actual payment date
+
+  // Transaction Reference
+  // transactionId String?      @unique
+  // transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  transactionId String?      @unique
+  transaction   Transaction? @relation("CommissionTransaction", fields: [transactionId], references: [id])
+
+  // Metadata
+  configSnapshot Json // Snapshot of commission config at creation time
+  notes          String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([investmentId])
+  @@index([beneficiaryId])
+  @@index([bonusType])
+  @@index([status])
+  @@index([scheduledDate])
+  @@index([level])
+  @@map("investment_commissions")
+}
+
+// Commission Payment Batch - Groups delayed payments for processing
+model CommissionPaymentBatch {
+  id String @id @default(uuid())
+
+  // Batch Details
+  batchDate DateTime // Date when batch should be processed
+  bonusType BonusType
+
+  // Processing Status
+  status           String  @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  totalCommissions Int     @default(0)
+  processedCount   Int     @default(0)
+  failedCount      Int     @default(0)
+  totalAmount      Decimal @db.Decimal(20, 8)
+
+  // Processing Information
+  startedAt   DateTime?
+  completedAt DateTime?
+  processedBy String?
+
+  // Error Handling
+  errors Json? // Array of error details
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([batchDate])
+  @@index([status])
+  @@index([bonusType])
+  @@map("commission_payment_batches")
+}
+
+// Profile Change History - Tracks changes to profile configurations
+model ProfileConfigHistory {
+  id String @id @default(uuid())
+
+  // Reference to current config
+  profileConfigId String
+  profile         InvestmentProfile
+
+  // Change Details
+  changeType   String @db.VarChar(50) // CREATE, UPDATE, DEACTIVATE
+  previousData Json? // Previous configuration
+  newData      Json // New configuration
+
+  // Change Metadata
+  changedBy    String // Admin user ID
+  changeReason String? @db.Text
+  version      Int
+
+  // Impact Analysis
+  affectedInvestments Int @default(0) // Number of investments affected
+
+  createdAt DateTime @default(now())
+
+  @@index([profileConfigId])
+  @@index([profile])
+  @@index([changedBy])
+  @@index([createdAt(sort: Desc)])
+  @@map("profile_config_history")
+}
+
+// Global Configuration - System-wide settings
+model GlobalConfig {
+  id  String @id @default(uuid())
+  key String @unique @db.VarChar(100)
+
+  // Configuration Value
+  value    Json // Flexible JSON value
+  dataType String @db.VarChar(50) // NUMBER, STRING, BOOLEAN, JSON
+
+  // Metadata
+  category    String  @db.VarChar(50) // COMMISSION, PROFILE, SYSTEM, etc.
+  description String? @db.Text
+
+  // Validation Rules
+  validationRules Json? // Min, max, regex, etc.
+
+  // Status
+  isActive   Boolean @default(true)
+  isEditable Boolean @default(true) // Some configs shouldn't be editable
+
+  // Version Control
+  version   Int     @default(1)
+  updatedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@index([category])
+  @@map("global_configs")
+}
+

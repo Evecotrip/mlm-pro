@@ -9,6 +9,7 @@ interface DigitalPaymentOptionsProps {
   amount: string;
   bonus: number;
   totalCredit: number;
+  currency: string;
   onContinue: (option: DigitalOption) => void;
   onBack: () => void;
 }
@@ -16,7 +17,8 @@ interface DigitalPaymentOptionsProps {
 export default function DigitalPaymentOptions({ 
   amount, 
   bonus, 
-  totalCredit, 
+  totalCredit,
+  currency, 
   onContinue, 
   onBack 
 }: DigitalPaymentOptionsProps) {
@@ -38,20 +40,12 @@ export default function DigitalPaymentOptions({
       <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="text-gray-600">Amount to Add:</span>
-            <span className="font-bold text-gray-900 text-lg">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
+            <span className="text-gray-600">Amount to Add ({currency}):</span>
+            <span className="font-bold text-gray-900 text-lg">{parseFloat(amount).toLocaleString('en-IN')}</span>
           </div>
-          {/* 
-          {bonus > 0 && (
-            <div className="flex justify-between">
-              <span className="text-gray-600">Bonus:</span>
-              <span className="font-semibold text-green-600">+₹{bonus.toLocaleString('en-IN')}</span>
-            </div>
-          )}
-          */}
           <div className="flex justify-between pt-2 border-t-2 border-gray-300">
-            <span className="font-bold text-gray-900">Total Credit:</span>
-            <span className="font-bold text-green-600 text-xl">₹{totalCredit.toLocaleString('en-IN')}</span>
+            <span className="font-bold text-gray-900">Total Credit (USDT):</span>
+            <span className="font-bold text-green-600 text-xl">{totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
         </div>
       </div>

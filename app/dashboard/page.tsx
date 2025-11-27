@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { 
   TrendingUp, LogOut, Users, DollarSign, Network, 
-  Plus, Copy, Check, UserCheck, Activity, Wallet, Sparkles 
+  Plus, Copy, Check, UserCheck, Activity, Wallet, Sparkles, Loader2 
 } from 'lucide-react';
 import { 
   mockUsers, mockInvestments, getDirectReferrals, 
@@ -13,20 +13,79 @@ import {
 } from '@/lib/mockData';
 import InvestmentModal from '@/components/InvestmentModal';
 import Navbar from '@/components/Navbar';
+import { useUserStore } from '@/store/useUserStore';
+import { useWalletStore } from '@/store/useWalletStore';
+import { getInvestments, Investment } from '@/api/investment-api';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { currentUser, isAuthenticated, logout } = useAuth();
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const [showInvestModal, setShowInvestModal] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [investments, setInvestments] = useState<Investment[]>([]);
+  const [loadingInvestments, setLoadingInvestments] = useState(false);
+
+  // User store
+  const userProfile = useUserStore(state => state.userProfile);
+  const userName = useUserStore(state => state.userName);
+  const pendingRequestsCount = useUserStore(state => state.pendingRequestsCount);
+  
+  // Wallet store
+  const balance = useWalletStore(state => state.balance);
+  const earnings = useWalletStore(state => state.earnings);
+  const statistics = useWalletStore(state => state.statistics);
+  const fetchWallet = useWalletStore(state => state.fetchWallet);
+  
+  // Mock current user for now - will be replaced with real API call
+  const currentUser = mockUsers[0]; // Using mock data temporarily
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoaded) return;
+
+    if (!user) {
       router.push('/login');
-    } else if (currentUser && !currentUser.isApproved) {
-      router.push('/queue');
+    } else {
+      setIsCheckingAuth(false);
+      // Fetch wallet data if not already loaded
+      if (!balance) {
+        fetchWallet();
+      }
+      // Fetch investments
+      fetchDashboardInvestments();
     }
-  }, [isAuthenticated, currentUser, router]);
+  }, [isLoaded, user, router]);
+
+  const fetchDashboardInvestments = async () => {
+    setLoadingInvestments(true);
+    try {
+      const response = await getInvestments({
+        page: 1,
+        limit: 5,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      });
+      if (response.success && response.data) {
+        setInvestments(response.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching investments:', error);
+    } finally {
+      setLoadingInvestments(false);
+    }
+  };
+
+  if (!isLoaded || isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentUser) {
     return null;
@@ -35,24 +94,36 @@ export default function DashboardPage() {
   const directReferrals = getDirectReferrals(currentUser.id);
   const allDownline = getAllDownline(currentUser.id);
   const myInvestments = getUserInvestments(currentUser.id);
-  const totalInvested = myInvestments.reduce((sum, inv) => sum + inv.amount, 0);
+  const mockTotalInvested = myInvestments.reduce((sum, inv) => sum + inv.amount, 0);
   const totalReturns = myInvestments
     .filter(inv => inv.status === 'active' || inv.status === 'matured')
     .reduce((sum, inv) => sum + inv.totalReturn, 0);
   
   const pendingReferrals = directReferrals.filter(user => !user.isApproved);
-  const walletBalance = getUserWalletBalance(currentUser.id);
+  const mockWalletBalance = getUserWalletBalance(currentUser.id);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    const { clearUserData } = await import('@/store/useUserStore').then(m => m.useUserStore.getState());
+    const { clearWallet } = await import('@/store/useWalletStore').then(m => m.useWalletStore.getState());
+    clearUserData();
+    clearWallet();
+    await signOut();
     router.push('/');
   };
 
   const copyReferralCode = () => {
-    navigator.clipboard.writeText(currentUser.referralCode);
+    const referralCode = userProfile?.referralCode || currentUser.referralCode;
+    navigator.clipboard.writeText(referralCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
+  
+  // Calculate stats from real data
+  const availableBalance = parseFloat(balance?.available || '0');
+  const totalEarnings = parseFloat(earnings?.total || '0');
+  const totalInvested = parseFloat(statistics?.totalInvested || '0');
+  const totalWithdrawn = parseFloat(statistics?.totalWithdrawn || '0');
+  const referralCode = userProfile?.referralCode || currentUser.referralCode;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
@@ -65,9 +136,6 @@ export default function DashboardPage() {
 
       {/* Navbar */}
       <Navbar
-        currentUser={currentUser}
-        walletBalance={walletBalance}
-        pendingRequestsCount={pendingReferrals.length}
         onLogout={handleLogout}
       />
 
@@ -83,8 +151,9 @@ export default function DashboardPage() {
               </div>
             </div>
             <p className="relative text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
-              ₹{totalInvested.toLocaleString()}
+              {totalInvested.toLocaleString('en-IN')} USDT
             </p>
+            <p className="text-xs text-gray-500 mt-1">From wallet stats</p>
           </div>
 
           <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-3 sm:p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
@@ -96,8 +165,9 @@ export default function DashboardPage() {
               </div>
             </div>
             <p className="relative text-lg sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text">
-              ₹{totalReturns.toLocaleString()}
+              {totalEarnings.toLocaleString('en-IN')} USDT
             </p>
+            <p className="text-xs text-gray-500 mt-1">Total earnings</p>
           </div>
 
           <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-3 sm:p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
@@ -140,7 +210,7 @@ export default function DashboardPage() {
             </h3>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <div className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl px-3 sm:px-4 py-2 sm:py-3 font-mono text-lg sm:text-xl font-bold text-center sm:text-left border-2 border-white/30 shadow-inner">
-                {currentUser.referralCode}
+                {referralCode}
               </div>
               <button
                 onClick={copyReferralCode}
@@ -174,7 +244,7 @@ export default function DashboardPage() {
                 My Investments
               </h2>
               <button
-                onClick={() => setShowInvestModal(true)}
+                onClick={() => router.push('/new-investment')}
                 className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 sm:px-4 py-2 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all font-semibold text-sm sm:text-base w-full sm:w-auto justify-center shadow-lg hover:shadow-2xl hover:scale-105"
               >
                 <Plus className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform" />
@@ -182,7 +252,12 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            {myInvestments.length === 0 ? (
+            {loadingInvestments ? (
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading investments...</p>
+              </div>
+            ) : investments.length === 0 ? (
               <div className="text-center py-12">
                 <div className="relative inline-block mb-4">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-xl opacity-50"></div>
@@ -190,7 +265,7 @@ export default function DashboardPage() {
                 </div>
                 <p className="text-gray-600 mb-4 font-medium">No investments yet</p>
                 <button
-                  onClick={() => setShowInvestModal(true)}
+                  onClick={() => router.push('/new-investment')}
                   className="text-blue-600 hover:text-purple-600 font-semibold transition-colors"
                 >
                   Make your first investment →
@@ -198,23 +273,23 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {myInvestments.map((inv) => (
+                {investments.slice(0, 2).map((inv) => (
                   <div key={inv.id} className="group relative border-2 border-gray-200 rounded-xl p-4 hover:border-purple-300 transition-all hover:shadow-lg bg-gradient-to-br from-white to-gray-50">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <p className="font-bold text-gray-900 text-lg">₹{inv.amount.toLocaleString()}</p>
+                        <p className="font-bold text-gray-900 text-lg">{inv.amount} USDT</p>
                         <p className="text-sm text-gray-600 capitalize flex items-center gap-1">
                           <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                          {inv.riskProfile} Risk
+                          {inv.profile}
                         </p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${
-                        inv.status === 'active' ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200' :
-                        inv.status === 'pending' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border border-yellow-200' :
-                        inv.status === 'approved' ? 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border border-blue-200' :
+                        inv.status === 'ACTIVE' ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200' :
+                        inv.status === 'PENDING_APPROVAL' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border border-yellow-200' :
+                        inv.status === 'MATURED' ? 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-800 border border-purple-200' :
                         'bg-gradient-to-r from-gray-100 to-slate-100 text-gray-800 border border-gray-200'
                       }`}>
-                        {inv.status}
+                        {inv.status.replace('_', ' ')}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">
@@ -224,7 +299,7 @@ export default function DashboardPage() {
                       </p>
                       <p className="flex items-center gap-2 text-green-600 font-semibold mt-1">
                         <TrendingUp className="w-4 h-4" />
-                        Expected Return: ₹{inv.totalReturn.toLocaleString()}
+                        Expected: {inv.expectedMinReturn} - {inv.expectedMaxReturn} USDT
                       </p>
                     </div>
                   </div>

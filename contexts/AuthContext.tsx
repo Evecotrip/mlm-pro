@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { User, mockUsers } from '@/lib/mockData';
 
 interface AuthContextType {
@@ -15,69 +16,48 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const { user, isSignedIn } = useUser();
+  const { signOut } = useClerk();
 
+  // Map Clerk user -> existing mock user (by email) so the rest of the
+  // app that still relies on mockData continues to work.
   useEffect(() => {
-    // Check for stored user in localStorage
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
+    if (!isSignedIn || !user) {
+      setCurrentUser(null);
+      return;
     }
-    
-    // Always sync with latest mockUsers data (force update)
-    // This ensures new users from mockData.ts are available
-    setUsers(mockUsers);
-    localStorage.setItem('users', JSON.stringify(mockUsers));
-  }, []);
 
-  const login = (email: string, password: string): boolean => {
-    const user = users.find(u => u.email === email);
-    if (user) {
-      setCurrentUser(user);
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      return true;
+    const email = user.primaryEmailAddress?.emailAddress;
+    if (!email) {
+      setCurrentUser(null);
+      return;
+    }
+
+    const matchedUser = mockUsers.find((u) => u.email === email) || null;
+    setCurrentUser(matchedUser);
+  }, [isSignedIn, user]);
+
+  // Legacy helpers kept only so existing pages compile.
+  // Auth is now fully handled by Clerk.
+  const login = (): boolean => {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/sign-in';
     }
     return false;
   };
 
-  const signup = (userData: Partial<User>, referralCode: string): { success: boolean; message: string } => {
-    // Validate referral code
-    const referrer = users.find(u => u.referralCode === referralCode);
-    if (!referralCode || !referrer) {
-      return { success: false, message: 'Invalid referral code' };
+  const signup = (): { success: boolean; message: string } => {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/sign-up';
     }
-
-    // Check if email already exists
-    if (users.find(u => u.email === userData.email)) {
-      return { success: false, message: 'Email already registered' };
-    }
-
-    // Generate unique referral code
-    const newReferralCode = `USER${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-
-    // Create new user
-    const newUser: User = {
-      id: `user-${Date.now()}`,
-      name: userData.name || '',
-      email: userData.email || '',
-      phone: userData.phone || '',
-      dateOfBirth: userData.dateOfBirth || '',
-      referralCode: newReferralCode,
-      referrerId: referrer.id,
-      isApproved: false, // Needs referrer approval
-      createdAt: new Date().toISOString(),
+    return {
+      success: false,
+      message: 'Signup is handled by Clerk. Redirecting to Sign Up…',
     };
-
-    const updatedUsers = [...users, newUser];
-    setUsers(updatedUsers);
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
-
-    return { success: true, message: 'Registration successful! Waiting for referrer approval.' };
   };
 
   const logout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem('currentUser');
+    signOut();
   };
 
   return (
@@ -87,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         signup,
         logout,
-        isAuthenticated: !!currentUser,
+        isAuthenticated: !!currentUser && !!isSignedIn,
       }}
     >
       {children}

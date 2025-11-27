@@ -2,84 +2,115 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useUser } from '@clerk/nextjs';
 import {
   TrendingUp, DollarSign, Calendar, Clock, CheckCircle,
-  XCircle, AlertCircle, Filter, Download, ArrowUpDown
+  XCircle, AlertCircle, Filter, Download, ArrowUpDown, Plus
 } from 'lucide-react';
-import { getUserInvestments, Investment, getUserWalletBalance, getDirectReferrals } from '@/lib/mockData';
+import { 
+  getInvestments, 
+  getInvestmentStats,
+  Investment,
+  InvestmentStats,
+  InvestmentFilters
+} from '@/api/investment-api';
 import Navbar from '@/components/Navbar';
 
 export default function InvestmentHistoryPage() {
   const router = useRouter();
-  const { isAuthenticated, currentUser, logout } = useAuth();
+  const { isLoaded, user } = useUser();
   const [investments, setInvestments] = useState<Investment[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'active' | 'matured'>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'amount'>('date');
+  const [stats, setStats] = useState<InvestmentStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'PENDING_APPROVAL' | 'ACTIVE' | 'MATURED'>('all');
+  const [sortBy, setSortBy] = useState<'createdAt' | 'amount' | 'maturityDate'>('createdAt');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoaded) return;
+    if (!user) {
       router.push('/login');
-    } else if (currentUser && !currentUser.isApproved) {
-      router.push('/queue');
-    } else if (currentUser) {
-      setInvestments(getUserInvestments(currentUser.id));
     }
-  }, [isAuthenticated, currentUser, router]);
+  }, [isLoaded, user, router]);
 
-  if (!currentUser) {
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      fetchInvestments();
+      fetchStats();
+    }
+  }, [user, filter, sortBy, page]);
 
-  const handleLogout = () => {
-    logout();
+  const fetchInvestments = async () => {
+    setLoading(true);
+    try {
+      const filters: InvestmentFilters = {
+        page,
+        limit: 10,
+        sortBy: sortBy as any,
+        sortOrder: 'desc'
+      };
+
+      if (filter !== 'all') {
+        filters.status = filter as any;
+      }
+
+      const response = await getInvestments(filters);
+      if (response.success && response.data) {
+        setInvestments(response.data.data || []);
+        setTotalPages(response.data.pagination.totalPages);
+      }
+    } catch (error) {
+      console.error('Error fetching investments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await getInvestmentStats();
+      if (response.success && response.data) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const handleLogout = async () => {
     router.push('/');
   };
 
-  const walletBalance = getUserWalletBalance(currentUser.id);
-  const directReferrals = getDirectReferrals(currentUser.id);
-  const pendingReferrals = directReferrals.filter(user => !user.isApproved);
-
-  // Filter investments
-  const filteredInvestments = investments.filter(inv => {
-    if (filter === 'all') return true;
-    return inv.status === filter;
-  });
-
-  // Sort investments
-  const sortedInvestments = [...filteredInvestments].sort((a, b) => {
-    if (sortBy === 'date') {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    } else {
-      return b.amount - a.amount;
-    }
-  });
-
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case 'ACTIVE':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'pending':
+      case 'PENDING_APPROVAL':
         return <Clock className="w-5 h-5 text-yellow-600" />;
-      case 'approved':
-        return <CheckCircle className="w-5 h-5 text-blue-600" />;
-      case 'matured':
+      case 'MATURED':
         return <CheckCircle className="w-5 h-5 text-purple-600" />;
+      case 'WITHDRAWN':
+        return <CheckCircle className="w-5 h-5 text-blue-600" />;
+      case 'CANCELLED':
+        return <XCircle className="w-5 h-5 text-red-600" />;
       default:
-        return <XCircle className="w-5 h-5 text-gray-600" />;
+        return <AlertCircle className="w-5 h-5 text-gray-600" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
+      case 'ACTIVE':
         return 'bg-green-100 text-green-800 border-green-200';
-      case 'pending':
+      case 'PENDING_APPROVAL':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'approved':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'matured':
+      case 'MATURED':
         return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'WITHDRAWN':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800 border-red-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -94,18 +125,13 @@ export default function InvestmentHistoryPage() {
     });
   };
 
-  const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-  const totalReturns = investments
-    .filter(inv => inv.status === 'active' || inv.status === 'matured')
-    .reduce((sum, inv) => sum + inv.totalReturn, 0);
+  const totalInvested = parseFloat(stats?.totalInvested || '0');
+  const totalReturns = parseFloat(stats?.totalReturns || '0');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       {/* Navbar */}
       <Navbar
-        currentUser={currentUser}
-        walletBalance={walletBalance}
-        pendingRequestsCount={pendingReferrals.length}
         onLogout={handleLogout}
       />
 
@@ -141,7 +167,7 @@ export default function InvestmentHistoryPage() {
               </div>
             </div>
             <p className="text-2xl sm:text-3xl font-bold text-green-600">
-              ₹{totalInvested.toLocaleString('en-IN')}
+              {totalInvested.toLocaleString('en-IN')} USDT
             </p>
           </div>
 
@@ -153,7 +179,7 @@ export default function InvestmentHistoryPage() {
               </div>
             </div>
             <p className="text-2xl sm:text-3xl font-bold text-purple-600">
-              ₹{totalReturns.toLocaleString('en-IN')}
+              {totalReturns.toLocaleString('en-IN')} USDT
             </p>
           </div>
         </div>
@@ -165,7 +191,7 @@ export default function InvestmentHistoryPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <Filter className="w-5 h-5 text-gray-600" />
               <span className="text-sm font-medium text-gray-700">Filter:</span>
-              {['all', 'pending', 'approved', 'active', 'matured'].map((status) => (
+              {['all', 'PENDING_APPROVAL', 'ACTIVE', 'MATURED'].map((status) => (
                 <button
                   key={status}
                   onClick={() => setFilter(status as any)}
@@ -175,7 +201,7 @@ export default function InvestmentHistoryPage() {
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                  {status === 'all' ? 'All' : status.replace('_', ' ')}
                 </button>
               ))}
             </div>
@@ -185,11 +211,12 @@ export default function InvestmentHistoryPage() {
               <ArrowUpDown className="w-5 h-5 text-gray-600" />
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'date' | 'amount')}
+                onChange={(e) => setSortBy(e.target.value as 'createdAt' | 'amount' | 'maturityDate')}
                 className="px-3 py-1.5 border-2 border-gray-200 rounded-lg text-sm font-medium focus:border-blue-500 focus:outline-none"
               >
-                <option value="date">Sort by Date</option>
+                <option value="createdAt">Sort by Date</option>
                 <option value="amount">Sort by Amount</option>
+                <option value="maturityDate">Sort by Maturity</option>
               </select>
             </div>
           </div>
@@ -197,7 +224,12 @@ export default function InvestmentHistoryPage() {
 
         {/* Investment List */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-4 sm:p-6">
-          {sortedInvestments.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading investments...</p>
+            </div>
+          ) : investments.length === 0 ? (
             <div className="text-center py-12">
               <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600 font-medium">No investments found</p>
@@ -207,7 +239,7 @@ export default function InvestmentHistoryPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {sortedInvestments.map((inv) => (
+              {investments.map((inv: Investment) => (
                 <div
                   key={inv.id}
                   className="border-2 border-gray-200 rounded-xl p-4 sm:p-5 hover:border-blue-300 transition-all hover:shadow-md bg-gradient-to-br from-white to-gray-50"
@@ -221,14 +253,14 @@ export default function InvestmentHistoryPage() {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-xl font-bold text-gray-900">
-                            ₹{inv.amount.toLocaleString('en-IN')}
+                            {inv.amount} USDT
                           </h3>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(inv.status)}`}>
-                            {inv.status}
+                            {inv.status.replace('_', ' ')}
                           </span>
                         </div>
                         <p className="text-sm text-gray-600 capitalize mb-2">
-                          {inv.riskProfile} Risk • {inv.lockInMonths} months lock-in
+                          {inv.profile} • {inv.lockInMonths} months lock-in
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span className="flex items-center gap-1">
@@ -249,10 +281,10 @@ export default function InvestmentHistoryPage() {
                     <div className="text-right">
                       <p className="text-sm text-gray-600 mb-1">Expected Return</p>
                       <p className="text-2xl font-bold text-green-600">
-                        ₹{inv.totalReturn.toLocaleString('en-IN')}
+                        {inv.expectedMinReturn} - {inv.expectedMaxReturn} USDT
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        Base: ₹{inv.baseReturn.toLocaleString('en-IN')} + Bonus: ₹{inv.lockInBonus.toLocaleString('en-IN')}
+                        {inv.minReturnRate}% - {inv.maxReturnRate}% return rate
                       </p>
                     </div>
                   </div>
