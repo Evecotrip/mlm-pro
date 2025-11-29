@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertCircle, Sparkles } from 'lucide-react';
+import { AlertCircle, Sparkles, ArrowRight } from 'lucide-react';
 
 interface DirectAddInitialProps {
   onContinue: (amount: string, currency: string) => void;
@@ -19,19 +19,8 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('INR');
   const [error, setError] = useState('');
-  
+
   const selectedCurrency = CURRENCIES.find(c => c.code === currency) || CURRENCIES[0];
-
-  /* 
-  const calculateBonus = (amt: number): number => {
-    // Example: 10% bonus up to ₹1,000
-    const bonus = Math.min(amt * 0.1, 1000);
-    return bonus;
-  };
-
-  const bonus = amount ? calculateBonus(parseFloat(amount)) : 0;
-  const totalCredit = amount ? parseFloat(amount) + bonus : 0;
-  */
 
   const handleContinue = () => {
     setError('');
@@ -47,14 +36,14 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Special Offer Banner */}
-      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-4">
+      <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-xl p-4 animate-pulse">
         <div className="flex items-start gap-3">
-          <Sparkles className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
+          <Sparkles className="w-6 h-6 text-amber-500 flex-shrink-0 mt-1" />
           <div>
-            <p className="font-bold text-yellow-900 mb-2">⭐ SPECIAL OFFER ⭐</p>
-            <ul className="text-sm text-yellow-800 space-y-1">
+            <p className="font-bold text-amber-400 mb-2">⭐ SPECIAL OFFER ⭐</p>
+            <ul className="text-sm text-amber-300/80 space-y-1">
               <li>• Earn up to 10% bonus when you add money</li>
               <li>• Get a bonus of up to ₹1,000</li>
             </ul>
@@ -64,16 +53,16 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
 
       {/* Currency Selection */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-slate-400 mb-2">
           Select Currency *
         </label>
         <select
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
-          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-base font-semibold text-gray-900"
+          className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-base font-semibold appearance-none cursor-pointer hover:border-slate-700"
         >
           {CURRENCIES.map((curr) => (
-            <option key={curr.code} value={curr.code}>
+            <option key={curr.code} value={curr.code} className="bg-slate-900 text-white">
               {curr.symbol} {curr.name} ({curr.code})
             </option>
           ))}
@@ -82,11 +71,11 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
 
       {/* Amount Input */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-slate-400 mb-2">
           Enter Amount to Add *
         </label>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg font-semibold">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg font-bold">
             {selectedCurrency.symbol}
           </span>
           <input
@@ -94,25 +83,28 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0"
-            className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-xl font-semibold text-gray-900"
+            className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-xl font-bold placeholder:font-normal"
             min={selectedCurrency.min}
             step="100"
           />
         </div>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-slate-500 mt-2">
           Minimum: {selectedCurrency.symbol}{selectedCurrency.min}
         </p>
       </div>
 
       {/* Quick Amount Buttons */}
       {currency === 'INR' && (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-3">
           {[500, 1000, 5000, 10000].map((quickAmount) => (
             <button
               key={quickAmount}
               type="button"
               onClick={() => setAmount(quickAmount.toString())}
-              className="px-3 py-2 bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-600 rounded-lg transition-colors font-semibold text-sm"
+              className={`px-3 py-2 rounded-lg transition-all font-semibold text-sm border ${amount === quickAmount.toString()
+                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-600/20'
+                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-emerald-500/50 hover:text-emerald-400'
+                }`}
             >
               {quickAmount >= 1000 ? `${quickAmount / 1000}k` : quickAmount}
             </button>
@@ -120,13 +112,16 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
         </div>
       )}
       {currency === 'USD' && (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-3">
           {[50, 100, 500, 1000].map((quickAmount) => (
             <button
               key={quickAmount}
               type="button"
               onClick={() => setAmount(quickAmount.toString())}
-              className="px-3 py-2 bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-600 rounded-lg transition-colors font-semibold text-sm"
+              className={`px-3 py-2 rounded-lg transition-all font-semibold text-sm border ${amount === quickAmount.toString()
+                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-600/20'
+                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-emerald-500/50 hover:text-emerald-400'
+                }`}
             >
               {quickAmount >= 1000 ? `${quickAmount / 1000}k` : quickAmount}
             </button>
@@ -134,50 +129,28 @@ export default function DirectAddInitial({ onContinue, onBack }: DirectAddInitia
         </div>
       )}
 
-      {/* Bonus Calculation Display 
-      {amount && parseFloat(amount) > 0 && (
-        <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4">
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Amount:</span>
-              <span className="font-semibold text-gray-900">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
-            </div>
-            {bonus > 0 && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Bonus (10%):</span>
-                <span className="font-semibold text-green-600">+₹{bonus.toLocaleString('en-IN')}</span>
-              </div>
-            )}
-            <div className="flex justify-between pt-2 border-t-2 border-green-300">
-              <span className="font-bold text-gray-900">Total Credit:</span>
-              <span className="font-bold text-green-600 text-lg">₹{totalCredit.toLocaleString('en-IN')}</span>
-            </div>
-          </div>
-        </div>
-      )}
-        */}
-
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-400 font-medium">{error}</p>
         </div>
       )}
 
       {/* Buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-4 pt-4">
         <button
           onClick={onBack}
-          className="flex-1 py-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-bold transition-colors"
+          className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl font-bold transition-colors"
         >
           Back
         </button>
         <button
           onClick={handleContinue}
-          className="flex-1 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-bold transition-all shadow-lg"
+          className="flex-1 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/40 flex items-center justify-center gap-2 group"
         >
           Continue
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
     </div>

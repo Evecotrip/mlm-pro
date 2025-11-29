@@ -1,23 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import Navbar from '@/components/Navbar';
-import { 
-  CheckCircle, 
-  Clock, 
-  XCircle, 
+import {
+  CheckCircle,
+  Clock,
+  XCircle,
   AlertCircle,
   ArrowLeft,
   HandCoins,
   User,
   Upload,
-  Copy,
-  Check,
-  MapPin,
-  Phone,
-  CreditCard
+  CreditCard,
+  Loader2,
+  MapPin
 } from 'lucide-react';
 import {
   createBorrowRequest,
@@ -31,7 +29,7 @@ import {
 
 type Step = 'method' | 'amount' | 'details' | 'review' | 'created';
 
-export default function BorrowAddMoneyPage() {
+function BorrowAddMoneyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isLoaded, user } = useUser();
@@ -59,7 +57,6 @@ export default function BorrowAddMoneyPage() {
   const [creating, setCreating] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -75,7 +72,7 @@ export default function BorrowAddMoneyPage() {
 
   const fetchRequest = async () => {
     if (!requestId) return;
-    
+
     setLoading(true);
     try {
       const response = await getBorrowRequestById(requestId);
@@ -111,11 +108,10 @@ export default function BorrowAddMoneyPage() {
       }
 
       const response = await createBorrowRequest(payload);
-      
+
       if (response.success && response.data) {
         setRequest(response.data);
         setStep('created');
-        // Update URL with request ID
         router.push(`/borrow-add-money?requestId=${response.data.id}`);
       } else {
         alert(response.error || 'Failed to create borrow request');
@@ -144,12 +140,10 @@ export default function BorrowAddMoneyPage() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
       if (!['image/jpeg', 'image/jpg'].includes(file.type)) {
         alert('Only JPG/JPEG files are allowed');
         return;
       }
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('File size must be less than 5MB');
         return;
@@ -179,160 +173,144 @@ export default function BorrowAddMoneyPage() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const handleLogout = async () => {
     router.push('/');
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'REJECTED':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'CANCELLED':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'COMPLETED': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
+      case 'PROCESSING': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
+      case 'PENDING': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
+      case 'REJECTED': return 'text-red-400 bg-red-400/10 border-red-400/20';
+      case 'CANCELLED': return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
+      default: return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'COMPLETED':
-        return <CheckCircle className="w-6 h-6 text-green-600" />;
-      case 'PROCESSING':
-        return <Clock className="w-6 h-6 text-blue-600" />;
-      case 'PENDING':
-        return <Clock className="w-6 h-6 text-yellow-600" />;
+      case 'COMPLETED': return <CheckCircle className="w-5 h-5" />;
+      case 'PROCESSING': return <Clock className="w-5 h-5" />;
+      case 'PENDING': return <Clock className="w-5 h-5" />;
       case 'REJECTED':
-      case 'CANCELLED':
-        return <XCircle className="w-6 h-6 text-red-600" />;
-      default:
-        return <AlertCircle className="w-6 h-6 text-gray-600" />;
+      case 'CANCELLED': return <XCircle className="w-5 h-5" />;
+      default: return <AlertCircle className="w-5 h-5" />;
     }
   };
 
   // If viewing existing request
   if (requestId && request) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
+      <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
         <Navbar onLogout={handleLogout} />
 
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-3xl mx-auto">
-            {/* Back Button */}
             <button
               onClick={() => router.push('/add-money')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+              className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Add Money
             </button>
 
-            {/* Status Header */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6 mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(request.status)}
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl border ${getStatusColor(request.status)}`}>
+                    {getStatusIcon(request.status)}
+                  </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Borrow Money Request</h1>
-                    <p className="text-sm text-gray-600">Request ID: {request.id.slice(0, 8)}...</p>
+                    <h1 className="text-2xl font-bold text-white">Borrow Request</h1>
+                    <p className="text-sm text-slate-400 font-mono">ID: {request.id.slice(0, 8)}...</p>
                   </div>
                 </div>
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${getStatusColor(request.status)}`}>
+                <span className={`px-4 py-1.5 rounded-full text-sm font-bold border uppercase tracking-wide ${getStatusColor(request.status)}`}>
                   {request.status}
                 </span>
               </div>
 
-              {/* Request Details */}
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-2 gap-6 pt-6 border-t border-slate-800">
                 <div>
-                  <p className="text-sm text-gray-600">Lender</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <User className="w-4 h-4 text-gray-400" />
-                    <p className="text-base font-semibold text-gray-900">
+                  <p className="text-sm text-slate-500 mb-1">Lender</p>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-slate-400" />
+                    <p className="text-base font-bold text-white">
                       {request.lender.firstName} {request.lender.lastName}
                     </p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Amount</p>
-                  <p className="text-xl font-bold text-purple-600">{request.amount} USDT</p>
+                  <p className="text-sm text-slate-500 mb-1">Amount</p>
+                  <p className="text-xl font-bold text-white">{request.amount} USDT</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Payment Method</p>
-                  <p className="text-base font-semibold text-gray-900">
+                  <p className="text-sm text-slate-500 mb-1">Payment Method</p>
+                  <p className="text-base font-medium text-slate-300">
                     {request.paymentMethod === 'ONLINE_TRANSFER' ? 'Online Transfer' : 'Physical Cash'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Created</p>
-                  <p className="text-base font-semibold text-gray-900">
+                  <p className="text-sm text-slate-500 mb-1">Created</p>
+                  <p className="text-base font-medium text-slate-300">
                     {new Date(request.createdAt).toLocaleDateString('en-IN')}
                   </p>
                 </div>
               </div>
 
               {request.borrowerNotes && (
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <p className="text-sm text-gray-600 mb-1">Your Notes:</p>
-                  <p className="text-sm text-gray-900 italic">"{request.borrowerNotes}"</p>
+                <div className="mt-6 pt-6 border-t border-slate-800">
+                  <p className="text-sm text-slate-500 mb-2">Your Notes:</p>
+                  <p className="text-sm text-slate-300 italic p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    "{request.borrowerNotes}"
+                  </p>
                 </div>
               )}
             </div>
 
             {/* Lender Details for PROCESSING status */}
             {request.status === 'PROCESSING' && request.paymentMethod === 'PHYSICAL_CASH' && request.borrowerDetails.contactDetails && (
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <MapPin className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-xl font-bold text-gray-900">Your Contact Details</h2>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-3xl p-8 mb-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <MapPin className="w-6 h-6 text-blue-400" />
+                  <h2 className="text-xl font-bold text-white">Your Contact Details</h2>
                 </div>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-blue-200 mb-6">
                   The lender will use these details to deliver cash:
                 </p>
 
-                <div className="bg-white rounded-xl p-4 space-y-3">
+                <div className="bg-slate-950/50 rounded-xl p-6 space-y-4 border border-blue-500/20">
                   <div>
-                    <p className="text-xs text-gray-600">Address</p>
-                    <p className="font-semibold text-gray-900">{request.borrowerDetails.contactDetails.address}</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Address</p>
+                    <p className="font-medium text-white">{request.borrowerDetails.contactDetails.address}</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <p className="text-xs text-gray-600">City</p>
-                      <p className="font-semibold text-gray-900">{request.borrowerDetails.contactDetails.city}</p>
+                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">City</p>
+                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.city}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600">State</p>
-                      <p className="font-semibold text-gray-900">{request.borrowerDetails.contactDetails.state}</p>
+                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">State</p>
+                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.state}</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <p className="text-xs text-gray-600">PIN Code</p>
-                      <p className="font-semibold text-gray-900">{request.borrowerDetails.contactDetails.pinCode}</p>
+                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">PIN Code</p>
+                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.pinCode}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600">Phone</p>
-                      <p className="font-semibold text-gray-900">{request.borrowerDetails.contactDetails.phoneNumber1}</p>
+                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Phone</p>
+                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.phoneNumber1}</p>
                     </div>
                   </div>
                 </div>
 
                 {request.lenderNotes && (
-                  <div className="mt-4 p-3 bg-blue-100 rounded-lg">
-                    <p className="text-xs text-blue-600 mb-1">Lender's Notes:</p>
-                    <p className="text-sm text-blue-900 italic">"{request.lenderNotes}"</p>
+                  <div className="mt-6 p-4 bg-blue-500/20 rounded-xl border border-blue-500/30">
+                    <p className="text-xs text-blue-300 mb-1 font-bold uppercase">Lender's Notes:</p>
+                    <p className="text-sm text-blue-100 italic">"{request.lenderNotes}"</p>
                   </div>
                 )}
               </div>
@@ -340,32 +318,38 @@ export default function BorrowAddMoneyPage() {
 
             {/* Upload Confirmation Proof */}
             {request.status === 'PROCESSING' && !request.confirmationProof && (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6 mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Upload className="w-6 h-6 text-purple-600" />
-                  <h2 className="text-xl font-bold text-gray-900">Upload Confirmation Proof</h2>
+              <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Upload className="w-6 h-6 text-purple-500" />
+                  <h2 className="text-xl font-bold text-white">Upload Confirmation Proof</h2>
                 </div>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-slate-400 mb-6">
                   Once you receive the money, please upload a confirmation proof (screenshot/photo). Only JPG/JPEG files accepted.
                 </p>
 
                 <div className="space-y-4">
-                  <div>
+                  <div className="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-purple-500/50 transition-colors bg-slate-950/30">
                     <input
                       type="file"
+                      id="proof-upload"
                       accept="image/jpeg,image/jpg"
                       onChange={handleFileSelect}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                      className="hidden"
                     />
+                    <label htmlFor="proof-upload" className="cursor-pointer flex flex-col items-center">
+                      <Upload className="w-10 h-10 text-slate-500 mb-3" />
+                      <span className="text-slate-300 font-medium mb-1">Click to select file</span>
+                      <span className="text-xs text-slate-500">JPG/JPEG up to 5MB</span>
+                    </label>
                     {selectedFile && (
-                      <p className="text-sm text-green-600 mt-2">✓ {selectedFile.name} selected</p>
+                      <p className="text-sm text-emerald-400 mt-4 font-medium">✓ {selectedFile.name}</p>
                     )}
                   </div>
 
                   <button
                     onClick={handleUploadProof}
                     disabled={!selectedFile || uploading}
-                    className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {uploading ? 'Uploading...' : 'Upload Confirmation Proof'}
                   </button>
@@ -375,13 +359,14 @@ export default function BorrowAddMoneyPage() {
 
             {/* Status Messages */}
             {request.status === 'PENDING' && (
-              <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-yellow-800">
-                  <strong>⏳ Pending:</strong> Your request is waiting for the lender's approval. You'll be notified once they respond.
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-yellow-200">
+                  <strong className="text-yellow-400 block mb-1">⏳ Pending Approval</strong>
+                  Your request is waiting for the lender's approval. You'll be notified once they respond.
                 </p>
                 <button
                   onClick={handleCancelRequest}
-                  className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                  className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-sm font-bold transition-colors"
                 >
                   Cancel Request
                 </button>
@@ -389,33 +374,37 @@ export default function BorrowAddMoneyPage() {
             )}
 
             {request.status === 'PROCESSING' && (
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-blue-800">
-                  <strong>✓ Approved:</strong> The lender has approved your request and will transfer the money soon. Please upload confirmation proof once received.
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-blue-200">
+                  <strong className="text-blue-400 block mb-1">✓ Request Approved</strong>
+                  The lender has approved your request and will transfer the money soon. Please upload confirmation proof once received.
                 </p>
               </div>
             )}
 
             {request.status === 'COMPLETED' && (
-              <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-green-800">
-                  <strong>✓ Completed:</strong> The transaction has been completed and {request.amount} USDT has been credited to your wallet.
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-emerald-200">
+                  <strong className="text-emerald-400 block mb-1">✓ Transaction Completed</strong>
+                  The transaction has been completed and {request.amount} USDT has been credited to your wallet.
                 </p>
               </div>
             )}
 
             {request.status === 'REJECTED' && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-red-800">
-                  <strong>✗ Rejected:</strong> The lender has rejected your request. {request.lenderNotes || 'Please try with a different lender.'}
+              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-red-200">
+                  <strong className="text-red-400 block mb-1">✗ Request Rejected</strong>
+                  The lender has rejected your request. {request.lenderNotes || 'Please try with a different lender.'}
                 </p>
               </div>
             )}
 
             {request.status === 'CANCELLED' && (
-              <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-gray-800">
-                  <strong>✗ Cancelled:</strong> This request has been cancelled.
+              <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-slate-400">
+                  <strong className="text-slate-300 block mb-1">✗ Request Cancelled</strong>
+                  This request has been cancelled.
                 </p>
               </div>
             )}
@@ -427,81 +416,65 @@ export default function BorrowAddMoneyPage() {
 
   // Create new borrow request flow
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
       <Navbar onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          {/* Back Button */}
           <button
             onClick={() => router.push('/add-money')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Add Money
           </button>
 
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex-1"></div>
-              <div className="text-center flex-1">
-                <div className="inline-block p-4 bg-purple-100 rounded-2xl mb-4">
-                  <HandCoins className="w-12 h-12 text-purple-600" />
-                </div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text mb-2">
-                  Borrow Money
-                </h1>
-                <p className="text-gray-600">Get funds from another platform user</p>
-              </div>
-              <div className="flex-1 flex justify-end">
-                <button
-                  onClick={() => router.push('/my-borrow-requests')}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
-                >
-                  <Clock className="w-4 h-4" />
-                  My Requests
-                </button>
-              </div>
+          <div className="mb-8 text-center">
+            <div className="inline-flex p-4 bg-purple-500/10 rounded-2xl mb-4 border border-purple-500/20">
+              <HandCoins className="w-10 h-10 text-purple-500" />
             </div>
+            <h1 className="text-3xl font-bold text-white mb-2">Borrow Money</h1>
+            <p className="text-slate-400">Get funds from another platform user</p>
           </div>
 
           {/* Step 1: Payment Method */}
           {step === 'method' && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Select Payment Method</h2>
-              
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
+              <h2 className="text-xl font-bold text-white mb-6">Select Payment Method</h2>
+
               <div className="space-y-4">
                 <button
                   onClick={() => setPaymentMethod('ONLINE_TRANSFER')}
-                  className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                    paymentMethod === 'ONLINE_TRANSFER'
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  className={`w-full p-6 rounded-2xl border transition-all text-left group ${paymentMethod === 'ONLINE_TRANSFER'
+                    ? 'bg-purple-500/10 border-purple-500/50 shadow-lg shadow-purple-500/10'
+                    : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                    }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="w-6 h-6 text-purple-600" />
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-xl ${paymentMethod === 'ONLINE_TRANSFER' ? 'bg-purple-500 text-white' : 'bg-slate-900 text-slate-500 group-hover:text-slate-300'}`}>
+                      <CreditCard className="w-6 h-6" />
+                    </div>
                     <div>
-                      <p className="font-semibold text-gray-900">Online Transfer (Soft Cash)</p>
-                      <p className="text-sm text-gray-600">Request from a specific user by referral code</p>
+                      <p className={`font-bold mb-1 ${paymentMethod === 'ONLINE_TRANSFER' ? 'text-white' : 'text-slate-300'}`}>Online Transfer (Soft Cash)</p>
+                      <p className="text-sm text-slate-500">Request from a specific user by referral code</p>
                     </div>
                   </div>
                 </button>
 
                 <button
                   onClick={() => setPaymentMethod('PHYSICAL_CASH')}
-                  className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                    paymentMethod === 'PHYSICAL_CASH'
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  className={`w-full p-6 rounded-2xl border transition-all text-left group ${paymentMethod === 'PHYSICAL_CASH'
+                    ? 'bg-purple-500/10 border-purple-500/50 shadow-lg shadow-purple-500/10'
+                    : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                    }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <HandCoins className="w-6 h-6 text-purple-600" />
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-xl ${paymentMethod === 'PHYSICAL_CASH' ? 'bg-purple-500 text-white' : 'bg-slate-900 text-slate-500 group-hover:text-slate-300'}`}>
+                      <HandCoins className="w-6 h-6" />
+                    </div>
                     <div>
-                      <p className="font-semibold text-gray-900">Physical Cash (Hard Cash)</p>
-                      <p className="text-sm text-gray-600">Provide your address for cash delivery</p>
+                      <p className={`font-bold mb-1 ${paymentMethod === 'PHYSICAL_CASH' ? 'text-white' : 'text-slate-300'}`}>Physical Cash (Hard Cash)</p>
+                      <p className="text-sm text-slate-500">Provide your address for cash delivery</p>
                     </div>
                   </div>
                 </button>
@@ -509,7 +482,7 @@ export default function BorrowAddMoneyPage() {
 
               <button
                 onClick={() => setStep('amount')}
-                className="w-full mt-6 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition-colors"
+                className="w-full mt-8 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20"
               >
                 Continue
               </button>
@@ -518,12 +491,12 @@ export default function BorrowAddMoneyPage() {
 
           {/* Step 2: Amount */}
           {step === 'amount' && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Enter Amount</h2>
-              
-              <div className="space-y-4">
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
+              <h2 className="text-xl font-bold text-white mb-6">Enter Amount</h2>
+
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
                     Amount (USDT)
                   </label>
                   <input
@@ -531,37 +504,37 @@ export default function BorrowAddMoneyPage() {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="Enter amount"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     min="1"
                     step="0.01"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
                     Notes (Optional)
                   </label>
                   <textarea
                     value={borrowerNotes}
                     onChange={(e) => setBorrowerNotes(e.target.value)}
                     placeholder="Add any notes for the lender..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     rows={3}
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-4 mt-8">
                 <button
                   onClick={() => setStep('method')}
-                  className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-colors"
+                  className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors"
                 >
                   Back
                 </button>
                 <button
                   onClick={() => setStep('details')}
                   disabled={!amount || parseFloat(amount) <= 0}
-                  className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Continue
                 </button>
@@ -571,128 +544,128 @@ export default function BorrowAddMoneyPage() {
 
           {/* Step 3: Details */}
           {step === 'details' && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
+              <h2 className="text-xl font-bold text-white mb-6">
                 {paymentMethod === 'ONLINE_TRANSFER' ? 'Lender Details' : 'Your Contact Details'}
               </h2>
-              
+
               {paymentMethod === 'ONLINE_TRANSFER' ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-400 mb-2">
                     Lender's Referral Code *
                   </label>
                   <input
                     type="text"
                     value={lenderReferralCode}
                     onChange={(e) => setLenderReferralCode(e.target.value.toUpperCase())}
-                    placeholder="Enter referral code (e.g., REF00001AA)"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Enter referral code (e.g., REFCODE)"
+                    className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-slate-500 mt-2">
                     Enter the referral code of the user you want to borrow from
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Address *
                     </label>
                     <input
                       type="text"
                       value={contactDetails.address}
-                      onChange={(e) => setContactDetails({...contactDetails, address: e.target.value})}
+                      onChange={(e) => setContactDetails({ ...contactDetails, address: e.target.value })}
                       placeholder="Street address"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-400 mb-2">
                         City *
                       </label>
                       <input
                         type="text"
                         value={contactDetails.city}
-                        onChange={(e) => setContactDetails({...contactDetails, city: e.target.value})}
+                        onChange={(e) => setContactDetails({ ...contactDetails, city: e.target.value })}
                         placeholder="City"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-400 mb-2">
                         State *
                       </label>
                       <input
                         type="text"
                         value={contactDetails.state}
-                        onChange={(e) => setContactDetails({...contactDetails, state: e.target.value})}
+                        onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
                         placeholder="State"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-400 mb-2">
                         PIN Code *
                       </label>
                       <input
                         type="text"
                         value={contactDetails.pinCode}
-                        onChange={(e) => setContactDetails({...contactDetails, pinCode: e.target.value})}
+                        onChange={(e) => setContactDetails({ ...contactDetails, pinCode: e.target.value })}
                         placeholder="PIN Code"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-400 mb-2">
                         Country *
                       </label>
                       <input
                         type="text"
                         value={contactDetails.country}
-                        onChange={(e) => setContactDetails({...contactDetails, country: e.target.value})}
+                        onChange={(e) => setContactDetails({ ...contactDetails, country: e.target.value })}
                         placeholder="Country"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Phone Number 1 *
                     </label>
                     <input
                       type="tel"
                       value={contactDetails.phoneNumber1}
-                      onChange={(e) => setContactDetails({...contactDetails, phoneNumber1: e.target.value})}
+                      onChange={(e) => setContactDetails({ ...contactDetails, phoneNumber1: e.target.value })}
                       placeholder="+91 9876543210"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
                       Phone Number 2 (Optional)
                     </label>
                     <input
                       type="tel"
                       value={contactDetails.phoneNumber2}
-                      onChange={(e) => setContactDetails({...contactDetails, phoneNumber2: e.target.value})}
+                      onChange={(e) => setContactDetails({ ...contactDetails, phoneNumber2: e.target.value })}
                       placeholder="+91 9876543211"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
                 </div>
               )}
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-4 mt-8">
                 <button
                   onClick={() => setStep('amount')}
-                  className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-colors"
+                  className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors"
                 >
                   Back
                 </button>
@@ -703,7 +676,7 @@ export default function BorrowAddMoneyPage() {
                       ? !lenderReferralCode
                       : !contactDetails.address || !contactDetails.city || !contactDetails.state || !contactDetails.pinCode || !contactDetails.phoneNumber1
                   }
-                  className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Review
                 </button>
@@ -713,64 +686,69 @@ export default function BorrowAddMoneyPage() {
 
           {/* Step 4: Review */}
           {step === 'review' && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Review Request</h2>
-              
-              <div className="space-y-4 mb-6">
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-600">Amount</p>
-                  <p className="text-2xl font-bold text-purple-600">{amount} USDT</p>
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
+              <h2 className="text-xl font-bold text-white mb-6">Review Request</h2>
+
+              <div className="space-y-4 mb-8">
+                <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
+                  <p className="text-sm text-slate-500 mb-1">Amount</p>
+                  <p className="text-2xl font-bold text-white">{amount} USDT</p>
                 </div>
 
-                <div className="p-4 bg-gray-50 rounded-xl">
-                  <p className="text-sm text-gray-600">Payment Method</p>
-                  <p className="font-semibold text-gray-900">
+                <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
+                  <p className="text-sm text-slate-500 mb-1">Payment Method</p>
+                  <p className="font-bold text-white">
                     {paymentMethod === 'ONLINE_TRANSFER' ? 'Online Transfer' : 'Physical Cash'}
                   </p>
                 </div>
 
                 {paymentMethod === 'ONLINE_TRANSFER' ? (
-                  <div className="p-4 bg-gray-50 rounded-xl">
-                    <p className="text-sm text-gray-600">Lender Referral Code</p>
-                    <p className="font-semibold text-gray-900">{lenderReferralCode}</p>
+                  <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <p className="text-sm text-slate-500 mb-1">Lender Referral Code</p>
+                    <p className="font-bold text-white font-mono">{lenderReferralCode}</p>
                   </div>
                 ) : (
-                  <div className="p-4 bg-gray-50 rounded-xl">
-                    <p className="text-sm text-gray-600 mb-2">Contact Details</p>
-                    <div className="space-y-1 text-sm">
-                      <p className="text-gray-900">{contactDetails.address}</p>
-                      <p className="text-gray-900">{contactDetails.city}, {contactDetails.state}</p>
-                      <p className="text-gray-900">{contactDetails.country} - {contactDetails.pinCode}</p>
-                      <p className="text-gray-900">📞 {contactDetails.phoneNumber1}</p>
+                  <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <p className="text-sm text-slate-500 mb-2">Contact Details</p>
+                    <div className="space-y-1 text-sm text-slate-300">
+                      <p>{contactDetails.address}</p>
+                      <p>{contactDetails.city}, {contactDetails.state}</p>
+                      <p>{contactDetails.country} - {contactDetails.pinCode}</p>
+                      <p>📞 {contactDetails.phoneNumber1}</p>
                       {contactDetails.phoneNumber2 && (
-                        <p className="text-gray-900">📞 {contactDetails.phoneNumber2}</p>
+                        <p>📞 {contactDetails.phoneNumber2}</p>
                       )}
                     </div>
                   </div>
                 )}
 
                 {borrowerNotes && (
-                  <div className="p-4 bg-gray-50 rounded-xl">
-                    <p className="text-sm text-gray-600">Notes</p>
-                    <p className="text-sm text-gray-900 italic">"{borrowerNotes}"</p>
+                  <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
+                    <p className="text-sm text-slate-500 mb-1">Notes</p>
+                    <p className="text-sm text-slate-300 italic">"{borrowerNotes}"</p>
                   </div>
                 )}
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   onClick={() => setStep('details')}
                   disabled={creating}
-                  className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleCreateRequest}
                   disabled={creating}
-                  className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20 disabled:opacity-50"
                 >
-                  {creating ? 'Creating...' : 'Create Request'}
+                  {creating ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Creating...
+                    </span>
+                  ) : 'Create Request'}
                 </button>
               </div>
             </div>
@@ -778,5 +756,17 @@ export default function BorrowAddMoneyPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function BorrowAddMoneyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
+      </div>
+    }>
+      <BorrowAddMoneyContent />
+    </Suspense>
   );
 }

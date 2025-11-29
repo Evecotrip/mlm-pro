@@ -18,9 +18,10 @@ import {
   Position,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { 
-  TrendingUp, LogOut, ArrowLeft, Users, DollarSign, 
-  Activity, Crown, Phone, Mail, Target, Zap, Wallet
+import {
+  TrendingUp, LogOut, ArrowLeft, Users, DollarSign,
+  Activity, Crown, Phone, Mail, Target, Zap, Wallet,
+  Search, X, ChevronRight
 } from 'lucide-react';
 import { User, getDirectReferrals, getUserStats, getAllDownline, getUserWalletBalance } from '@/lib/mockData';
 import Navbar from '@/components/Navbar';
@@ -32,78 +33,76 @@ function UserNode({ data }: { data: any }) {
   const isRoot = data.isRoot;
 
   return (
-    <div 
-      className={`relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border-2 p-4 w-64 transition-all hover:shadow-2xl cursor-pointer ${
-        isRoot ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-400'
-      }`}
+    <div
+      className={`relative group transition-all duration-300 ${isRoot ? 'scale-110' : 'hover:scale-105'
+        }`}
       onClick={() => data.onUserClick(data.user)}
     >
-      {/* Handles for edge connections */}
-      <Handle
-        type="target"
-        position={Position.Top}
-        style={{ background: '#8b5cf6', width: 12, height: 12, border: '2px solid white' }}
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        style={{ background: '#8b5cf6', width: 12, height: 12, border: '2px solid white' }}
-      />
-      
-      {isRoot && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1 z-10">
-          <Crown className="w-3 h-3" />
-          YOU
-        </div>
-      )}
+      {/* Glow Effect */}
+      <div className={`absolute -inset-0.5 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-500 ${isRoot ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-slate-600 to-slate-400'
+        }`}></div>
 
-      {/* Header with Avatar */}
-      <div className="flex items-start gap-3 mb-3">
-        <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-md ${
-          isRoot ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600' : 'bg-gradient-to-br from-purple-600 via-pink-600 to-red-600'
+      <div className={`relative bg-slate-900 rounded-2xl p-4 w-64 border ${isRoot ? 'border-blue-500/50' : 'border-slate-700 hover:border-slate-500'
         }`}>
-          {data.user.name.charAt(0)}
-          {stats.investmentCount > 0 && (
-            <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-xs font-bold border-2 border-white shadow-md">
-              <Zap className="w-3 h-3" />
+        {/* Handles */}
+        <Handle
+          type="target"
+          position={Position.Top}
+          className="!bg-slate-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          className="!bg-slate-500 !w-3 !h-3 !border-2 !border-slate-900"
+        />
+
+        {isRoot && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-0.5 rounded-full text-[10px] font-bold shadow-lg flex items-center gap-1 z-10 border border-white/10">
+            <Crown className="w-3 h-3" />
+            YOU
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className={`relative w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold shadow-inner ${isRoot ? 'bg-gradient-to-br from-blue-600 to-purple-600' : 'bg-slate-800 border border-slate-700'
+            }`}>
+            {data.user.name.charAt(0)}
+            {stats.investmentCount > 0 && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-slate-900">
+                <Zap className="w-2 h-2 text-white" />
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-bold text-white truncate">{data.user.name}</h3>
+            <p className="text-[10px] text-slate-400 truncate">{data.user.email}</p>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          <div className="bg-slate-950/50 rounded-lg p-2 border border-slate-800">
+            <div className="flex items-center gap-1 mb-0.5">
+              <DollarSign className="w-3 h-3 text-emerald-500" />
+              <span className="text-[10px] font-medium text-slate-400">Invested</span>
             </div>
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-bold text-gray-900 leading-tight truncate">{data.user.name}</h3>
-          <p className="text-xs text-gray-600 truncate flex items-center gap-1">
-            <Mail className="w-3 h-3 shrink-0" />
-            <span className="truncate">{data.user.email}</span>
-          </p>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-2 mb-2">
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-2 border border-green-200">
-          <div className="flex items-center gap-1 mb-0.5">
-            <DollarSign className="w-3 h-3 text-green-600" />
-            <span className="text-xs font-medium text-green-700">Invested</span>
+            <p className="text-xs font-bold text-emerald-400">₹{(stats.totalInvested / 1000).toFixed(1)}K</p>
           </div>
-          <p className="text-sm font-bold text-green-800">₹{(stats.totalInvested / 1000).toFixed(1)}K</p>
-        </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-2 border border-purple-200">
-          <div className="flex items-center gap-1 mb-0.5">
-            <Users className="w-3 h-3 text-purple-600" />
-            <span className="text-xs font-medium text-purple-700">Referrals</span>
+          <div className="bg-slate-950/50 rounded-lg p-2 border border-slate-800">
+            <div className="flex items-center gap-1 mb-0.5">
+              <Users className="w-3 h-3 text-blue-500" />
+              <span className="text-[10px] font-medium text-slate-400">Team</span>
+            </div>
+            <p className="text-xs font-bold text-blue-400">{directReferrals.length}</p>
           </div>
-          <p className="text-sm font-bold text-purple-800">{directReferrals.length}</p>
         </div>
-      </div>
 
-      {/* Referral Code */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-2 text-white">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium opacity-90">Code</span>
-          <span className="font-mono font-bold text-xs tracking-wider">
-            {data.user.referralCode}
-          </span>
+        {/* Code */}
+        <div className="bg-slate-800/50 rounded-lg py-1 px-2 flex justify-between items-center">
+          <span className="text-[10px] text-slate-500">Code</span>
+          <span className="font-mono text-[10px] text-slate-300">{data.user.referralCode}</span>
         </div>
       </div>
     </div>
@@ -153,24 +152,18 @@ export default function HierarchyFlowPage() {
     router.push('/');
   };
 
-  const allDownline = getAllDownline(currentUser.id);
-  const networkStats = getNetworkStats(currentUser);
   const walletBalance = getUserWalletBalance(currentUser.id);
   const directReferrals = getDirectReferrals(currentUser.id);
   const pendingReferrals = directReferrals.filter(user => !user.isApproved);
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Navbar */}
+    <div className="h-screen flex flex-col bg-slate-950 text-slate-50">
       <Navbar
-        currentUser={currentUser}
-        walletBalance={walletBalance}
-        pendingRequestsCount={pendingReferrals.length}
         onLogout={handleLogout}
       />
 
       {/* React Flow Container */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative bg-slate-950">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -191,110 +184,113 @@ export default function HierarchyFlowPage() {
           nodesDraggable={true}
           nodesConnectable={false}
           elementsSelectable={true}
+          className="bg-slate-950"
         >
-          <Background 
-            variant={BackgroundVariant.Dots} 
-            gap={16} 
-            size={2}
-            color="#cbd5e1"
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={24}
+            size={1}
+            color="#334155" // slate-700
+            className="bg-slate-950"
           />
-          <Controls 
+          <Controls
             showZoom={true}
             showFitView={true}
             showInteractive={true}
             position="bottom-left"
+            className="!bg-slate-900 !border-slate-800 !shadow-xl [&>button]:!bg-slate-800 [&>button]:!border-slate-700 [&>button]:!text-slate-400 [&>button:hover]:!bg-slate-700 [&>button:hover]:!text-white"
           />
-          <MiniMap 
+          <MiniMap
             nodeColor={(node) => {
               if (node.data.isRoot) return '#3b82f6';
-              return '#a855f7';
+              return '#475569';
             }}
-            maskColor="rgba(0, 0, 0, 0.1)"
-            style={{ 
-              backgroundColor: 'white',
-              border: '2px solid #e5e7eb'
-            }}
+            maskColor="rgba(2, 6, 23, 0.7)" // slate-950 with opacity
+            className="!bg-slate-900 !border-slate-800 !shadow-xl"
             position="bottom-right"
           />
-          
-          <Panel position="top-right" className="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-2 sm:p-3 m-2 sm:m-4 border border-gray-200">
-            <div className="text-xs sm:text-sm space-y-1">
-              <p className="font-bold text-gray-900">Controls:</p>
-              <p className="text-gray-600 hidden sm:block">🖱️ Drag to pan</p>
-              <p className="text-gray-600 hidden sm:block">🔍 Scroll to zoom</p>
-              <p className="text-gray-600">👆 Click node</p>
-              <p className="text-xs text-purple-600 mt-2">Edges: {edges.length}</p>
+
+          <Panel position="top-right" className="bg-slate-900/80 backdrop-blur-md rounded-xl shadow-xl p-4 border border-slate-800">
+            <div className="text-xs space-y-2">
+              <p className="font-bold text-white flex items-center gap-2">
+                <Activity className="w-3 h-3 text-blue-500" /> Network Overview
+              </p>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-slate-400">
+                <span>Total Nodes:</span>
+                <span className="text-white text-right">{nodes.length}</span>
+                <span>Connections:</span>
+                <span className="text-white text-right">{edges.length}</span>
+              </div>
             </div>
           </Panel>
         </ReactFlow>
 
         {/* Sidebar Panel */}
         {showSidebar && selectedUser && (
-          <div className="absolute top-2 right-2 sm:top-4 sm:right-4 w-[calc(100vw-1rem)] sm:w-80 max-w-sm bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[1000]">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-xl font-bold border-2 border-white/30">
-                    {selectedUser.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold">{selectedUser.name}</h3>
-                    <p className="text-blue-100 text-sm">{selectedUser.email}</p>
-                  </div>
+          <div className="absolute top-4 right-4 w-80 bg-slate-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-800 overflow-hidden z-[1000] animate-in slide-in-from-right duration-300">
+            {/* Header */}
+            <div className="relative p-6 pb-8 bg-gradient-to-br from-blue-900/50 to-purple-900/50 border-b border-slate-800">
+              <button
+                onClick={() => setShowSidebar(false)}
+                className="absolute top-4 right-4 p-1 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+                  {selectedUser.name.charAt(0)}
                 </div>
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  className="text-white/80 hover:text-white transition-colors text-xl"
-                >
-                  ✕
-                </button>
+                <div>
+                  <h3 className="text-lg font-bold text-white leading-tight">{selectedUser.name}</h3>
+                  <p className="text-blue-400 text-xs">{selectedUser.email}</p>
+                </div>
               </div>
-              
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="w-4 h-4" />
+
+              <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-950/50 py-1.5 px-3 rounded-lg w-fit">
+                <Phone className="w-3 h-3" />
                 <span>{selectedUser.phone}</span>
               </div>
             </div>
 
-            <div className="p-4 space-y-4">
+            {/* Content */}
+            <div className="p-6 space-y-6">
               {/* Referral Code */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
-                <span className="text-xs font-medium text-gray-600">Referral Code</span>
-                <p className="text-xl font-bold font-mono text-blue-600">{selectedUser.referralCode}</p>
+              <div className="bg-slate-950 rounded-xl p-4 border border-slate-800">
+                <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Referral Code</span>
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-lg font-mono font-bold text-white">{selectedUser.referralCode}</p>
+                  <button className="text-xs text-blue-400 hover:text-blue-300">Copy</button>
+                </div>
               </div>
 
               {/* Stats */}
-              <div className="space-y-2">
-                <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-blue-600" />
-                  Performance Stats
+              <div>
+                <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-blue-500" />
+                  Performance
                 </h4>
-                
+
                 {(() => {
                   const stats = getUserStats(selectedUser.id);
                   const directRefs = getDirectReferrals(selectedUser.id);
                   return (
-                    <>
-                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-600">Total Invested</span>
-                        <span className="font-bold text-gray-900">₹{stats.totalInvested.toLocaleString()}</span>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-800">
+                        <span className="text-sm text-slate-400">Total Invested</span>
+                        <span className="font-bold text-emerald-400">₹{stats.totalInvested.toLocaleString()}</span>
                       </div>
 
-                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-600">Total Returns</span>
-                        <span className="font-bold text-green-600">₹{stats.totalReturns.toLocaleString()}</span>
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-800">
+                        <span className="text-sm text-slate-400">Total Returns</span>
+                        <span className="font-bold text-blue-400">₹{stats.totalReturns.toLocaleString()}</span>
                       </div>
 
-                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-600">Direct Referrals</span>
-                        <span className="font-bold text-purple-600">{directRefs.length}</span>
+                      <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl border border-slate-800">
+                        <span className="text-sm text-slate-400">Direct Referrals</span>
+                        <span className="font-bold text-purple-400">{directRefs.length}</span>
                       </div>
-
-                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-600">Investments</span>
-                        <span className="font-bold text-orange-600">{stats.investmentCount}</span>
-                      </div>
-                    </>
+                    </div>
                   );
                 })()}
               </div>
@@ -303,21 +299,17 @@ export default function HierarchyFlowPage() {
         )}
       </div>
 
-      {/* Custom CSS for edges - SIMPLIFIED */}
+      {/* Custom CSS for edges */}
       <style jsx global>{`
         .react-flow__edge path {
-          stroke: #8b5cf6 !important;
-          stroke-width: 4px !important;
+          stroke: #475569 !important; /* slate-600 */
+          stroke-width: 2px !important;
         }
         
         .react-flow__edge.animated path {
+          stroke: #3b82f6 !important; /* blue-500 */
           stroke-dasharray: 5;
           animation: dashdraw 0.5s linear infinite;
-        }
-        
-        .react-flow__edge.selected path {
-          stroke: #7c3aed !important;
-          stroke-width: 5px !important;
         }
         
         @keyframes dashdraw {
@@ -334,9 +326,9 @@ export default function HierarchyFlowPage() {
 function buildFlowGraph(rootUser: User, onUserClick: (user: User) => void) {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
-  const levelGap = 280;
+  const levelGap = 200;
   const nodeWidth = 280; // Width of each node card + spacing
-  
+
   // First pass: calculate subtree widths
   function calculateSubtreeWidth(user: User): number {
     const children = getDirectReferrals(user.id);
@@ -349,17 +341,17 @@ function buildFlowGraph(rootUser: User, onUserClick: (user: User) => void) {
 
   // Second pass: position nodes
   function addUserNode(
-    user: User, 
-    level: number, 
-    parentId: string | null, 
+    user: User,
+    level: number,
+    parentId: string | null,
     startX: number
   ): number {
     const nodeId = user.id;
     const children = getDirectReferrals(user.id);
-    
+
     let currentX = startX;
     const childPositions: number[] = [];
-    
+
     // Position all children first and collect their X positions
     if (children.length > 0) {
       children.forEach((child) => {
@@ -368,23 +360,23 @@ function buildFlowGraph(rootUser: User, onUserClick: (user: User) => void) {
         childPositions.push(childCenterX);
         currentX += childWidth * nodeWidth;
       });
-      
+
       // Position parent at the center of its children
       const leftmostChild = childPositions[0];
       const rightmostChild = childPositions[childPositions.length - 1];
       const parentX = (leftmostChild + rightmostChild) / 2;
-      
+
       nodes.push({
         id: nodeId,
         type: 'userNode',
         position: { x: parentX, y: level * levelGap },
-        data: { 
-          user, 
+        data: {
+          user,
           isRoot: parentId === null,
           onUserClick
         },
       });
-      
+
       // Create edges to children
       children.forEach((child) => {
         edges.push({
@@ -395,7 +387,7 @@ function buildFlowGraph(rootUser: User, onUserClick: (user: User) => void) {
           animated: true,
         });
       });
-      
+
       return parentX;
     } else {
       // Leaf node - position at current X
@@ -404,8 +396,8 @@ function buildFlowGraph(rootUser: User, onUserClick: (user: User) => void) {
         id: nodeId,
         type: 'userNode',
         position: { x, y: level * levelGap },
-        data: { 
-          user, 
+        data: {
+          user,
           isRoot: parentId === null,
           onUserClick
         },
@@ -418,33 +410,4 @@ function buildFlowGraph(rootUser: User, onUserClick: (user: User) => void) {
   addUserNode(rootUser, 0, null, 0);
 
   return { nodes, edges };
-}
-
-// Helper function to get network stats
-function getNetworkStats(user: User): {
-  totalUsers: number;
-  totalInvestment: number;
-  activeUsers: number;
-  totalReturns: number;
-} {
-  let totalUsers = 1;
-  let totalInvestment = 0;
-  let activeUsers = 0;
-  let totalReturns = 0;
-
-  const stats = getUserStats(user.id);
-  totalInvestment += stats.totalInvested;
-  totalReturns += stats.totalReturns;
-  if (stats.investmentCount > 0) activeUsers++;
-
-  const referrals = getDirectReferrals(user.id);
-  referrals.forEach(ref => {
-    const childStats = getNetworkStats(ref);
-    totalUsers += childStats.totalUsers;
-    totalInvestment += childStats.totalInvestment;
-    activeUsers += childStats.activeUsers;
-    totalReturns += childStats.totalReturns;
-  });
-
-  return { totalUsers, totalInvestment, activeUsers, totalReturns };
 }

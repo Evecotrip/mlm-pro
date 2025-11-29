@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, ArrowLeft, Building2, CreditCard, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { X, ArrowLeft, Building2, CreditCard, CheckCircle, AlertCircle, Loader2, Wallet } from 'lucide-react';
 import { User as UserType } from '@/lib/mockData';
 
 interface OnlineTransferFormProps {
@@ -20,7 +20,7 @@ interface OnlineTransferFormProps {
 export default function OnlineTransferForm({ onClose, onBack, currentUser, withdrawalInfo }: OnlineTransferFormProps) {
   const [step, setStep] = useState<'details' | 'review' | 'success'>('details');
   const [loading, setLoading] = useState(false);
-  
+
   // Form state
   const [amount, setAmount] = useState('');
   const [accountHolderName, setAccountHolderName] = useState(currentUser.name);
@@ -77,39 +77,42 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
   // Success Screen
   if (step === 'success') {
     const requestId = `WD${Date.now().toString().slice(-9)}`;
-    
+
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+        <div className="bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-lg relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+
           <div className="p-8 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-12 h-12 text-green-600" />
+            <div className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/10">
+              <CheckCircle className="w-10 h-10 text-emerald-500" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Withdrawal Request Submitted!</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold text-white mb-2">Withdrawal Request Submitted!</h2>
+            <p className="text-slate-400 mb-8">
               Your request will be processed within 24 hours
             </p>
 
-            <div className="bg-gray-50 rounded-xl p-5 mb-6 space-y-3 text-left">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Request ID</span>
-                <span className="font-mono font-semibold text-gray-900">{requestId}</span>
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 mb-6 space-y-4 text-left">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 text-sm">Request ID</span>
+                <span className="font-mono font-semibold text-slate-300">{requestId}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Amount</span>
-                <span className="font-bold text-green-600 text-lg">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 text-sm">Amount</span>
+                <span className="font-bold text-emerald-400 text-lg">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Status</span>
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 text-sm">Status</span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-full text-xs font-bold uppercase tracking-wide">
                   Pending Approval
                 </span>
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-              <p className="text-sm text-blue-700">
-                💡 Your referrer has been notified and will process your request soon. 
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-6 text-left">
+              <p className="text-sm text-blue-300/90 leading-relaxed">
+                <strong className="text-blue-400 block mb-1">What's Next?</strong>
+                Your referrer has been notified and will process your request soon.
                 Money will be credited to your account within 2-3 business days after approval.
               </p>
             </div>
@@ -117,13 +120,13 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors"
+                className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold rounded-xl transition-colors"
               >
-                Back to Dashboard
+                Dashboard
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-colors"
+                className="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-600/20"
               >
                 Track Request
               </button>
@@ -137,56 +140,57 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
   // Review Screen
   if (step === 'review') {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+        <div className="bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-2xl">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setStep('details')}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <h2 className="text-2xl font-bold">Review & Confirm</h2>
-              </div>
+          <div className="sticky top-0 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800 p-6 z-10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <button
-                onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+                onClick={() => setStep('details')}
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors border border-slate-800"
               >
-                <X className="w-5 h-5" />
+                <ArrowLeft className="w-5 h-5" />
               </button>
+              <h2 className="text-xl font-bold text-white">Review & Confirm</h2>
             </div>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors border border-slate-800"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Content */}
           <div className="p-6 space-y-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5">
-              <h3 className="font-bold text-gray-900 mb-4 text-lg">Withdrawal Request Summary</h3>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between py-2 border-b border-blue-200">
-                  <span className="text-gray-600">Amount</span>
-                  <span className="font-bold text-blue-600 text-xl">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <h3 className="font-bold text-white mb-4 text-lg flex items-center gap-2">
+                <Wallet className="w-5 h-5 text-purple-500" />
+                Withdrawal Summary
+              </h3>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Amount</span>
+                  <span className="font-bold text-emerald-400 text-xl">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-blue-200">
-                  <span className="text-gray-600">Method</span>
-                  <span className="font-semibold text-gray-900">Online Transfer</span>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Method</span>
+                  <span className="font-medium text-white bg-slate-800 px-2 py-1 rounded text-sm">Online Transfer</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-blue-200">
-                  <span className="text-gray-600">Bank</span>
-                  <span className="font-semibold text-gray-900">{bankName}</span>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Bank</span>
+                  <span className="font-medium text-white">{bankName}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-blue-200">
-                  <span className="text-gray-600">Account</span>
-                  <span className="font-mono font-semibold text-gray-900">
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Account</span>
+                  <span className="font-mono font-medium text-slate-300">
                     XXXX XXXX {accountNumber.slice(-4)}
                   </span>
                 </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-gray-600">IFSC</span>
-                  <span className="font-mono font-semibold text-gray-900">{ifscCode}</span>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-slate-400">IFSC</span>
+                  <span className="font-mono font-medium text-slate-300">{ifscCode}</span>
                 </div>
               </div>
             </div>
@@ -194,7 +198,7 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
             <button
               onClick={handleConfirm}
               disabled={loading}
-              className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20"
             >
               {loading ? (
                 <>
@@ -216,60 +220,61 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
 
   // Details Form
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-2xl z-10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onBack}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h2 className="text-2xl font-bold">Online Transfer</h2>
-                <p className="text-blue-100 text-sm">Enter your bank details</p>
-              </div>
-            </div>
+        <div className="sticky top-0 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800 p-6 z-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+              onClick={onBack}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors border border-slate-800"
             >
-              <X className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
+            <div>
+              <h2 className="text-xl font-bold text-white">Online Transfer</h2>
+              <p className="text-slate-400 text-sm">Enter your bank details</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors border border-slate-800"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Available Balance */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <p className="text-sm text-blue-600 mb-1">Available for Withdrawal</p>
-            <p className="text-2xl font-bold text-blue-700">₹{withdrawalInfo.availableBalance.toLocaleString('en-IN')}</p>
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex justify-between items-center">
+            <div>
+              <p className="text-sm text-blue-400 mb-1">Available for Withdrawal</p>
+              <p className="text-2xl font-bold text-blue-300">₹{withdrawalInfo.availableBalance.toLocaleString('en-IN')}</p>
+            </div>
+            <Wallet className="w-8 h-8 text-blue-500/50" />
           </div>
 
           {/* Amount */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Withdrawal Amount <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl font-bold">₹</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl font-bold">₹</span>
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-xl font-semibold text-gray-900"
+                className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-xl font-bold placeholder:font-normal placeholder:text-slate-600"
                 min="1"
                 max={withdrawalInfo.availableBalance}
                 step="1"
               />
             </div>
             {amount && parseFloat(amount) > withdrawalInfo.availableBalance && (
-              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+              <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Amount exceeds available balance
               </p>
@@ -278,7 +283,7 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
 
           {/* Account Holder Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Account Holder Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -286,31 +291,31 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
               value={accountHolderName}
               onChange={(e) => setAccountHolderName(e.target.value)}
               placeholder="Enter account holder name"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-900"
+              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600"
             />
-            <p className="text-xs text-gray-500 mt-1">Must match your registered name</p>
+            <p className="text-xs text-slate-500 mt-1">Must match your registered name</p>
           </div>
 
           {/* Bank Name */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Bank Name <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
               <input
                 type="text"
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
                 placeholder="e.g., HDFC Bank, SBI, ICICI"
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-900"
+                className="w-full pl-12 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600"
               />
             </div>
           </div>
 
           {/* Account Number */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Account Number <span className="text-red-500">*</span>
             </label>
             <input
@@ -318,14 +323,14 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
               value={accountNumber}
               onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
               placeholder="Enter account number"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors font-mono text-gray-900"
+              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-600"
               maxLength={18}
             />
           </div>
 
           {/* Confirm Account Number */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Re-enter Account Number <span className="text-red-500">*</span>
             </label>
             <input
@@ -333,11 +338,11 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
               value={confirmAccountNumber}
               onChange={(e) => setConfirmAccountNumber(e.target.value.replace(/\D/g, ''))}
               placeholder="Re-enter account number"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors font-mono text-gray-900"
+              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-600"
               maxLength={18}
             />
             {confirmAccountNumber && accountNumber !== confirmAccountNumber && (
-              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+              <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Account numbers do not match
               </p>
@@ -346,7 +351,7 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
 
           {/* IFSC Code */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               IFSC Code <span className="text-red-500">*</span>
             </label>
             <input
@@ -354,80 +359,96 @@ export default function OnlineTransferForm({ onClose, onBack, currentUser, withd
               value={ifscCode}
               onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
               placeholder="e.g., HDFC0001234"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors font-mono text-gray-900 uppercase"
+              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono uppercase placeholder:font-sans placeholder:text-slate-600"
               maxLength={11}
             />
-            <p className="text-xs text-gray-500 mt-1">11 character alphanumeric code</p>
+            <p className="text-xs text-slate-500 mt-1">11 character alphanumeric code</p>
           </div>
 
           {/* Account Type */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Account Type <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-4">
-              <label className="flex-1 flex items-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 transition-colors">
+              <label className={`flex-1 flex items-center gap-3 px-4 py-3 border rounded-xl cursor-pointer transition-all ${accountType === 'savings'
+                  ? 'border-purple-500 bg-purple-500/10'
+                  : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                }`}>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${accountType === 'savings' ? 'border-purple-500' : 'border-slate-600'
+                  }`}>
+                  {accountType === 'savings' && <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />}
+                </div>
                 <input
                   type="radio"
                   name="accountType"
                   value="savings"
                   checked={accountType === 'savings'}
                   onChange={(e) => setAccountType(e.target.value as 'savings')}
-                  className="w-4 h-4 text-blue-600"
+                  className="hidden"
                 />
-                <span className="font-medium text-gray-900">Savings</span>
+                <span className={`font-medium ${accountType === 'savings' ? 'text-white' : 'text-slate-400'}`}>Savings</span>
               </label>
-              <label className="flex-1 flex items-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 transition-colors">
+
+              <label className={`flex-1 flex items-center gap-3 px-4 py-3 border rounded-xl cursor-pointer transition-all ${accountType === 'current'
+                  ? 'border-purple-500 bg-purple-500/10'
+                  : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                }`}>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${accountType === 'current' ? 'border-purple-500' : 'border-slate-600'
+                  }`}>
+                  {accountType === 'current' && <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />}
+                </div>
                 <input
                   type="radio"
                   name="accountType"
                   value="current"
                   checked={accountType === 'current'}
                   onChange={(e) => setAccountType(e.target.value as 'current')}
-                  className="w-4 h-4 text-blue-600"
+                  className="hidden"
                 />
-                <span className="font-medium text-gray-900">Current</span>
+                <span className={`font-medium ${accountType === 'current' ? 'text-white' : 'text-slate-400'}`}>Current</span>
               </label>
             </div>
           </div>
 
           {/* Remarks */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Remarks (Optional)
             </label>
             <textarea
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="Add any additional notes..."
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-900 resize-none"
+              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-600"
               rows={3}
               maxLength={200}
             />
-            <p className="text-xs text-gray-500 mt-1">{remarks.length}/200 characters</p>
+            <p className="text-xs text-slate-500 mt-1 text-right">{remarks.length}/200 characters</p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2 text-red-700">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm font-medium">{error}</p>
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-400 font-medium">{error}</p>
             </div>
           )}
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40"
           >
             <CreditCard className="w-5 h-5" />
             Review Withdrawal Request
           </button>
 
           {/* Info Note */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
-            <p className="text-xs text-gray-600 text-center">
-              🔒 Your bank details are secure and will only be shared with your referrer for processing
+          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-3">
+            <p className="text-xs text-slate-500 text-center flex items-center justify-center gap-1">
+              <CheckCircle className="w-3 h-3" />
+              Your bank details are secure and encrypted
             </p>
           </div>
         </form>

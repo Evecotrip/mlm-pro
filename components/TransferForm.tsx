@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Send, Download, User, Phone, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { X, Send, Download, User, Phone, AlertCircle, CheckCircle, ArrowRight, Wallet } from 'lucide-react';
 import { getUserByReferralCode, User as UserType, getAvailableWithdrawalBalance } from '@/lib/mockData';
 
 interface TransferFormProps {
@@ -86,40 +86,38 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+      <div className="bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">Transfer Money</h2>
+        <div className="sticky top-0 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800 p-6 z-10">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white">Transfer Money</h2>
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors border border-slate-800"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          
+
           {/* Mode Toggle */}
-          <div className="flex bg-white/20 backdrop-blur-sm rounded-xl p-1">
+          <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => setMode('send')}
-              className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                mode === 'send'
-                  ? 'bg-white text-blue-600 shadow-lg'
-                  : 'text-white hover:bg-white/10'
-              }`}
+              className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${mode === 'send'
+                  ? 'bg-slate-800 text-white shadow-lg border border-slate-700'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                }`}
             >
               <Send className="w-4 h-4" />
               Send Money
             </button>
             <button
               onClick={() => setMode('receive')}
-              className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                mode === 'receive'
-                  ? 'bg-white text-purple-600 shadow-lg'
-                  : 'text-white hover:bg-white/10'
-              }`}
+              className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${mode === 'receive'
+                  ? 'bg-slate-800 text-white shadow-lg border border-slate-700'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                }`}
             >
               <Download className="w-4 h-4" />
               Request Money
@@ -129,17 +127,17 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
 
         {/* Success Message */}
         {success && (
-          <div className="p-6 bg-green-50 border-b border-green-200">
-            <div className="flex items-center gap-3 text-green-700">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-6 h-6" />
+          <div className="p-6 bg-emerald-500/10 border-b border-emerald-500/20 animate-in slide-in-from-top-2">
+            <div className="flex items-center gap-3 text-emerald-400">
+              <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center border border-emerald-500/30">
+                <CheckCircle className="w-5 h-5" />
               </div>
               <div>
-                <p className="font-semibold">
+                <p className="font-semibold text-white">
                   {mode === 'send' ? 'Money Sent Successfully!' : 'Request Sent Successfully!'}
                 </p>
-                <p className="text-sm text-green-600">
-                  {mode === 'send' 
+                <p className="text-sm text-emerald-400/80">
+                  {mode === 'send'
                     ? `₹${amount} transferred to ${receiverUser?.name}`
                     : `Request for ₹${amount} sent to ${receiverUser?.name}`
                   }
@@ -150,19 +148,22 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Current Balance (for Send mode) */}
           {mode === 'send' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <p className="text-sm text-blue-600 mb-1">Transfer Balance</p>
-              <p className="text-2xl font-bold text-blue-700">₹{transferBalance.toLocaleString('en-IN')}</p>
-              <p className="text-xs text-blue-600 mt-1">Returns from matured investments</p>
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 flex justify-between items-center">
+              <div>
+                <p className="text-sm text-blue-400 mb-1">Transfer Balance</p>
+                <p className="text-2xl font-bold text-blue-300">₹{transferBalance.toLocaleString('en-IN')}</p>
+                <p className="text-xs text-blue-400/70 mt-1">Returns from matured investments</p>
+              </div>
+              <Wallet className="w-8 h-8 text-blue-500/50" />
             </div>
           )}
 
           {/* Referral Code Input */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               {mode === 'send' ? "Receiver's Referral Code" : "Sender's Referral Code"}
             </label>
             <input
@@ -170,58 +171,58 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
               value={referralCode}
               onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
               placeholder="Enter referral code"
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors font-mono text-lg tracking-wider uppercase text-gray-900"
+              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono text-lg tracking-wider uppercase placeholder:text-slate-600 placeholder:font-sans placeholder:tracking-normal"
               maxLength={10}
               disabled={loading || success}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Enter the referral code of the {mode === 'send' ? 'receiver' : 'sender'}
             </p>
           </div>
 
           {/* User Details Card */}
           {receiverUser && (
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-4 animate-fadeIn">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-green-600" />
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-center gap-4 mb-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/20">
+                  <User className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-bold text-gray-900 text-lg">{receiverUser.name}</p>
-                  <p className="text-sm text-gray-600 flex items-center gap-1">
+                  <p className="font-bold text-white text-lg">{receiverUser.name}</p>
+                  <p className="text-sm text-slate-400 flex items-center gap-1">
                     <Phone className="w-3 h-3" />
                     {receiverUser.phone}
                   </p>
                 </div>
-                <CheckCircle className="w-6 h-6 text-green-600" />
+                <CheckCircle className="w-6 h-6 text-emerald-500" />
               </div>
-              <div className="bg-white/60 rounded-lg p-2 text-center">
-                <p className="text-xs text-gray-600">Referral Code</p>
-                <p className="font-mono font-bold text-green-700">{receiverUser.referralCode}</p>
+              <div className="bg-slate-950 rounded-lg p-2 text-center border border-slate-800">
+                <p className="text-xs text-slate-500 mb-1">Referral Code</p>
+                <p className="font-mono font-bold text-emerald-400 tracking-wider">{receiverUser.referralCode}</p>
               </div>
             </div>
           )}
 
           {/* Amount Input */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Amount
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl font-bold">₹</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl font-bold">₹</span>
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-xl font-semibold text-gray-900"
+                className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-xl font-bold placeholder:font-normal placeholder:text-slate-600"
                 min="1"
                 step="1"
                 disabled={loading || success || !receiverUser}
               />
             </div>
             {mode === 'send' && amount && parseFloat(amount) > transferBalance && (
-              <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+              <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Insufficient balance
               </p>
@@ -237,7 +238,7 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
                   type="button"
                   onClick={() => setAmount(quickAmount.toString())}
                   disabled={loading || success || (mode === 'send' && quickAmount > transferBalance)}
-                  className="py-2 px-3 bg-gray-100 text-gray-900 hover:bg-blue-100 hover:text-blue-600 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="py-2 px-3 bg-slate-900 text-slate-300 border border-slate-800 hover:border-purple-500/50 hover:text-purple-400 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   ₹{quickAmount}
                 </button>
@@ -248,59 +249,59 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
           {/* Notes/Reason (for Request mode) */}
           {mode === 'receive' && receiverUser && (
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-400 mb-2">
                 Reason for Request (Optional)
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g., Payment for services, loan repayment, etc."
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-gray-900 resize-none"
+                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-600"
                 rows={3}
                 maxLength={150}
                 disabled={loading || success}
               />
-              <p className="text-xs text-gray-500 mt-1">{notes.length}/150 characters</p>
+              <p className="text-xs text-slate-500 mt-1 text-right">{notes.length}/150 characters</p>
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2 text-red-700">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <p className="text-sm font-medium">{error}</p>
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-400 font-medium">{error}</p>
             </div>
           )}
 
           {/* Transfer Summary */}
           {receiverUser && amount && parseFloat(amount) > 0 && !error && (
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-gray-700 mb-3">
+            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 animate-in fade-in slide-in-from-bottom-2">
+              <p className="text-sm font-semibold text-slate-400 mb-3">
                 {mode === 'send' ? 'Transfer Summary' : 'Request Summary'}
               </p>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">
+                  <span className="text-slate-500">
                     {mode === 'send' ? 'To' : 'From'}
                   </span>
-                  <span className="font-semibold text-gray-900">{receiverUser.name}</span>
+                  <span className="font-semibold text-white">{receiverUser.name}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Amount</span>
-                  <span className="font-bold text-xl text-blue-600">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
+                  <span className="text-slate-500">Amount</span>
+                  <span className="font-bold text-xl text-emerald-400">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
                 </div>
                 {mode === 'send' && (
-                  <div className="flex justify-between items-center pt-2 border-t border-blue-200">
-                    <span className="text-gray-600">Balance After Transfer</span>
-                    <span className="font-semibold text-gray-900">
+                  <div className="flex justify-between items-center pt-3 border-t border-slate-800">
+                    <span className="text-slate-500 text-sm">Balance After Transfer</span>
+                    <span className="font-semibold text-slate-300">
                       ₹{(transferBalance - parseFloat(amount)).toLocaleString('en-IN')}
                     </span>
                   </div>
                 )}
                 {mode === 'receive' && notes && (
-                  <div className="pt-2 border-t border-purple-200">
-                    <span className="text-gray-600 text-sm">Reason</span>
-                    <p className="text-gray-900 mt-1 text-sm">{notes}</p>
+                  <div className="pt-3 border-t border-slate-800">
+                    <span className="text-slate-500 text-sm block mb-1">Reason</span>
+                    <p className="text-slate-300 text-sm">{notes}</p>
                   </div>
                 )}
               </div>
@@ -311,11 +312,10 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
           <button
             type="submit"
             disabled={!receiverUser || !amount || parseFloat(amount) <= 0 || loading || success || !!error}
-            className={`w-full py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 ${
-              mode === 'send'
-                ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800'
-                : 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800'
-            } disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg disabled:hover:shadow-none`}
+            className={`w-full py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 shadow-lg ${mode === 'send'
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-blue-600/20 hover:shadow-blue-600/40'
+                : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-purple-600/20 hover:shadow-purple-600/40'
+              } disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`}
           >
             {loading ? (
               <>
@@ -346,9 +346,9 @@ export default function TransferForm({ onClose, currentUser, currentBalance }: T
           </button>
 
           {/* Info Note */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
-            <p className="text-xs text-gray-600 text-center">
-              {mode === 'send' 
+          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-3">
+            <p className="text-xs text-slate-500 text-center">
+              {mode === 'send'
                 ? '💡 Money will be transferred instantly to the receiver\'s wallet'
                 : '💡 A request will be sent to the user. They can accept or decline it.'
               }

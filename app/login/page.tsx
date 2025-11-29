@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import { SignIn } from '@clerk/nextjs';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { handleUserRegistrationFlow } from '@/api/register-user-api';
 import Logo from '@/components/Logo';
+import { dark } from '@clerk/themes';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,46 +34,60 @@ export default function LoginPage() {
 
   if (isCheckingStatus) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Checking your account status...</p>
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <div className="absolute inset-0 bg-blue-500 rounded-full opacity-20 animate-ping"></div>
+            <Loader2 className="w-16 h-16 text-blue-500 animate-spin relative z-10" />
+          </div>
+          <p className="text-slate-400 font-medium tracking-wide">Authenticating...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-3 sm:p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <Logo 
-          size="lg" 
-          subtitle="Sign in to your account"
-          className="mb-6 sm:mb-8"
-        />
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] animate-blob"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[100px] animate-blob animation-delay-2000"></div>
 
-        {/* Clerk Sign In Component */}
-        <div className="flex justify-center">
-          <SignIn 
-            appearance={{
-              elements: {
-                rootBox: "mx-auto",
-                card: "shadow-xl border border-gray-100"
-              }
-            }}
-            routing="hash"
-            signUpUrl="/signup"
-            forceRedirectUrl="/login"
-            fallbackRedirectUrl="/login"
-          />
-        </div>
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <Logo size="lg" subtitle="Welcome back to AuramX" />
+          </div>
 
-        {/* Back to Home */}
-        <div className="mt-6 text-center">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
-            ← Back to Home
-          </Link>
+          {/* Clerk Sign In Component */}
+          <div className="flex justify-center">
+            <SignIn
+              appearance={{
+                baseTheme: dark,
+                elements: {
+                  rootBox: "w-full",
+                  card: "bg-transparent shadow-none p-0 w-full",
+                  headerTitle: "hidden",
+                  headerSubtitle: "hidden",
+                  formButtonPrimary: "bg-blue-600 hover:bg-blue-500 text-white",
+                  formFieldInput: "bg-slate-950 border-slate-800 text-white",
+                  formFieldLabel: "text-slate-400",
+                  footerActionLink: "text-blue-400 hover:text-blue-300"
+                }
+              }}
+              routing="hash"
+              signUpUrl="/signup"
+              forceRedirectUrl="/login"
+              fallbackRedirectUrl="/login"
+            />
+          </div>
+
+          {/* Back to Home */}
+          <div className="mt-8 text-center border-t border-slate-800 pt-6">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-white transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Back to Home
+            </Link>
+          </div>
         </div>
       </div>
     </div>

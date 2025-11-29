@@ -282,7 +282,7 @@ export async function createInvestment(
 }
 
 /**
- * Get user's investments with optional filters
+ * Get current user's investments with optional filters
  */
 export async function getInvestments(
   filters?: InvestmentFilters
@@ -354,7 +354,7 @@ export async function getInvestments(
 }
 
 /**
- * Get a specific investment by ID
+ * Get a specific investment by ID for current user
  */
 export async function getInvestmentById(
   investmentId: string
@@ -498,6 +498,11 @@ export async function getPendingApprovals(
 
     const result = await response.json();
 
+    console.log("URL:", url);
+
+    console.log('Pending approvals response:', result);
+    console.log('Response status:', response.status);
+
     if (!response.ok) {
       return {
         success: false,
@@ -535,6 +540,14 @@ export async function approveInvestment(
       };
     }
 
+    // Only include adminNotes in body if it has a value
+    const body: { adminNotes?: string } = {};
+    if (adminNotes && adminNotes.trim()) {
+      body.adminNotes = adminNotes.trim();
+    }
+
+    console.log('Approve investment API call:', { investmentId, body });
+
     const response = await fetch(
       `${BASE_URL}/api/v1/investments/${investmentId}/approve`,
       {
@@ -543,11 +556,12 @@ export async function approveInvestment(
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ adminNotes }),
+        body: JSON.stringify(body),
       }
     );
 
     const result = await response.json();
+    console.log('Approve investment API response:', { status: response.status, result });
 
     if (!response.ok) {
       return {
@@ -586,6 +600,9 @@ export async function rejectInvestment(
       };
     }
 
+    const body = { rejectionReason: rejectionReason.trim() };
+    console.log('Reject investment API call:', { investmentId, body });
+
     const response = await fetch(
       `${BASE_URL}/api/v1/investments/${investmentId}/reject`,
       {
@@ -594,11 +611,12 @@ export async function rejectInvestment(
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ rejectionReason }),
+        body: JSON.stringify(body),
       }
     );
 
     const result = await response.json();
+    console.log('Reject investment API response:', { status: response.status, result });
 
     if (!response.ok) {
       return {

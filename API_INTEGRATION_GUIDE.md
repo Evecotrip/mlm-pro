@@ -159,7 +159,7 @@ All API functions include:
    - Go to `/signup`
    - Sign up with Clerk
    - Should redirect to `/validate-and-register-user`
-   - Enter referral code (e.g., `REF00001AA`)
+   - Enter referral code (e.g., `REFCODE`)
    - Click "Validate Code"
    - Click "Complete Registration"
    - Should redirect to `/queue`

@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import {
   TrendingUp, DollarSign, Calendar, Clock, CheckCircle,
-  XCircle, AlertCircle, Filter, Download, ArrowUpDown, Plus
+  XCircle, AlertCircle, Filter, ArrowUpDown, Search
 } from 'lucide-react';
-import { 
-  getInvestments, 
+import {
+  getInvestments,
   getInvestmentStats,
   Investment,
   InvestmentStats,
@@ -84,44 +84,29 @@ export default function InvestmentHistoryPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'ACTIVE':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'PENDING_APPROVAL':
-        return <Clock className="w-5 h-5 text-yellow-600" />;
-      case 'MATURED':
-        return <CheckCircle className="w-5 h-5 text-purple-600" />;
-      case 'WITHDRAWN':
-        return <CheckCircle className="w-5 h-5 text-blue-600" />;
-      case 'CANCELLED':
-        return <XCircle className="w-5 h-5 text-red-600" />;
-      default:
-        return <AlertCircle className="w-5 h-5 text-gray-600" />;
+      case 'ACTIVE': return <CheckCircle className="w-5 h-5 text-emerald-500" />;
+      case 'PENDING_APPROVAL': return <Clock className="w-5 h-5 text-yellow-500" />;
+      case 'MATURED': return <CheckCircle className="w-5 h-5 text-purple-500" />;
+      case 'WITHDRAWN': return <CheckCircle className="w-5 h-5 text-blue-500" />;
+      case 'CANCELLED': return <XCircle className="w-5 h-5 text-red-500" />;
+      default: return <AlertCircle className="w-5 h-5 text-slate-500" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'PENDING_APPROVAL':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'MATURED':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'WITHDRAWN':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'ACTIVE': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+      case 'PENDING_APPROVAL': return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+      case 'MATURED': return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+      case 'WITHDRAWN': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      case 'CANCELLED': return 'bg-red-500/10 text-red-400 border-red-500/20';
+      default: return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
     }
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric'
     });
   };
 
@@ -129,179 +114,170 @@ export default function InvestmentHistoryPage() {
   const totalReturns = parseFloat(stats?.totalReturns || '0');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      {/* Navbar */}
-      <Navbar
-        onLogout={handleLogout}
-      />
+    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
+      <Navbar onLogout={handleLogout} />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+      <main className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-2">
-            Investment History
-          </h1>
-          <p className="text-gray-600">Track all your investments and returns</p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Investment History</h1>
+          <p className="text-slate-400">Track and manage your portfolio performance</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm font-medium">Total Investments</span>
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <DollarSign className="w-5 h-5 text-blue-600" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2.5 bg-blue-500/10 rounded-xl">
+                  <DollarSign className="w-5 h-5 text-blue-400" />
+                </div>
+                <span className="text-slate-400 text-sm font-medium">Total Investments</span>
               </div>
+              <p className="text-3xl font-bold text-white">{investments.length}</p>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-blue-600">
-              {investments.length}
-            </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm font-medium">Total Invested</span>
-              <div className="p-2 bg-green-100 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-green-600" />
+          <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2.5 bg-emerald-500/10 rounded-xl">
+                  <TrendingUp className="w-5 h-5 text-emerald-400" />
+                </div>
+                <span className="text-slate-400 text-sm font-medium">Total Invested</span>
               </div>
+              <p className="text-3xl font-bold text-white">{totalInvested.toLocaleString('en-IN')} USDT</p>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-green-600">
-              {totalInvested.toLocaleString('en-IN')} USDT
-            </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm font-medium">Total Returns</span>
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
+          <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2.5 bg-purple-500/10 rounded-xl">
+                  <TrendingUp className="w-5 h-5 text-purple-400" />
+                </div>
+                <span className="text-slate-400 text-sm font-medium">Total Returns</span>
               </div>
+              <p className="text-3xl font-bold text-white">{totalReturns.toLocaleString('en-IN')} USDT</p>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-purple-600">
-              {totalReturns.toLocaleString('en-IN')} USDT
-            </p>
           </div>
         </div>
 
         {/* Filters and Actions */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-4 sm:p-6 mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-4 mb-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Status Filter */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <Filter className="w-5 h-5 text-gray-600" />
-              <span className="text-sm font-medium text-gray-700">Filter:</span>
-              {['all', 'PENDING_APPROVAL', 'ACTIVE', 'MATURED'].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilter(status as any)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                    filter === status
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {status === 'all' ? 'All' : status.replace('_', ' ')}
-                </button>
-              ))}
+            <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+              <Filter className="w-4 h-4 text-slate-500 flex-shrink-0" />
+              <div className="flex bg-slate-950 rounded-lg p-1 border border-slate-800">
+                {['all', 'PENDING_APPROVAL', 'ACTIVE', 'MATURED'].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setFilter(status as any)}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${filter === status
+                        ? 'bg-slate-800 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-white'
+                      }`}
+                  >
+                    {status === 'all' ? 'All' : status.replace('_', ' ')}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Sort */}
-            <div className="flex items-center gap-2">
-              <ArrowUpDown className="w-5 h-5 text-gray-600" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'createdAt' | 'amount' | 'maturityDate')}
-                className="px-3 py-1.5 border-2 border-gray-200 rounded-lg text-sm font-medium focus:border-blue-500 focus:outline-none"
-              >
-                <option value="createdAt">Sort by Date</option>
-                <option value="amount">Sort by Amount</option>
-                <option value="maturityDate">Sort by Maturity</option>
-              </select>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <div className="relative flex-1 md:flex-none">
+                <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="w-full md:w-48 pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-300 focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
+                >
+                  <option value="createdAt">Date (Newest)</option>
+                  <option value="amount">Amount (High-Low)</option>
+                  <option value="maturityDate">Maturity Date</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Investment List */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-4 sm:p-6">
+        <div className="space-y-4">
           {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading investments...</p>
+            <div className="text-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-slate-400">Loading investments...</p>
             </div>
           ) : investments.length === 0 ? (
-            <div className="text-center py-12">
-              <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 font-medium">No investments found</p>
-              <p className="text-gray-500 text-sm mt-2">
-                {filter !== 'all' ? 'Try changing the filter' : 'Start investing to see your history'}
+            <div className="text-center py-20 bg-slate-900/30 rounded-3xl border border-slate-800 border-dashed">
+              <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-slate-600" />
+              </div>
+              <p className="text-slate-400 font-medium">No investments found</p>
+              <p className="text-slate-500 text-sm mt-2">
+                {filter !== 'all' ? 'Try changing the filters' : 'Start investing to see your history'}
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {investments.map((inv: Investment) => (
-                <div
-                  key={inv.id}
-                  className="border-2 border-gray-200 rounded-xl p-4 sm:p-5 hover:border-blue-300 transition-all hover:shadow-md bg-gradient-to-br from-white to-gray-50"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    {/* Left Section */}
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-blue-100 rounded-xl">
-                        {getStatusIcon(inv.status)}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-xl font-bold text-gray-900">
-                            {inv.amount} USDT
-                          </h3>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(inv.status)}`}>
-                            {inv.status.replace('_', ' ')}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 capitalize mb-2">
-                          {inv.profile} • {inv.lockInMonths} months lock-in
-                        </p>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            {formatDate(inv.createdAt)}
-                          </span>
-                          {inv.maturityDate && (
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              Matures: {formatDate(inv.maturityDate)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
+            investments.map((inv: Investment) => (
+              <div
+                key={inv.id}
+                className="group bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl p-5 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/10"
+              >
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  {/* Left Section */}
+                  <div className="flex items-start gap-4">
+                    <div className={`p-3 rounded-xl bg-slate-950 border border-slate-800 ${inv.status === 'ACTIVE' ? 'text-emerald-500' :
+                        inv.status === 'PENDING_APPROVAL' ? 'text-yellow-500' : 'text-slate-500'
+                      }`}>
+                      {getStatusIcon(inv.status)}
                     </div>
-
-                    {/* Right Section - Returns */}
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600 mb-1">Expected Return</p>
-                      <p className="text-2xl font-bold text-green-600">
-                        {inv.expectedMinReturn} - {inv.expectedMaxReturn} USDT
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h3 className="text-xl font-bold text-white">
+                          {inv.amount} USDT
+                        </h3>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${getStatusColor(inv.status)}`}>
+                          {inv.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-400 mb-2">
+                        <span className="text-white font-medium">{inv.profile} Plan</span> • {inv.lockInMonths} Months Lock-in
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {inv.minReturnRate}% - {inv.maxReturnRate}% return rate
-                      </p>
+                      <div className="flex items-center gap-4 text-xs text-slate-500">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {formatDate(inv.createdAt)}
+                        </span>
+                        {inv.maturityDate && (
+                          <span className="flex items-center gap-1.5 text-blue-400">
+                            <Clock className="w-3.5 h-3.5" />
+                            Matures: {formatDate(inv.maturityDate)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Back Button */}
-        <div className="mt-6">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors"
-          >
-            ← Back to Dashboard
-          </button>
+                  {/* Right Section - Returns */}
+                  <div className="w-full md:w-auto pl-4 md:pl-0 border-l md:border-l-0 border-slate-800 md:text-right">
+                    <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Expected Return</p>
+                    <p className="text-2xl font-bold text-emerald-400">
+                      {inv.expectedMinReturn} - {inv.expectedMaxReturn} <span className="text-sm text-emerald-500/70">USDT</span>
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {inv.minReturnRate}% - {inv.maxReturnRate}% ROI
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </main>
     </div>

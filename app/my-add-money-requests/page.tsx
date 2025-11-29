@@ -4,25 +4,27 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import Navbar from '@/components/Navbar';
-import { 
+import {
   getMyAddMoneyRequests,
-  AddMoneyRequest 
+  AddMoneyRequest
 } from '@/api/direct-add-money-api';
-import { 
-  CheckCircle, 
-  Clock, 
-  XCircle, 
+import {
+  CheckCircle,
+  Clock,
+  XCircle,
   AlertCircle,
   ArrowLeft,
   Calendar,
   Filter,
-  ArrowUpDown
+  ArrowUpDown,
+  Wallet,
+  Loader2
 } from 'lucide-react';
 
 export default function MyAddMoneyRequestsPage() {
   const router = useRouter();
   const { isLoaded, user } = useUser();
-  
+
   const [requests, setRequests] = useState<AddMoneyRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'PENDING' | 'PROCESSING' | 'COMPLETED'>('all');
@@ -67,33 +69,33 @@ export default function MyAddMoneyRequestsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'COMPLETED':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
       case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
       case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
       case 'REJECTED':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'text-red-400 bg-red-400/10 border-red-400/20';
       case 'CANCELLED':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'COMPLETED':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5" />;
       case 'PROCESSING':
-        return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
+        return <Loader2 className="w-5 h-5 animate-spin" />;
       case 'PENDING':
-        return <Clock className="w-5 h-5 text-yellow-600" />;
+        return <Clock className="w-5 h-5" />;
       case 'REJECTED':
       case 'CANCELLED':
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle className="w-5 h-5" />;
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-600" />;
+        return <AlertCircle className="w-5 h-5" />;
     }
   };
 
@@ -124,22 +126,17 @@ export default function MyAddMoneyRequestsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
-        <Navbar onLogout={handleLogout} />
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading requests...</p>
-            </div>
-          </div>
-        </main>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-400">Loading requests...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
+    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-emerald-500/30">
       <Navbar onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
@@ -147,62 +144,68 @@ export default function MyAddMoneyRequestsPage() {
           {/* Back Button */}
           <button
             onClick={() => router.push('/add-money')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors group"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             Back to Add Money
           </button>
 
           {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text mb-2">
-              My Add Money Requests
-            </h1>
-            <p className="text-gray-600">View and manage all your add money requests</p>
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                <Wallet className="w-8 h-8 text-emerald-500" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-white">
+                  My Add Money Requests
+                </h1>
+                <p className="text-slate-400">Track and manage your fund requests</p>
+              </div>
+            </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-              <p className="text-xs text-gray-600 mb-1">Total Requests</p>
-              <p className="text-2xl font-bold text-gray-900">{requests.length}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
+              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Total Requests</p>
+              <p className="text-2xl font-bold text-white">{requests.length}</p>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-              <p className="text-xs text-gray-600 mb-1">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
+              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Pending</p>
+              <p className="text-2xl font-bold text-yellow-500">
                 {requests.filter(r => r.status === 'PENDING').length}
               </p>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-              <p className="text-xs text-gray-600 mb-1">Processing</p>
-              <p className="text-2xl font-bold text-blue-600">
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
+              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Processing</p>
+              <p className="text-2xl font-bold text-blue-500">
                 {requests.filter(r => r.status === 'PROCESSING').length}
               </p>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-              <p className="text-xs text-gray-600 mb-1">Completed</p>
-              <p className="text-2xl font-bold text-green-600">
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
+              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Completed</p>
+              <p className="text-2xl font-bold text-emerald-500">
                 {requests.filter(r => r.status === 'COMPLETED').length}
               </p>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 mb-6">
+          <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-4 mb-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               {/* Status Filter */}
               <div className="flex items-center gap-2 flex-wrap">
-                <Filter className="w-5 h-5 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">Filter:</span>
+                <Filter className="w-5 h-5 text-slate-400" />
+                <span className="text-sm font-medium text-slate-300">Filter:</span>
                 {['all', 'PENDING', 'PROCESSING', 'COMPLETED'].map((status) => (
                   <button
                     key={status}
                     onClick={() => setFilter(status as any)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      filter === status
-                        ? 'bg-green-600 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === status
+                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
+                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                      }`}
                   >
                     {status === 'all' ? 'All' : status}
                   </button>
@@ -211,11 +214,11 @@ export default function MyAddMoneyRequestsPage() {
 
               {/* Sort */}
               <div className="flex items-center gap-2">
-                <ArrowUpDown className="w-5 h-5 text-gray-600" />
+                <ArrowUpDown className="w-5 h-5 text-slate-400" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as 'createdAt' | 'amount')}
-                  className="px-3 py-1.5 border-2 border-gray-200 rounded-lg text-sm font-medium focus:border-green-500 focus:outline-none"
+                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-300 focus:border-emerald-500 focus:outline-none transition-colors"
                 >
                   <option value="createdAt">Sort by Date</option>
                   <option value="amount">Sort by Amount</option>
@@ -227,15 +230,17 @@ export default function MyAddMoneyRequestsPage() {
           {/* Requests List */}
           <div className="space-y-4">
             {sortedRequests.length === 0 ? (
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
-                <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Requests Found</h3>
-                <p className="text-gray-500 mb-6">
+              <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-12 text-center">
+                <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <AlertCircle className="w-8 h-8 text-slate-500" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">No Requests Found</h3>
+                <p className="text-slate-400 mb-6">
                   {filter !== 'all' ? 'Try changing the filter' : 'You haven\'t made any add money requests yet'}
                 </p>
                 <button
                   onClick={() => router.push('/direct-add-money')}
-                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors"
+                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20"
                 >
                   Create New Request
                 </button>
@@ -245,62 +250,62 @@ export default function MyAddMoneyRequestsPage() {
                 <div
                   key={request.id}
                   onClick={() => router.push(`/direct-add-money?requestId=${request.id}`)}
-                  className="bg-white rounded-xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-all hover:scale-[1.01] cursor-pointer"
+                  className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-5 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/5 transition-all cursor-pointer group"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     {/* Left Section */}
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="p-3 bg-green-100 rounded-xl">
+                      <div className={`p-3 rounded-xl border ${getStatusColor(request.status)}`}>
                         {getStatusIcon(request.status)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-bold text-gray-900 text-lg">
+                        <div className="flex items-center gap-3 mb-1">
+                          <h4 className="font-bold text-white text-lg">
                             {request.currencyAmount} {request.currency}
                           </h4>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wide ${getStatusColor(request.status)}`}>
                             {request.status}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Total Credit: {request.usdtAmount} USDT
+                        <p className="text-sm text-slate-400 mb-2">
+                          Total Credit: <span className="text-emerald-400 font-bold">{request.usdtAmount} USDT</span>
                         </p>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-4 text-sm text-slate-500">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             {formatDate(request.createdAt)}
                           </span>
-                          <span className="px-2 py-0.5 bg-gray-100 rounded text-xs">
-                            {request.method}
+                          <span className="px-2 py-0.5 bg-slate-800 rounded text-xs font-mono text-slate-300 border border-slate-700">
+                            {request.method.replace('_', ' ')}
                           </span>
                         </div>
                       </div>
                     </div>
 
                     {/* Right Section - Action Hint */}
-                    <div className="text-right">
+                    <div className="text-right flex flex-col justify-center">
                       {request.status === 'PENDING' && (
-                        <p className="text-sm text-yellow-600 font-medium">
+                        <p className="text-sm text-yellow-500 font-medium mb-1">
                           ⏳ Waiting for approval
                         </p>
                       )}
                       {request.status === 'PROCESSING' && !request.paymentProof && (
-                        <p className="text-sm text-blue-600 font-medium">
+                        <p className="text-sm text-blue-400 font-medium mb-1 animate-pulse">
                           📤 Upload payment proof
                         </p>
                       )}
                       {request.status === 'PROCESSING' && request.paymentProof && (
-                        <p className="text-sm text-blue-600 font-medium">
+                        <p className="text-sm text-blue-400 font-medium mb-1">
                           ⏳ Verifying payment
                         </p>
                       )}
                       {request.status === 'COMPLETED' && (
-                        <p className="text-sm text-green-600 font-medium">
+                        <p className="text-sm text-emerald-400 font-medium mb-1">
                           ✓ Completed
                         </p>
                       )}
-                      <p className="text-xs text-gray-500 mt-1">
-                        Click to view details →
+                      <p className="text-xs text-slate-500 group-hover:text-emerald-400 transition-colors flex items-center justify-end gap-1">
+                        View Details <ArrowLeft className="w-3 h-3 rotate-180" />
                       </p>
                     </div>
                   </div>
@@ -310,10 +315,10 @@ export default function MyAddMoneyRequestsPage() {
           </div>
 
           {/* New Request Button */}
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <button
               onClick={() => router.push('/direct-add-money')}
-              className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl"
+              className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20 hover:scale-105"
             >
               + Create New Request
             </button>

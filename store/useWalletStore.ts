@@ -171,9 +171,13 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       const response = await getBalanceLogs(page, limit, operation);
       
       if (response.success && response.data) {
+        // Check if response.data is an array (direct) or has a data property (paginated)
+        const logsArray = Array.isArray(response.data) ? response.data : (response.data.data || []);
+        const pagination = Array.isArray(response.data) ? undefined : response.data.pagination;
+        
         set({
-          balanceLogs: response.data.data || [],
-          balanceLogsPagination: response.data.pagination,
+          balanceLogs: logsArray,
+          balanceLogsPagination: pagination,
           isLoadingBalanceLogs: false,
         });
       } else {

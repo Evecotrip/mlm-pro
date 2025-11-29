@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useClerk } from '@clerk/nextjs';
-import { 
-  TrendingUp, LogOut, Users, DollarSign, Network, 
-  Plus, Copy, Check, UserCheck, Activity, Wallet, Sparkles, Loader2 
+import {
+  TrendingUp, LogOut, Users, DollarSign, Network,
+  Plus, Copy, Check, UserCheck, Activity, Wallet, Sparkles, Loader2,
+  ArrowUpRight, ShieldCheck, Clock, ChevronRight, Bell
 } from 'lucide-react';
-import { 
-  mockUsers, mockInvestments, getDirectReferrals, 
-  getAllDownline, getUserInvestments, User, getUserWalletBalance 
+import {
+  mockUsers, mockInvestments, getDirectReferrals,
+  getAllDownline, getUserInvestments, User, getUserWalletBalance
 } from '@/lib/mockData';
 import InvestmentModal from '@/components/InvestmentModal';
 import Navbar from '@/components/Navbar';
@@ -31,13 +32,13 @@ export default function DashboardPage() {
   const userProfile = useUserStore(state => state.userProfile);
   const userName = useUserStore(state => state.userName);
   const pendingRequestsCount = useUserStore(state => state.pendingRequestsCount);
-  
+
   // Wallet store
   const balance = useWalletStore(state => state.balance);
   const earnings = useWalletStore(state => state.earnings);
   const statistics = useWalletStore(state => state.statistics);
   const fetchWallet = useWalletStore(state => state.fetchWallet);
-  
+
   // Mock current user for now - will be replaced with real API call
   const currentUser = mockUsers[0]; // Using mock data temporarily
 
@@ -78,10 +79,13 @@ export default function DashboardPage() {
 
   if (!isLoaded || isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <div className="absolute inset-0 bg-blue-500 rounded-full opacity-20 animate-ping"></div>
+            <Loader2 className="w-16 h-16 text-blue-500 animate-spin relative z-10" />
+          </div>
+          <p className="text-slate-400 font-medium tracking-wide">Initializing AuramX...</p>
         </div>
       </div>
     );
@@ -94,13 +98,6 @@ export default function DashboardPage() {
   const directReferrals = getDirectReferrals(currentUser.id);
   const allDownline = getAllDownline(currentUser.id);
   const myInvestments = getUserInvestments(currentUser.id);
-  const mockTotalInvested = myInvestments.reduce((sum, inv) => sum + inv.amount, 0);
-  const totalReturns = myInvestments
-    .filter(inv => inv.status === 'active' || inv.status === 'matured')
-    .reduce((sum, inv) => sum + inv.totalReturn, 0);
-  
-  const pendingReferrals = directReferrals.filter(user => !user.isApproved);
-  const mockWalletBalance = getUserWalletBalance(currentUser.id);
 
   const handleLogout = async () => {
     const { clearUserData } = await import('@/store/useUserStore').then(m => m.useUserStore.getState());
@@ -117,253 +114,255 @@ export default function DashboardPage() {
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
-  
+
   // Calculate stats from real data
   const availableBalance = parseFloat(balance?.available || '0');
+  const totalBalance = parseFloat(balance?.total || '0');
+  const investedAmount = parseFloat(balance?.invested || '0');
   const totalEarnings = parseFloat(earnings?.total || '0');
   const totalInvested = parseFloat(statistics?.totalInvested || '0');
-  const totalWithdrawn = parseFloat(statistics?.totalWithdrawn || '0');
   const referralCode = userProfile?.referralCode || currentUser.referralCode;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      {/* Animated Background Orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
+      {/* Ambient Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse duration-[4s]"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen animate-pulse duration-[6s]"></div>
       </div>
 
-      {/* Navbar */}
-      <Navbar
-        onLogout={handleLogout}
-      />
+      <Navbar onLogout={handleLogout} />
 
-      <main className="relative container mx-auto px-3 sm:px-4 py-4 sm:py-8">
-        {/* Enhanced Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
-          <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-3 sm:p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-xs sm:text-sm font-medium">Total Invested</span>
-              <div className="p-2 bg-blue-100 rounded-lg group-hover:scale-110 transition-transform">
-                <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-              </div>
-            </div>
-            <p className="relative text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
-              {totalInvested.toLocaleString('en-IN')} USDT
-            </p>
-            <p className="text-xs text-gray-500 mt-1">From wallet stats</p>
+      <main className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
+        {/* Welcome Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent mb-2">
+              Welcome back, {user?.firstName || 'Investor'}
+            </h1>
+            <p className="text-slate-400">Here's what's happening with your portfolio today.</p>
           </div>
-
-          <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-3 sm:p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-xs sm:text-sm font-medium">Total Returns</span>
-              <div className="p-2 bg-green-100 rounded-lg group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-              </div>
-            </div>
-            <p className="relative text-lg sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text">
-              {totalEarnings.toLocaleString('en-IN')} USDT
-            </p>
-            <p className="text-xs text-gray-500 mt-1">Total earnings</p>
-          </div>
-
-          <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-3 sm:p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-xs sm:text-sm font-medium">Direct Referrals</span>
-              <div className="p-2 bg-purple-100 rounded-lg group-hover:scale-110 transition-transform">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
-              </div>
-            </div>
-            <p className="relative text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-              {directReferrals.length}
-            </p>
-          </div>
-
-          <div className="group relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 p-3 sm:p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-xs sm:text-sm font-medium">Total Network</span>
-              <div className="p-2 bg-orange-100 rounded-lg group-hover:scale-110 transition-transform">
-                <Network className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
-              </div>
-            </div>
-            <p className="relative text-lg sm:text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text">
-              {allDownline.length}
-            </p>
+          <div className="flex items-center gap-3 bg-slate-900/50 backdrop-blur-md border border-slate-800 rounded-full px-4 py-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="text-sm font-medium text-slate-300">System Operational</span>
           </div>
         </div>
 
-        {/* Enhanced Referral Code Section */}
-        <div className="relative group bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 rounded-2xl shadow-2xl p-4 sm:p-6 mb-6 sm:mb-8 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32 blur-3xl"></div>
-          
-          <div className="relative">
-            <h3 className="text-base sm:text-lg font-semibold mb-3 flex items-center gap-2">
-              Your Referral Code
-              <Sparkles className="w-4 h-4 animate-pulse" />
-            </h3>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-              <div className="flex-1 bg-white/20 backdrop-blur-sm rounded-xl px-3 sm:px-4 py-2 sm:py-3 font-mono text-lg sm:text-xl font-bold text-center sm:text-left border-2 border-white/30 shadow-inner">
-                {referralCode}
-              </div>
-              <button
-                onClick={copyReferralCode}
-                className="bg-white text-purple-600 px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:bg-blue-50 transition-all font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                {copiedCode ? (
-                  <>
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
-                    Copy Code
-                  </>
-                )}
-              </button>
-            </div>
-            <p className="text-sm text-white/90 mt-3 flex items-center gap-2">
-              <span>✨</span>
-              Share this code with others to grow your network and earn together!
-            </p>
-          </div>
-        </div>
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
 
-        <div className="grid lg:grid-cols-2 gap-4 sm:gap-8">
-          {/* Enhanced Investment Section */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
-                My Investments
-              </h2>
+          {/* Main Balance Card - Spans 8 cols */}
+          <div className="md:col-span-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-8 shadow-2xl shadow-blue-900/20 group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-white/20 transition-all duration-500"></div>
+
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-blue-100 font-medium mb-1">Total Balance</p>
+                  <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                    {totalBalance.toLocaleString('en-IN')} <span className="text-2xl opacity-80">USDT</span>
+                  </h2>
+                  <div className="flex items-center gap-4 mt-3 text-sm">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-blue-200">Available:</span>
+                      <span className="font-semibold text-white">{availableBalance.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-blue-200">Invested:</span>
+                      <span className="font-semibold text-white">{investedAmount.toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl">
+                  <Wallet className="w-8 h-8 text-white" />
+                </div>
+              </div>
+
+              <div className="mt-8 flex gap-4">
+                <button
+                  onClick={() => router.push('/create-investment')}
+                  className="flex-1 bg-white text-blue-600 hover:bg-blue-50 font-bold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  New Investment
+                </button>
+                <button
+                  onClick={() => router.push('/wallet')}
+                  className="flex-1 bg-blue-800/50 hover:bg-blue-800/70 text-white font-semibold py-3 px-6 rounded-xl transition-all border border-blue-400/30 flex items-center justify-center gap-2"
+                >
+                  <ArrowUpRight className="w-5 h-5" />
+                  Withdraw
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Referral Card - Spans 4 cols */}
+          <div className="md:col-span-4 relative overflow-hidden rounded-3xl bg-slate-900 border border-slate-800 p-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10"></div>
+            <div className="relative h-full bg-slate-900/80 backdrop-blur-sm rounded-[20px] p-6 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-purple-400 font-medium mb-2">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Referral Program</span>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-4">Grow your network, multiply your returns.</h3>
+              </div>
+
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-4">
+                <p className="text-xs text-slate-500 mb-1">YOUR EXCLUSIVE CODE</p>
+                <div className="flex items-center justify-between">
+                  <code className="text-xl font-mono font-bold text-purple-400 tracking-wider">{referralCode}</code>
+                  <button
+                    onClick={copyReferralCode}
+                    className="p-2 hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-white"
+                  >
+                    {copiedCode ? <Check className="w-5 h-5 text-emerald-500" /> : <Copy className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Direct Referrals</span>
+                <span className="font-bold text-white">{directReferrals.length} Members</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Row - Spans 12 cols (3x4) */}
+          <div className="md:col-span-4 bg-slate-900/50 border border-slate-800 rounded-3xl p-6 hover:border-slate-700 transition-colors group">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-emerald-500/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="w-6 h-6 text-emerald-500" />
+              </div>
+              <span className="bg-emerald-500/10 text-emerald-500 text-xs font-bold px-2 py-1 rounded-full">+12.5%</span>
+            </div>
+            <p className="text-slate-400 text-sm mb-1">Total Earnings</p>
+            <h3 className="text-2xl font-bold text-white">{totalEarnings.toLocaleString('en-IN')} USDT</h3>
+          </div>
+
+          <div className="md:col-span-4 bg-slate-900/50 border border-slate-800 rounded-3xl p-6 hover:border-slate-700 transition-colors group">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-orange-500/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <Network className="w-6 h-6 text-orange-500" />
+              </div>
+              <span className="bg-orange-500/10 text-orange-500 text-xs font-bold px-2 py-1 rounded-full">Level 3</span>
+            </div>
+            <p className="text-slate-400 text-sm mb-1">Network Size</p>
+            <h3 className="text-2xl font-bold text-white">{allDownline.length} Members</h3>
+          </div>
+
+          <div className="md:col-span-4 bg-slate-900/50 border border-slate-800 rounded-3xl p-6 hover:border-slate-700 transition-colors group">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-purple-500/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                <ShieldCheck className="w-6 h-6 text-purple-500" />
+              </div>
+              <span className="bg-purple-500/10 text-purple-500 text-xs font-bold px-2 py-1 rounded-full">Verified</span>
+            </div>
+            <p className="text-slate-400 text-sm mb-1">Account Status</p>
+            <h3 className="text-2xl font-bold text-white">Premium Tier</h3>
+          </div>
+
+          {/* Recent Investments List - Spans 8 cols */}
+          <div className="md:col-span-8 bg-slate-900/50 border border-slate-800 rounded-3xl p-6 md:p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-500" />
+                Recent Activity
+              </h3>
               <button
-                onClick={() => router.push('/new-investment')}
-                className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 sm:px-4 py-2 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all font-semibold text-sm sm:text-base w-full sm:w-auto justify-center shadow-lg hover:shadow-2xl hover:scale-105"
+                onClick={() => router.push('/investment-history')}
+                className="text-sm text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1 transition-colors"
               >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform" />
-                New Investment
+                View All <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
             {loadingInvestments ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading investments...</p>
+              <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+                <Loader2 className="w-8 h-8 animate-spin mb-2" />
+                <p>Loading investments...</p>
               </div>
             ) : investments.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="relative inline-block mb-4">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-xl opacity-50"></div>
-                  <DollarSign className="relative w-16 h-16 text-gray-400 mx-auto" />
+              <div className="text-center py-12 border border-dashed border-slate-800 rounded-2xl bg-slate-900/30">
+                <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <DollarSign className="w-6 h-6 text-slate-500" />
                 </div>
-                <p className="text-gray-600 mb-4 font-medium">No investments yet</p>
+                <p className="text-slate-400 mb-4">No active investments found</p>
                 <button
-                  onClick={() => router.push('/new-investment')}
-                  className="text-blue-600 hover:text-purple-600 font-semibold transition-colors"
+                  onClick={() => setShowInvestModal(true)}
+                  className="text-blue-400 hover:text-blue-300 font-medium text-sm"
                 >
-                  Make your first investment →
+                  Start Investing Now
                 </button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {investments.slice(0, 2).map((inv) => (
-                  <div key={inv.id} className="group relative border-2 border-gray-200 rounded-xl p-4 hover:border-purple-300 transition-all hover:shadow-lg bg-gradient-to-br from-white to-gray-50">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-bold text-gray-900 text-lg">{inv.amount} USDT</p>
-                        <p className="text-sm text-gray-600 capitalize flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                          {inv.profile}
-                        </p>
+              <div className="space-y-3">
+                {investments.slice(0, 4).map((inv) => (
+                  <div key={inv.id} className="group flex items-center justify-between p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-blue-500/30 transition-all hover:shadow-lg hover:shadow-blue-900/10">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${inv.profile === 'DIAMOND' ? 'bg-cyan-500/10 text-cyan-500' :
+                        inv.profile === 'GOLD' ? 'bg-yellow-500/10 text-yellow-500' :
+                          inv.profile === 'SILVER' ? 'bg-slate-400/10 text-slate-400' :
+                            'bg-orange-500/10 text-orange-500'
+                        }`}>
+                        <DollarSign className="w-5 h-5" />
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium shadow-sm ${
-                        inv.status === 'ACTIVE' ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200' :
-                        inv.status === 'PENDING_APPROVAL' ? 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border border-yellow-200' :
-                        inv.status === 'MATURED' ? 'bg-gradient-to-r from-purple-100 to-violet-100 text-purple-800 border border-purple-200' :
-                        'bg-gradient-to-r from-gray-100 to-slate-100 text-gray-800 border border-gray-200'
-                      }`}>
-                        {inv.status.replace('_', ' ')}
-                      </span>
+                      <div>
+                        <h4 className="font-bold text-white">{inv.amount} USDT</h4>
+                        <p className="text-xs text-slate-500 capitalize">{inv.profile.toLowerCase()} Plan • {inv.lockInMonths} Months</p>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      <p className="flex items-center gap-2">
-                        <span className="font-medium">Lock-in:</span>
-                        <span>{inv.lockInMonths} months</span>
-                      </p>
-                      <p className="flex items-center gap-2 text-green-600 font-semibold mt-1">
-                        <TrendingUp className="w-4 h-4" />
-                        Expected: {inv.expectedMinReturn} - {inv.expectedMaxReturn} USDT
+
+                    <div className="text-right">
+                      <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${inv.status === 'ACTIVE' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                        inv.status === 'PENDING_APPROVAL' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                          'bg-slate-800 text-slate-400 border-slate-700'
+                        }`}>
+                        {inv.status.replace('_', ' ')}
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1 flex items-center justify-end gap-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(inv.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-
-            {/* Investment History Button */}
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <button
-                onClick={() => router.push('/investment-history')}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-blue-50 hover:to-purple-50 text-gray-700 hover:text-blue-600 rounded-xl transition-all font-semibold shadow-sm hover:shadow-md"
-              >
-                <Activity className="w-5 h-5" />
-                View Investment History
-              </button>
-            </div>
           </div>
 
-          {/* Enhanced Network Hierarchy */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text mb-4 sm:mb-6">
-              My Network Hierarchy
-            </h2>
-            
-            {directReferrals.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="relative inline-block mb-4">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full blur-xl opacity-50"></div>
-                  <Users className="relative w-16 h-16 text-gray-400 mx-auto" />
-                </div>
-                <p className="text-gray-600 mb-2 font-medium">No referrals yet</p>
-                <p className="text-sm text-gray-500">Share your referral code to build your network</p>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <div className="mb-6">
-                  <div className="relative inline-block">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                    <Network className="relative w-16 h-16 text-blue-600 mx-auto mb-4" />
+          {/* Network Tree Preview - Spans 4 cols */}
+          <div className="md:col-span-4 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-white mb-2">Network Tree</h3>
+              <p className="text-slate-400 text-sm mb-6">Visualize your downline structure and performance.</p>
+
+              <div className="relative h-48 w-full bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden mb-6 flex items-center justify-center group cursor-pointer" onClick={() => router.push('/hierarchy-flow')}>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 to-transparent opacity-50"></div>
+                {/* Simulated Tree Nodes */}
+                <div className="relative z-10 flex flex-col items-center gap-4 transform group-hover:scale-105 transition-transform duration-500">
+                  <div className="w-10 h-10 rounded-full bg-blue-600 border-4 border-slate-950 shadow-xl z-20"></div>
+                  <div className="flex gap-8">
+                    <div className="w-8 h-8 rounded-full bg-slate-700 border-4 border-slate-950 z-10"></div>
+                    <div className="w-8 h-8 rounded-full bg-slate-700 border-4 border-slate-950 z-10"></div>
+                    <div className="w-8 h-8 rounded-full bg-slate-700 border-4 border-slate-950 z-10"></div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    View Your Complete Network Tree
-                  </h3>
-                  <p className="text-gray-600 mb-1">
-                    You have <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">{allDownline.length}</span> members in your network
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Including <span className="font-semibold">{directReferrals.length}</span> direct referrals
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button
-                    onClick={() => router.push('/hierarchy-flow')}
-                    className="group inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all font-semibold shadow-lg hover:shadow-2xl hover:scale-105"
-                  >
-                    <Network className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                    Tree View
-                  </button>
-                  
+                  {/* Connecting Lines (Simulated) */}
+                  <div className="absolute top-5 left-1/2 -translate-x-1/2 w-32 h-8 border-t-2 border-l-2 border-r-2 border-slate-800 rounded-t-2xl -z-0"></div>
                 </div>
               </div>
-            )}
+            </div>
+
+            <button
+              onClick={() => router.push('/hierarchy-flow')}
+              className="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+            >
+              <Network className="w-5 h-5" />
+              Explore Network
+            </button>
           </div>
+
         </div>
       </main>
 
@@ -378,32 +377,6 @@ export default function DashboardPage() {
           }}
         />
       )}
-
-      <style jsx>{`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </div>
   );
 }

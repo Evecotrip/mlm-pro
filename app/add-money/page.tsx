@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useClerk } from '@clerk/nextjs';
-import { ArrowLeft, Wallet, HandCoins, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, Wallet, HandCoins, X, Loader2, CreditCard, ArrowRight, Clock } from 'lucide-react';
 import { getUserWalletBalance, getDirectReferrals } from '@/lib/mockData';
 import Navbar from '@/components/Navbar';
 import BorrowLenderDetails from '@/components/borrow/BorrowLenderDetails';
@@ -15,8 +15,8 @@ import DirectAddInitial from '@/components/direct-add/DirectAddInitial';
 import PaymentMethodSelection, { DirectPaymentMethod } from '@/components/direct-add/PaymentMethodSelection';
 import DigitalPaymentOptions, { DigitalOption } from '@/components/direct-add/DigitalPaymentOptions';
 import DirectAddConfirmation from '@/components/direct-add/DirectAddConfirmation';
-import { 
-  calculateConversion, 
+import {
+  calculateConversion,
   createAddMoneyRequest,
   getBankDetailsForCurrency,
   type ConversionCalculation,
@@ -33,13 +33,13 @@ export default function AddMoneyPage() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
-  
+
   // Mock data for now
   const currentUser = { id: user?.id || '', name: user?.fullName || 'User', isApproved: true };
-  
+
   // Main state
   const [selectedMethod, setSelectedMethod] = useState<AddMoneyMethod>(null);
-  
+
   // Borrow flow state
   const [borrowStep, setBorrowStep] = useState<BorrowStep>('lender-details');
   const [lenderUser, setLenderUser] = useState<any>(null);
@@ -47,7 +47,7 @@ export default function AddMoneyPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
   const [loading, setLoading] = useState(false);
   const [requestId, setRequestId] = useState('');
-  
+
   // Direct Add flow state
   const [directStep, setDirectStep] = useState<DirectStep>('initial');
   const [directPaymentMethod, setDirectPaymentMethod] = useState<DirectPaymentMethod>(null);
@@ -68,10 +68,10 @@ export default function AddMoneyPage() {
 
   if (!isLoaded || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-green-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading...</p>
+          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-400">Loading...</p>
         </div>
       </div>
     );
@@ -128,11 +128,11 @@ export default function AddMoneyPage() {
     setAmount(directAmount);
     setCurrency(selectedCurrency);
     setLoading(true);
-    
+
     try {
       // Calculate conversion with backend
       const response = await calculateConversion(selectedCurrency, parseFloat(directAmount));
-      
+
       if (response.success && response.data) {
         setConversionData(response.data);
         // Use only USDT amount without bonus
@@ -165,10 +165,10 @@ export default function AddMoneyPage() {
     // Both QR code and bank details use UPI method
     await createDirectAddRequest('UPI');
   };
-  
+
   const createDirectAddRequest = async (method: 'UPI' | 'BANK_TRANSFER') => {
     setLoading(true);
-    
+
     try {
       // Create add money request
       const requestResponse = await createAddMoneyRequest({
@@ -180,7 +180,7 @@ export default function AddMoneyPage() {
         },
         userNotes: 'Direct add money request'
       });
-      
+
       if (requestResponse.success && requestResponse.data) {
         // Redirect to direct add money page with request ID
         router.push(`/direct-add-money?requestId=${requestResponse.data.id}`);
@@ -214,95 +214,123 @@ export default function AddMoneyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
-      <Navbar
-        onLogout={handleLogout}
-      />
+    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
+      <Navbar onLogout={handleLogout} />
 
-      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => router.push('/wallet')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Wallet</span>
-            </button>
-            <button
-              onClick={() => router.push('/my-add-money-requests')}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors shadow-lg"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="hidden sm:inline">My Requests</span>
-            </button>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text mb-2">
-            💵 Add Money to Wallet
-          </h1>
-          <p className="text-gray-600">Select Method</p>
+      <main className="container mx-auto px-4 py-8 relative">
+        {/* Background Effects */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-[20%] left-[10%] w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[100px]"></div>
+          <div className="absolute bottom-[20%] right-[10%] w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[100px]"></div>
         </div>
 
-        {!selectedMethod ? (
-          /* Method Selection */
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Borrow Money */}
-            <button
-              onClick={() => router.push('/borrow-add-money')}
-              className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border-2 border-gray-200 hover:border-purple-400 p-6 sm:p-8 transition-all hover:shadow-2xl hover:scale-105 text-left"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-4 bg-purple-100 rounded-2xl group-hover:bg-purple-200 transition-colors">
-                  <HandCoins className="w-10 h-10 text-purple-600" />
-                </div>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">○ Borrow Money from User</h2>
-              <p className="text-gray-600">
-                Get funds from another platform user
-              </p>
-            </button>
-
-            {/* Direct Add */}
-            <button
-              onClick={() => router.push('/direct-add-money')}
-              className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border-2 border-gray-200 hover:border-green-400 p-6 sm:p-8 transition-all hover:shadow-2xl hover:scale-105 text-left"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-4 bg-green-100 rounded-2xl group-hover:bg-green-200 transition-colors">
-                  <Wallet className="w-10 h-10 text-green-600" />
-                </div>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">○ Direct Add Money</h2>
-              <p className="text-gray-600">
-                Add money directly to wallet
-              </p>
-            </button>
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <button
+                onClick={() => router.push('/wallet')}
+                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group"
+              >
+                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                <span className="font-medium">Back to Wallet</span>
+              </button>
+              <button
+                onClick={() => router.push('/my-add-money-requests')}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-colors border border-slate-700 hover:border-slate-600"
+              >
+                <Clock className="w-4 h-4" />
+                <span className="hidden sm:inline">My Add Money Requests</span>
+              </button>
+              <button
+                onClick={() => router.push('/lend-requests')}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-colors border border-slate-700 hover:border-slate-600"
+              >
+                <Clock className="w-4 h-4" />
+                <span className="hidden sm:inline">Lending Requests</span>
+              </button>
+              <button
+                onClick={() => router.push('/my-borrow-requests')}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-colors border border-slate-700 hover:border-slate-600"
+              >
+                <Clock className="w-4 h-4" />
+                <span className="hidden sm:inline">My Borrow Requests</span>
+              </button>
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              Add Money to Wallet
+            </h1>
+            <p className="text-slate-400">Choose your preferred method to add funds securely</p>
           </div>
-        ) : selectedMethod === 'borrow' ? (
-          /* Borrow Money Flow */
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 overflow-hidden">
-              {/* Header */}
-              <div className="p-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold mb-1">Borrow Money Request</h2>
-                    <p className="text-sm opacity-90">
-                      {borrowStep === 'lender-details' && 'Enter lender details and amount'}
-                      {borrowStep === 'payment-method' && 'Select payment method'}
-                      {borrowStep === 'payment-details' && 'Provide payment details'}
-                      {borrowStep === 'confirmation' && 'Request submitted successfully'}
-                    </p>
+
+          {!selectedMethod ? (
+            /* Method Selection */
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Borrow Money */}
+              <button
+                onClick={() => router.push('/borrow-add-money')}
+                className="group relative bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 text-left transition-all hover:scale-[1.02] hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                <div className="relative z-10">
+                  <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20 group-hover:border-purple-500/50 transition-colors">
+                    <HandCoins className="w-8 h-8 text-purple-500" />
                   </div>
-                  <button
-                    onClick={resetForm}
-                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
+
+                  <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Borrow from User</h2>
+                  <p className="text-slate-400 mb-6">
+                    Request funds directly from another platform user. Perfect for peer-to-peer transfers.
+                  </p>
+
+                  <div className="flex items-center gap-2 text-sm font-bold text-purple-500">
+                    Select Method <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
+              </button>
+
+              {/* Direct Add */}
+              <button
+                onClick={() => router.push('/direct-add-money')}
+                className="group relative bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 text-left transition-all hover:scale-[1.02] hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-teal-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                <div className="relative z-10">
+                  <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20 group-hover:border-emerald-500/50 transition-colors">
+                    <Wallet className="w-8 h-8 text-emerald-500" />
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">Direct Deposit</h2>
+                  <p className="text-slate-400 mb-6">
+                    Add funds directly using bank transfer, UPI, or other digital payment methods.
+                  </p>
+
+                  <div className="flex items-center gap-2 text-sm font-bold text-emerald-500">
+                    Select Method <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </button>
+            </div>
+          ) : selectedMethod === 'borrow' ? (
+            /* Borrow Money Flow */
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 overflow-hidden">
+              {/* Header */}
+              <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <div>
+                  <h2 className="text-xl font-bold text-white">Borrow Money Request</h2>
+                  <p className="text-sm text-slate-400">
+                    {borrowStep === 'lender-details' && 'Enter lender details and amount'}
+                    {borrowStep === 'payment-method' && 'Select payment method'}
+                    {borrowStep === 'payment-details' && 'Provide payment details'}
+                    {borrowStep === 'confirmation' && 'Request submitted successfully'}
+                  </p>
+                </div>
+                <button
+                  onClick={resetForm}
+                  className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
 
               {/* Content */}
@@ -350,30 +378,26 @@ export default function AddMoneyPage() {
                 )}
               </div>
             </div>
-          </div>
-        ) : (
-          /* Direct Add Money Flow */
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/50 overflow-hidden">
+          ) : (
+            /* Direct Add Money Flow */
+            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 overflow-hidden">
               {/* Header */}
-              <div className="p-6 bg-gradient-to-r from-green-600 to-emerald-600 text-white">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-bold mb-1">💰 Direct Add Money</h2>
-                    <p className="text-sm opacity-90">
-                      {directStep === 'initial' && 'Enter amount to add'}
-                      {directStep === 'payment-method' && 'Select payment method'}
-                      {directStep === 'digital-options' && 'Choose digital payment option'}
-                      {directStep === 'confirmation' && 'Request submitted successfully'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={resetForm}
-                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
+              <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+                <div>
+                  <h2 className="text-xl font-bold text-white">Direct Add Money</h2>
+                  <p className="text-sm text-slate-400">
+                    {directStep === 'initial' && 'Enter amount to add'}
+                    {directStep === 'payment-method' && 'Select payment method'}
+                    {directStep === 'digital-options' && 'Choose digital payment option'}
+                    {directStep === 'confirmation' && 'Request submitted successfully'}
+                  </p>
                 </div>
+                <button
+                  onClick={resetForm}
+                  className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
               </div>
 
               {/* Content */}
@@ -415,18 +439,18 @@ export default function AddMoneyPage() {
                     totalCredit={totalCredit}
                     currency={currency}
                     paymentType={
-                      directPaymentMethod === 'cash' 
-                        ? 'cash' 
-                        : digitalOption === 'qr-code' 
-                        ? 'qr-code' 
-                        : 'bank-details'
+                      directPaymentMethod === 'cash'
+                        ? 'cash'
+                        : digitalOption === 'qr-code'
+                          ? 'qr-code'
+                          : 'bank-details'
                     }
                   />
                 )}
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </main>
     </div>
   );

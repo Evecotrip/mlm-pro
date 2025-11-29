@@ -1,26 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
 import Navbar from '@/components/Navbar';
-import { 
-  createInvestment, 
+import {
+  createInvestment,
   getInvestmentProfiles,
-  InvestmentProfile 
+  InvestmentProfile
 } from '@/api/investment-api';
-import { 
-  TrendingUp, 
-  Clock, 
-  Users, 
-  Shield, 
-  CheckCircle, 
+import {
+  TrendingUp,
+  Clock,
+  Users,
+  Shield,
+  CheckCircle,
   AlertCircle,
   ArrowLeft,
   Sparkles,
   Crown,
   Gem,
-  Award
+  Award,
+  Loader2
 } from 'lucide-react';
 
 const PROFILE_ICONS = {
@@ -30,40 +31,44 @@ const PROFILE_ICONS = {
   DIAMOND: Gem,
 };
 
-const PROFILE_COLORS = {
+const PROFILE_STYLES = {
   BRONZE: {
     gradient: 'from-amber-600 to-orange-700',
-    bg: 'bg-gradient-to-br from-amber-50 to-orange-50',
-    border: 'border-amber-300',
-    text: 'text-amber-700',
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/20',
+    text: 'text-amber-500',
+    shadow: 'shadow-amber-500/10',
   },
   SILVER: {
-    gradient: 'from-gray-400 to-gray-600',
-    bg: 'bg-gradient-to-br from-gray-50 to-slate-50',
-    border: 'border-gray-300',
-    text: 'text-gray-700',
+    gradient: 'from-slate-400 to-slate-600',
+    bg: 'bg-slate-400/10',
+    border: 'border-slate-400/20',
+    text: 'text-slate-400',
+    shadow: 'shadow-slate-400/10',
   },
   GOLD: {
     gradient: 'from-yellow-500 to-amber-600',
-    bg: 'bg-gradient-to-br from-yellow-50 to-amber-50',
-    border: 'border-yellow-400',
-    text: 'text-yellow-700',
+    bg: 'bg-yellow-500/10',
+    border: 'border-yellow-500/20',
+    text: 'text-yellow-500',
+    shadow: 'shadow-yellow-500/10',
   },
   DIAMOND: {
     gradient: 'from-cyan-500 to-blue-600',
-    bg: 'bg-gradient-to-br from-cyan-50 to-blue-50',
-    border: 'border-cyan-400',
-    text: 'text-cyan-700',
+    bg: 'bg-cyan-500/10',
+    border: 'border-cyan-500/20',
+    text: 'text-cyan-500',
+    shadow: 'shadow-cyan-500/10',
   },
 };
 
-export default function CreateInvestmentPage() {
+function CreateInvestmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isLoaded, user } = useUser();
-  
+
   const selectedProfile = searchParams.get('profile') as 'BRONZE' | 'SILVER' | 'GOLD' | 'DIAMOND';
-  
+
   const [profileDetails, setProfileDetails] = useState<InvestmentProfile | null>(null);
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
@@ -105,7 +110,7 @@ export default function CreateInvestmentPage() {
 
   const handleCreateInvestment = async () => {
     setError('');
-    
+
     if (!amount || parseFloat(amount) <= 0) {
       setError('Please enter a valid amount');
       return;
@@ -159,85 +164,84 @@ export default function CreateInvestmentPage() {
 
   if (!profileDetails) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
-        <Navbar onLogout={handleLogout} />
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading...</p>
-            </div>
-          </div>
-        </main>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-400">Loading plan details...</p>
+        </div>
       </div>
     );
   }
 
   if (success && createdInvestment) {
     const Icon = PROFILE_ICONS[selectedProfile];
-    const colors = PROFILE_COLORS[selectedProfile];
+    const styles = PROFILE_STYLES[selectedProfile];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
+      <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
         <Navbar onLogout={handleLogout} />
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto">
             {/* Success Message */}
             <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-12 h-12 text-green-600" />
+              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
+                <CheckCircle className="w-10 h-10 text-emerald-500" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                ✓ Investment Created Successfully
+              <h1 className="text-3xl font-bold text-white mb-2">
+                Investment Created Successfully
               </h1>
-              <p className="text-gray-600">
+              <p className="text-slate-400">
                 Your investment request has been submitted for approval
               </p>
             </div>
 
             {/* Investment Details */}
-            <div className={`${colors.bg} border-2 ${colors.border} rounded-2xl p-6 mb-6`}>
-              <div className="flex items-center gap-3 mb-4">
-                <Icon className={`w-8 h-8 ${colors.text}`} />
-                <h2 className="text-xl font-bold text-gray-900">{selectedProfile} Investment</h2>
+            <div className={`bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6 relative overflow-hidden`}>
+              <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${styles.gradient}`}></div>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`p-3 rounded-xl ${styles.bg} ${styles.border} border`}>
+                  <Icon className={`w-8 h-8 ${styles.text}`} />
+                </div>
+                <h2 className="text-2xl font-bold text-white">{selectedProfile} Investment</h2>
               </div>
 
-              <div className="space-y-3 border-t-2 border-gray-200 pt-4">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Reference ID:</span>
-                  <span className="font-bold text-gray-900 font-mono">{createdInvestment.referenceId}</span>
+              <div className="space-y-4 border-t border-slate-800 pt-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Reference ID</span>
+                  <span className="font-bold text-white font-mono bg-slate-950 px-3 py-1 rounded-lg border border-slate-800">{createdInvestment.referenceId}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount:</span>
-                  <span className="font-bold text-gray-900">{createdInvestment.amount} USDT</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Amount</span>
+                  <span className="font-bold text-white text-lg">{createdInvestment.amount} USDT</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Expected Returns:</span>
-                  <span className="font-bold text-green-600">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Expected Returns</span>
+                  <span className="font-bold text-emerald-400">
                     {createdInvestment.expectedMinReturn} - {createdInvestment.expectedMaxReturn} USDT
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Return Rate:</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Return Rate</span>
+                  <span className="font-semibold text-slate-200">
                     {createdInvestment.minReturnRate}% - {createdInvestment.maxReturnRate}%
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Lock-in Period:</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Lock-in Period</span>
+                  <span className="font-semibold text-slate-200">
                     {createdInvestment.lockInMonths} months
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Maturity Date:</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Maturity Date</span>
+                  <span className="font-semibold text-slate-200">
                     {new Date(createdInvestment.maturityDate).toLocaleDateString('en-IN')}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Status:</span>
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Status</span>
+                  <span className="px-3 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-full text-sm font-bold uppercase tracking-wide">
                     {createdInvestment.status.replace('_', ' ')}
                   </span>
                 </div>
@@ -245,24 +249,31 @@ export default function CreateInvestmentPage() {
             </div>
 
             {/* Next Steps */}
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4 mb-6">
-              <p className="text-sm text-blue-800">
-                <strong>What's Next?</strong><br />
-                Your investment is awaiting approval from your referrer. Once approved, it will become active and start earning returns. You'll be notified via email.
-              </p>
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 mb-8">
+              <div className="flex gap-3">
+                <div className="p-2 bg-blue-500/20 rounded-lg h-fit">
+                  <Sparkles className="w-5 h-5 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-blue-400 font-bold mb-1">What's Next?</h3>
+                  <p className="text-sm text-blue-200/80 leading-relaxed">
+                    Your investment is awaiting approval from your referrer. Once approved, it will become active and start earning returns automatically. You'll be notified via email.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => router.push('/investment-history')}
-                className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors"
+                className="flex-1 px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20"
               >
                 View All Investments
               </button>
               <button
                 onClick={() => router.push('/dashboard')}
-                className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl font-semibold transition-colors"
+                className="flex-1 px-6 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl font-bold transition-colors"
               >
                 Back to Dashboard
               </button>
@@ -274,10 +285,10 @@ export default function CreateInvestmentPage() {
   }
 
   const Icon = PROFILE_ICONS[selectedProfile];
-  const colors = PROFILE_COLORS[selectedProfile];
+  const styles = PROFILE_STYLES[selectedProfile];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-50">
+    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
       <Navbar onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
@@ -285,86 +296,97 @@ export default function CreateInvestmentPage() {
           {/* Back Button */}
           <button
             onClick={() => router.push('/new-investment')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors group"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             Back to Plans
           </button>
 
           {/* Header */}
-          <div className={`${colors.bg} border-2 ${colors.border} rounded-2xl p-6 mb-6`}>
-            <div className="flex items-center gap-3 mb-4">
-              <Icon className={`w-10 h-10 ${colors.text}`} />
+          <div className={`bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6 relative overflow-hidden group hover:border-slate-700 transition-colors`}>
+            <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${styles.gradient}`}></div>
+
+            <div className="flex items-center gap-4 mb-6">
+              <div className={`p-4 rounded-2xl ${styles.bg} ${styles.border} border shadow-lg ${styles.shadow}`}>
+                <Icon className={`w-10 h-10 ${styles.text}`} />
+              </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{selectedProfile} Investment</h1>
-                <p className="text-sm text-gray-600">{profileDetails.description}</p>
+                <h1 className="text-3xl font-bold text-white mb-1">{selectedProfile} Investment</h1>
+                <p className="text-slate-400">{profileDetails.description}</p>
               </div>
             </div>
 
             {/* Plan Details */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t-2 border-gray-200">
-              <div>
-                <p className="text-xs text-gray-600 mb-1">Returns</p>
-                <p className="font-bold text-green-600">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-slate-800">
+              <div className="bg-slate-950/50 rounded-xl p-3 border border-slate-800/50">
+                <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Returns</p>
+                <p className="font-bold text-emerald-400">
                   {profileDetails.minReturnRate}% - {profileDetails.maxReturnRate}%
                 </p>
               </div>
-              <div>
-                <p className="text-xs text-gray-600 mb-1">Lock-in</p>
-                <p className="font-bold text-gray-900">{profileDetails.lockInMonths} months</p>
+              <div className="bg-slate-950/50 rounded-xl p-3 border border-slate-800/50">
+                <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Lock-in</p>
+                <p className="font-bold text-white">{profileDetails.lockInMonths} months</p>
               </div>
-              <div>
-                <p className="text-xs text-gray-600 mb-1">Network</p>
-                <p className="font-bold text-gray-900">{profileDetails.maxHierarchyDepth} levels</p>
+              <div className="bg-slate-950/50 rounded-xl p-3 border border-slate-800/50">
+                <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Network</p>
+                <p className="font-bold text-white">{profileDetails.maxHierarchyDepth} levels</p>
               </div>
-              <div>
-                <p className="text-xs text-gray-600 mb-1">Min Amount</p>
-                <p className="font-bold text-gray-900">{profileDetails.minInvestment} USDT</p>
+              <div className="bg-slate-950/50 rounded-xl p-3 border border-slate-800/50">
+                <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Min Amount</p>
+                <p className="font-bold text-white">{profileDetails.minInvestment} USDT</p>
               </div>
             </div>
           </div>
 
           {/* Investment Form */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Investment Details</h2>
+          <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6">
+            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-500" />
+              Investment Details
+            </h2>
 
             {/* Amount Input */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-400 mb-2">
                 Investment Amount (USDT) *
               </label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Enter amount in USDT"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-lg font-semibold text-gray-900"
-                min={profileDetails.minInvestment}
-                max={profileDetails.maxInvestment !== '9999999999' ? profileDetails.maxInvestment : undefined}
-                step="0.01"
-              />
-              <p className="text-xs text-gray-500 mt-2">
+              <div className="relative">
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter amount in USDT"
+                  className="w-full px-4 py-4 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-lg font-bold placeholder:font-normal"
+                  min={profileDetails.minInvestment}
+                  max={profileDetails.maxInvestment !== '9999999999' ? profileDetails.maxInvestment : undefined}
+                  step="0.01"
+                />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold pointer-events-none">
+                  USDT
+                </div>
+              </div>
+              <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" />
                 Range: {profileDetails.minInvestment} - {profileDetails.maxInvestment === '9999999999' ? '∞' : profileDetails.maxInvestment} USDT
               </p>
             </div>
 
             {/* Expected Returns Display */}
             {amount && parseFloat(amount) > 0 && (
-              <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-gray-600 mb-2">Expected Returns:</p>
+              <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-emerald-400 mb-4 font-medium">Expected Returns Calculator</p>
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-xs text-gray-600">Minimum</p>
-                    <p className="text-lg font-bold text-green-700">
+                    <p className="text-xs text-slate-500 mb-1">Minimum Return</p>
+                    <p className="text-xl font-bold text-emerald-400">
                       {(parseFloat(amount) * parseFloat(profileDetails.minReturnRate) / 100).toFixed(2)} USDT
                     </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-600">to</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Maximum</p>
-                    <p className="text-lg font-bold text-green-700">
+                  <div className="h-8 w-px bg-slate-800"></div>
+                  <div className="text-right">
+                    <p className="text-xs text-slate-500 mb-1">Maximum Return</p>
+                    <p className="text-xl font-bold text-emerald-400">
                       {(parseFloat(amount) * parseFloat(profileDetails.maxReturnRate) / 100).toFixed(2)} USDT
                     </p>
                   </div>
@@ -373,27 +395,27 @@ export default function CreateInvestmentPage() {
             )}
 
             {/* Notes Input */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <div className="mb-8">
+              <label className="block text-sm font-medium text-slate-400 mb-2">
                 Notes (Optional)
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Add any notes about this investment..."
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition-colors text-gray-900"
+                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                 rows={3}
               />
             </div>
 
             {/* Features */}
-            <div className="bg-gray-50 rounded-xl p-4 mb-6">
-              <p className="text-sm font-semibold text-gray-700 mb-3">Plan Features:</p>
-              <ul className="space-y-2">
+            <div className="bg-slate-950/50 rounded-2xl p-6 mb-8 border border-slate-800/50">
+              <p className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Plan Features</p>
+              <ul className="space-y-3">
                 {profileDetails.features.map((feature, index) => (
-                  <li key={index} className="flex items-start gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{feature}</span>
+                  <li key={index} className="flex items-start gap-3 text-sm text-slate-300">
+                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -401,9 +423,9 @@ export default function CreateInvestmentPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-6 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-700">{error}</p>
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-400">{error}</p>
               </div>
             )}
 
@@ -411,11 +433,11 @@ export default function CreateInvestmentPage() {
             <button
               onClick={handleCreateInvestment}
               disabled={loading}
-              className="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-bold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className={`w-full py-4 bg-gradient-to-r ${styles.gradient} hover:opacity-90 text-white rounded-xl font-bold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   Creating Investment...
                 </>
               ) : (
@@ -428,13 +450,25 @@ export default function CreateInvestmentPage() {
           </div>
 
           {/* Info Box */}
-          <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
-            <p className="text-sm text-blue-800">
-              <strong>ℹ️ Important:</strong> Your investment will be reviewed and approved by your referrer. Once approved, the lock-in period begins and you cannot withdraw until maturity.
+          <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-6 text-center">
+            <p className="text-sm text-blue-300/80">
+              <strong className="text-blue-400">ℹ️ Important:</strong> Your investment will be reviewed and approved by your referrer. Once approved, the lock-in period begins and you cannot withdraw until maturity.
             </p>
           </div>
         </div>
       </main>
     </div>
+  );
+}
+
+export default function CreateInvestmentPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+      </div>
+    }>
+      <CreateInvestmentContent />
+    </Suspense>
   );
 }
