@@ -69,17 +69,17 @@ export default function MyAddMoneyRequestsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'COMPLETED':
-        return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
+        return 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-400/10 border-emerald-200 dark:border-emerald-400/20';
       case 'PROCESSING':
-        return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
+        return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-400/10 border-blue-200 dark:border-blue-400/20';
       case 'PENDING':
-        return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
+        return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-400/10 border-yellow-200 dark:border-yellow-400/20';
       case 'REJECTED':
-        return 'text-red-400 bg-red-400/10 border-red-400/20';
+        return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-400/10 border-red-200 dark:border-red-400/20';
       case 'CANCELLED':
-        return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
+        return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
       default:
-        return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
+        return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
     }
   };
 
@@ -126,17 +126,17 @@ export default function MyAddMoneyRequestsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading requests...</p>
+          <Loader2 className="w-12 h-12 text-emerald-600 dark:text-emerald-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Loading requests...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-emerald-500/30 transition-colors duration-300">
       <Navbar onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
@@ -144,7 +144,7 @@ export default function MyAddMoneyRequestsPage() {
           {/* Back Button */}
           <button
             onClick={() => router.push('/add-money')}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors group"
+            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors group"
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             Back to Add Money
@@ -157,54 +157,54 @@ export default function MyAddMoneyRequestsPage() {
                 <Wallet className="w-8 h-8 text-emerald-500" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                   My Add Money Requests
                 </h1>
-                <p className="text-slate-400">Track and manage your fund requests</p>
+                <p className="text-slate-600 dark:text-slate-400">Track and manage your fund requests</p>
               </div>
             </div>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
-              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Total Requests</p>
-              <p className="text-2xl font-bold text-white">{requests.length}</p>
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none">
+              <p className="text-xs text-slate-500 dark:text-slate-500 mb-1 uppercase tracking-wider">Total Requests</p>
+              <p className="text-2xl font-bold text-slate-900 dark:text-white">{requests.length}</p>
             </div>
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
-              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Pending</p>
-              <p className="text-2xl font-bold text-yellow-500">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none">
+              <p className="text-xs text-slate-500 dark:text-slate-500 mb-1 uppercase tracking-wider">Pending</p>
+              <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">
                 {requests.filter(r => r.status === 'PENDING').length}
               </p>
             </div>
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
-              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Processing</p>
-              <p className="text-2xl font-bold text-blue-500">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none">
+              <p className="text-xs text-slate-500 dark:text-slate-500 mb-1 uppercase tracking-wider">Processing</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-500">
                 {requests.filter(r => r.status === 'PROCESSING').length}
               </p>
             </div>
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-800">
-              <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Completed</p>
-              <p className="text-2xl font-bold text-emerald-500">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none">
+              <p className="text-xs text-slate-500 dark:text-slate-500 mb-1 uppercase tracking-wider">Completed</p>
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
                 {requests.filter(r => r.status === 'COMPLETED').length}
               </p>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-4 mb-6">
+          <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 p-4 mb-6 shadow-sm dark:shadow-none">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               {/* Status Filter */}
               <div className="flex items-center gap-2 flex-wrap">
-                <Filter className="w-5 h-5 text-slate-400" />
-                <span className="text-sm font-medium text-slate-300">Filter:</span>
+                <Filter className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Filter:</span>
                 {['all', 'PENDING', 'PROCESSING', 'COMPLETED'].map((status) => (
                   <button
                     key={status}
                     onClick={() => setFilter(status as any)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${filter === status
-                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
-                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white'
                       }`}
                   >
                     {status === 'all' ? 'All' : status}
@@ -214,11 +214,11 @@ export default function MyAddMoneyRequestsPage() {
 
               {/* Sort */}
               <div className="flex items-center gap-2">
-                <ArrowUpDown className="w-5 h-5 text-slate-400" />
+                <ArrowUpDown className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as 'createdAt' | 'amount')}
-                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-sm font-medium text-slate-300 focus:border-emerald-500 focus:outline-none transition-colors"
+                  className="px-3 py-1.5 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 focus:border-emerald-500 focus:outline-none transition-colors"
                 >
                   <option value="createdAt">Sort by Date</option>
                   <option value="amount">Sort by Amount</option>
@@ -230,12 +230,12 @@ export default function MyAddMoneyRequestsPage() {
           {/* Requests List */}
           <div className="space-y-4">
             {sortedRequests.length === 0 ? (
-              <div className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-12 text-center">
-                <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <AlertCircle className="w-8 h-8 text-slate-500" />
+              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center shadow-sm dark:shadow-none">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <AlertCircle className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">No Requests Found</h3>
-                <p className="text-slate-400 mb-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No Requests Found</h3>
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
                   {filter !== 'all' ? 'Try changing the filter' : 'You haven\'t made any add money requests yet'}
                 </p>
                 <button
@@ -250,7 +250,7 @@ export default function MyAddMoneyRequestsPage() {
                 <div
                   key={request.id}
                   onClick={() => router.push(`/direct-add-money?requestId=${request.id}`)}
-                  className="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-5 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/5 transition-all cursor-pointer group"
+                  className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 p-5 hover:border-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/5 transition-all cursor-pointer group shadow-sm dark:shadow-none"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     {/* Left Section */}
@@ -260,22 +260,22 @@ export default function MyAddMoneyRequestsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1">
-                          <h4 className="font-bold text-white text-lg">
+                          <h4 className="font-bold text-slate-900 dark:text-white text-lg">
                             {request.currencyAmount} {request.currency}
                           </h4>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wide ${getStatusColor(request.status)}`}>
                             {request.status}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-400 mb-2">
-                          Total Credit: <span className="text-emerald-400 font-bold">{request.usdtAmount} USDT</span>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                          Total Credit: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{request.usdtAmount} USDT</span>
                         </p>
-                        <div className="flex items-center gap-4 text-sm text-slate-500">
+                        <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-500">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             {formatDate(request.createdAt)}
                           </span>
-                          <span className="px-2 py-0.5 bg-slate-800 rounded text-xs font-mono text-slate-300 border border-slate-700">
+                          <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                             {request.method.replace('_', ' ')}
                           </span>
                         </div>
@@ -285,26 +285,26 @@ export default function MyAddMoneyRequestsPage() {
                     {/* Right Section - Action Hint */}
                     <div className="text-right flex flex-col justify-center">
                       {request.status === 'PENDING' && (
-                        <p className="text-sm text-yellow-500 font-medium mb-1">
+                        <p className="text-sm text-yellow-600 dark:text-yellow-500 font-medium mb-1">
                           ⏳ Waiting for approval
                         </p>
                       )}
                       {request.status === 'PROCESSING' && !request.paymentProof && (
-                        <p className="text-sm text-blue-400 font-medium mb-1 animate-pulse">
+                        <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-1 animate-pulse">
                           📤 Upload payment proof
                         </p>
                       )}
                       {request.status === 'PROCESSING' && request.paymentProof && (
-                        <p className="text-sm text-blue-400 font-medium mb-1">
+                        <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-1">
                           ⏳ Verifying payment
                         </p>
                       )}
                       {request.status === 'COMPLETED' && (
-                        <p className="text-sm text-emerald-400 font-medium mb-1">
+                        <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium mb-1">
                           ✓ Completed
                         </p>
                       )}
-                      <p className="text-xs text-slate-500 group-hover:text-emerald-400 transition-colors flex items-center justify-end gap-1">
+                      <p className="text-xs text-slate-500 dark:text-slate-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors flex items-center justify-end gap-1">
                         View Details <ArrowLeft className="w-3 h-3 rotate-180" />
                       </p>
                     </div>

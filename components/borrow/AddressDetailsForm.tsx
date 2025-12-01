@@ -58,16 +58,16 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
   return (
     <div className="space-y-8">
       {/* Info Box */}
-      <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-        <p className="text-sm text-blue-400">
-          <strong className="text-blue-300">Note:</strong> Provide your contact details for cash collection. The lender will coordinate with you.
+      <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4">
+        <p className="text-sm text-blue-600 dark:text-blue-400">
+          <strong className="text-blue-700 dark:text-blue-300">Note:</strong> Provide your contact details for cash collection. The lender will coordinate with you.
         </p>
       </div>
 
       {/* Form Fields */}
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-2 flex items-center gap-2">
+          <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">
             <MapPin className="w-4 h-4" />
             Full Address *
           </label>
@@ -76,14 +76,14 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
             onChange={(e) => setAddressDetails({ ...addressDetails, fullAddress: e.target.value })}
             placeholder="Enter your complete address"
             rows={3}
-            className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-600"
+            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-slate-600"
             disabled={loading}
           />
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
               City *
             </label>
             <input
@@ -91,13 +91,13 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
               value={addressDetails.city}
               onChange={(e) => setAddressDetails({ ...addressDetails, city: e.target.value })}
               placeholder="e.g., Bangalore"
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
               disabled={loading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
               State *
             </label>
             <input
@@ -105,13 +105,13 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
               value={addressDetails.state}
               onChange={(e) => setAddressDetails({ ...addressDetails, state: e.target.value })}
               placeholder="e.g., Karnataka"
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
               disabled={loading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
               PIN Code *
             </label>
             <input
@@ -120,18 +120,18 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
               onChange={(e) => setAddressDetails({ ...addressDetails, pinCode: e.target.value })}
               placeholder="6-digit PIN"
               maxLength={6}
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-600"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-400 dark:placeholder:text-slate-600"
               disabled={loading}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2 flex items-center gap-2">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-2">
               <Phone className="w-4 h-4" />
               Primary Phone Number *
             </label>
             <div className="flex gap-3">
-              <span className="px-3 py-3 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 font-medium">
+              <span className="px-3 py-3 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 dark:text-slate-400 font-medium">
                 +91
               </span>
               <input
@@ -140,18 +140,18 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
                 onChange={(e) => setAddressDetails({ ...addressDetails, primaryPhone: e.target.value })}
                 placeholder="10-digit number"
                 maxLength={10}
-                className="flex-1 px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-600"
+                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-400 dark:placeholder:text-slate-600"
                 disabled={loading}
               />
             </div>
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-400 mb-2">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
               Secondary Phone Number (Optional)
             </label>
             <div className="flex gap-3">
-              <span className="px-3 py-3 bg-slate-900 border border-slate-800 rounded-xl text-slate-400 font-medium">
+              <span className="px-3 py-3 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 dark:text-slate-400 font-medium">
                 +91
               </span>
               <input
@@ -160,14 +160,14 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
                 onChange={(e) => setAddressDetails({ ...addressDetails, secondaryPhone: e.target.value })}
                 placeholder="10-digit number"
                 maxLength={10}
-                className="flex-1 px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-600"
+                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all font-mono placeholder:font-sans placeholder:text-slate-400 dark:placeholder:text-slate-600"
                 disabled={loading}
               />
             </div>
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-400 mb-2">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
               Best Time to Contact
             </label>
             <input
@@ -175,13 +175,13 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
               value={addressDetails.bestTime}
               onChange={(e) => setAddressDetails({ ...addressDetails, bestTime: e.target.value })}
               placeholder="e.g., 6 PM - 8 PM, Weekends"
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
               disabled={loading}
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-400 mb-2">
+            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
               Remarks (Optional)
             </label>
             <textarea
@@ -190,19 +190,19 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
               placeholder="Any additional information..."
               rows={2}
               maxLength={200}
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-600"
+              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-slate-600"
               disabled={loading}
             />
-            <p className="text-xs text-slate-500 mt-1 text-right">{addressDetails.remarks.length}/200 characters</p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 text-right">{addressDetails.remarks.length}/200 characters</p>
           </div>
         </div>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-400 font-medium">{error}</p>
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-4 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-600 dark:text-red-400 font-medium">{error}</p>
         </div>
       )}
 
@@ -211,7 +211,7 @@ export default function AddressDetailsForm({ onSubmit, onBack, loading = false }
         <button
           onClick={onBack}
           disabled={loading}
-          className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl font-bold transition-colors disabled:opacity-50"
+          className="flex-1 py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl font-bold transition-colors disabled:opacity-50"
         >
           Back
         </button>

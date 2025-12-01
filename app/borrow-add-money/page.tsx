@@ -179,12 +179,12 @@ function BorrowAddMoneyContent() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
-      case 'PROCESSING': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
-      case 'PENDING': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
-      case 'REJECTED': return 'text-red-400 bg-red-400/10 border-red-400/20';
-      case 'CANCELLED': return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
-      default: return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
+      case 'COMPLETED': return 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-400/10 border-emerald-200 dark:border-emerald-400/20';
+      case 'PROCESSING': return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-400/10 border-blue-200 dark:border-blue-400/20';
+      case 'PENDING': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-400/10 border-yellow-200 dark:border-yellow-400/20';
+      case 'REJECTED': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-400/10 border-red-200 dark:border-red-400/20';
+      case 'CANCELLED': return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
+      default: return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
     }
   };
 
@@ -202,28 +202,28 @@ function BorrowAddMoneyContent() {
   // If viewing existing request
   if (requestId && request) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30 transition-colors duration-300">
         <Navbar onLogout={handleLogout} />
 
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-3xl mx-auto">
             <button
               onClick={() => router.push('/add-money')}
-              className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+              className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Add Money
             </button>
 
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 mb-6 shadow-sm dark:shadow-none">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
                   <div className={`p-3 rounded-xl border ${getStatusColor(request.status)}`}>
                     {getStatusIcon(request.status)}
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-white">Borrow Request</h1>
-                    <p className="text-sm text-slate-400 font-mono">ID: {request.id.slice(0, 8)}...</p>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Borrow Request</h1>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-mono">ID: {request.id.slice(0, 8)}...</p>
                   </div>
                 </div>
                 <span className={`px-4 py-1.5 rounded-full text-sm font-bold border uppercase tracking-wide ${getStatusColor(request.status)}`}>
@@ -231,38 +231,38 @@ function BorrowAddMoneyContent() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-6 border-t border-slate-800">
+              <div className="grid grid-cols-2 gap-6 pt-6 border-t border-slate-200 dark:border-slate-800">
                 <div>
-                  <p className="text-sm text-slate-500 mb-1">Lender</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Lender</p>
                   <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-slate-400" />
-                    <p className="text-base font-bold text-white">
+                    <User className="w-4 h-4 text-slate-400 dark:text-slate-400" />
+                    <p className="text-base font-bold text-slate-900 dark:text-white">
                       {request.lender.firstName} {request.lender.lastName}
                     </p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 mb-1">Amount</p>
-                  <p className="text-xl font-bold text-white">{request.amount} USDT</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Amount</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white">{request.amount} USDT</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 mb-1">Payment Method</p>
-                  <p className="text-base font-medium text-slate-300">
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Payment Method</p>
+                  <p className="text-base font-medium text-slate-700 dark:text-slate-300">
                     {request.paymentMethod === 'ONLINE_TRANSFER' ? 'Online Transfer' : 'Physical Cash'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 mb-1">Created</p>
-                  <p className="text-base font-medium text-slate-300">
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Created</p>
+                  <p className="text-base font-medium text-slate-700 dark:text-slate-300">
                     {new Date(request.createdAt).toLocaleDateString('en-IN')}
                   </p>
                 </div>
               </div>
 
               {request.borrowerNotes && (
-                <div className="mt-6 pt-6 border-t border-slate-800">
-                  <p className="text-sm text-slate-500 mb-2">Your Notes:</p>
-                  <p className="text-sm text-slate-300 italic p-3 bg-slate-950 rounded-xl border border-slate-800">
+                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mb-2">Your Notes:</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 italic p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
                     "{request.borrowerNotes}"
                   </p>
                 </div>
@@ -271,46 +271,46 @@ function BorrowAddMoneyContent() {
 
             {/* Lender Details for PROCESSING status */}
             {request.status === 'PROCESSING' && request.paymentMethod === 'PHYSICAL_CASH' && request.borrowerDetails.contactDetails && (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-3xl p-8 mb-6">
+              <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-3xl p-8 mb-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <MapPin className="w-6 h-6 text-blue-400" />
-                  <h2 className="text-xl font-bold text-white">Your Contact Details</h2>
+                  <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Your Contact Details</h2>
                 </div>
-                <p className="text-sm text-blue-200 mb-6">
+                <p className="text-sm text-blue-800 dark:text-blue-200 mb-6">
                   The lender will use these details to deliver cash:
                 </p>
 
-                <div className="bg-slate-950/50 rounded-xl p-6 space-y-4 border border-blue-500/20">
+                <div className="bg-white/50 dark:bg-slate-950/50 rounded-xl p-6 space-y-4 border border-blue-200 dark:border-blue-500/20">
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Address</p>
-                    <p className="font-medium text-white">{request.borrowerDetails.contactDetails.address}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Address</p>
+                    <p className="font-medium text-slate-900 dark:text-white">{request.borrowerDetails.contactDetails.address}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">City</p>
-                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.city}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">City</p>
+                      <p className="font-medium text-slate-900 dark:text-white">{request.borrowerDetails.contactDetails.city}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">State</p>
-                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.state}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">State</p>
+                      <p className="font-medium text-slate-900 dark:text-white">{request.borrowerDetails.contactDetails.state}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">PIN Code</p>
-                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.pinCode}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">PIN Code</p>
+                      <p className="font-medium text-slate-900 dark:text-white">{request.borrowerDetails.contactDetails.pinCode}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Phone</p>
-                      <p className="font-medium text-white">{request.borrowerDetails.contactDetails.phoneNumber1}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Phone</p>
+                      <p className="font-medium text-slate-900 dark:text-white">{request.borrowerDetails.contactDetails.phoneNumber1}</p>
                     </div>
                   </div>
                 </div>
 
                 {request.lenderNotes && (
-                  <div className="mt-6 p-4 bg-blue-500/20 rounded-xl border border-blue-500/30">
-                    <p className="text-xs text-blue-300 mb-1 font-bold uppercase">Lender's Notes:</p>
-                    <p className="text-sm text-blue-100 italic">"{request.lenderNotes}"</p>
+                  <div className="mt-6 p-4 bg-blue-100 dark:bg-blue-500/20 rounded-xl border border-blue-200 dark:border-blue-500/30">
+                    <p className="text-xs text-blue-700 dark:text-blue-300 mb-1 font-bold uppercase">Lender's Notes:</p>
+                    <p className="text-sm text-blue-900 dark:text-blue-100 italic">"{request.lenderNotes}"</p>
                   </div>
                 )}
               </div>
@@ -318,17 +318,17 @@ function BorrowAddMoneyContent() {
 
             {/* Upload Confirmation Proof */}
             {request.status === 'PROCESSING' && !request.confirmationProof && (
-              <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6">
+              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 mb-6 shadow-sm dark:shadow-none">
                 <div className="flex items-center gap-3 mb-4">
-                  <Upload className="w-6 h-6 text-purple-500" />
-                  <h2 className="text-xl font-bold text-white">Upload Confirmation Proof</h2>
+                  <Upload className="w-6 h-6 text-purple-600 dark:text-purple-500" />
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Upload Confirmation Proof</h2>
                 </div>
-                <p className="text-sm text-slate-400 mb-6">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
                   Once you receive the money, please upload a confirmation proof (screenshot/photo). Only JPG/JPEG files accepted.
                 </p>
 
                 <div className="space-y-4">
-                  <div className="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-purple-500/50 transition-colors bg-slate-950/30">
+                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 text-center hover:border-purple-500/50 transition-colors bg-slate-50/50 dark:bg-slate-950/30">
                     <input
                       type="file"
                       id="proof-upload"
@@ -337,12 +337,12 @@ function BorrowAddMoneyContent() {
                       className="hidden"
                     />
                     <label htmlFor="proof-upload" className="cursor-pointer flex flex-col items-center">
-                      <Upload className="w-10 h-10 text-slate-500 mb-3" />
-                      <span className="text-slate-300 font-medium mb-1">Click to select file</span>
-                      <span className="text-xs text-slate-500">JPG/JPEG up to 5MB</span>
+                      <Upload className="w-10 h-10 text-slate-400 dark:text-slate-500 mb-3" />
+                      <span className="text-slate-700 dark:text-slate-300 font-medium mb-1">Click to select file</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-500">JPG/JPEG up to 5MB</span>
                     </label>
                     {selectedFile && (
-                      <p className="text-sm text-emerald-400 mt-4 font-medium">✓ {selectedFile.name}</p>
+                      <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-4 font-medium">✓ {selectedFile.name}</p>
                     )}
                   </div>
 
@@ -359,9 +359,9 @@ function BorrowAddMoneyContent() {
 
             {/* Status Messages */}
             {request.status === 'PENDING' && (
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-6 mb-6">
-                <p className="text-sm text-yellow-200">
-                  <strong className="text-yellow-400 block mb-1">⏳ Pending Approval</strong>
+              <div className="bg-yellow-100 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  <strong className="text-yellow-700 dark:text-yellow-400 block mb-1">⏳ Pending Approval</strong>
                   Your request is waiting for the lender's approval. You'll be notified once they respond.
                 </p>
                 <button
@@ -374,36 +374,36 @@ function BorrowAddMoneyContent() {
             )}
 
             {request.status === 'PROCESSING' && (
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 mb-6">
-                <p className="text-sm text-blue-200">
-                  <strong className="text-blue-400 block mb-1">✓ Request Approved</strong>
+              <div className="bg-blue-100 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong className="text-blue-700 dark:text-blue-400 block mb-1">✓ Request Approved</strong>
                   The lender has approved your request and will transfer the money soon. Please upload confirmation proof once received.
                 </p>
               </div>
             )}
 
             {request.status === 'COMPLETED' && (
-              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 mb-6">
-                <p className="text-sm text-emerald-200">
-                  <strong className="text-emerald-400 block mb-1">✓ Transaction Completed</strong>
+              <div className="bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-emerald-800 dark:text-emerald-200">
+                  <strong className="text-emerald-700 dark:text-emerald-400 block mb-1">✓ Transaction Completed</strong>
                   The transaction has been completed and {request.amount} USDT has been credited to your wallet.
                 </p>
               </div>
             )}
 
             {request.status === 'REJECTED' && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 mb-6">
-                <p className="text-sm text-red-200">
-                  <strong className="text-red-400 block mb-1">✗ Request Rejected</strong>
+              <div className="bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-red-800 dark:text-red-200">
+                  <strong className="text-red-700 dark:text-red-400 block mb-1">✗ Request Rejected</strong>
                   The lender has rejected your request. {request.lenderNotes || 'Please try with a different lender.'}
                 </p>
               </div>
             )}
 
             {request.status === 'CANCELLED' && (
-              <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 mb-6">
-                <p className="text-sm text-slate-400">
-                  <strong className="text-slate-300 block mb-1">✗ Request Cancelled</strong>
+              <div className="bg-slate-200 dark:bg-slate-800/50 border border-slate-300 dark:border-slate-700 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <strong className="text-slate-700 dark:text-slate-300 block mb-1">✗ Request Cancelled</strong>
                   This request has been cancelled.
                 </p>
               </div>
@@ -416,47 +416,47 @@ function BorrowAddMoneyContent() {
 
   // Create new borrow request flow
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30 transition-colors duration-300">
       <Navbar onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => router.push('/add-money')}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Add Money
           </button>
 
           <div className="mb-8 text-center">
-            <div className="inline-flex p-4 bg-purple-500/10 rounded-2xl mb-4 border border-purple-500/20">
-              <HandCoins className="w-10 h-10 text-purple-500" />
+            <div className="inline-flex p-4 bg-purple-100 dark:bg-purple-500/10 rounded-2xl mb-4 border border-purple-200 dark:border-purple-500/20">
+              <HandCoins className="w-10 h-10 text-purple-600 dark:text-purple-500" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Borrow Money</h1>
-            <p className="text-slate-400">Get funds from another platform user</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Borrow Money</h1>
+            <p className="text-slate-600 dark:text-slate-400">Get funds from another platform user</p>
           </div>
 
           {/* Step 1: Payment Method */}
           {step === 'method' && (
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
-              <h2 className="text-xl font-bold text-white mb-6">Select Payment Method</h2>
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm dark:shadow-none">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Select Payment Method</h2>
 
               <div className="space-y-4">
                 <button
                   onClick={() => setPaymentMethod('ONLINE_TRANSFER')}
                   className={`w-full p-6 rounded-2xl border transition-all text-left group ${paymentMethod === 'ONLINE_TRANSFER'
-                    ? 'bg-purple-500/10 border-purple-500/50 shadow-lg shadow-purple-500/10'
-                    : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                    ? 'bg-purple-100 dark:bg-purple-500/10 border-purple-500/50 shadow-lg shadow-purple-500/10'
+                    : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-xl ${paymentMethod === 'ONLINE_TRANSFER' ? 'bg-purple-500 text-white' : 'bg-slate-900 text-slate-500 group-hover:text-slate-300'}`}>
+                    <div className={`p-3 rounded-xl ${paymentMethod === 'ONLINE_TRANSFER' ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300'}`}>
                       <CreditCard className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className={`font-bold mb-1 ${paymentMethod === 'ONLINE_TRANSFER' ? 'text-white' : 'text-slate-300'}`}>Online Transfer (Soft Cash)</p>
-                      <p className="text-sm text-slate-500">Request from a specific user by referral code</p>
+                      <p className={`font-bold mb-1 ${paymentMethod === 'ONLINE_TRANSFER' ? 'text-purple-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>Online Transfer (Soft Cash)</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-500">Request from a specific user by referral code</p>
                     </div>
                   </div>
                 </button>
@@ -464,17 +464,17 @@ function BorrowAddMoneyContent() {
                 <button
                   onClick={() => setPaymentMethod('PHYSICAL_CASH')}
                   className={`w-full p-6 rounded-2xl border transition-all text-left group ${paymentMethod === 'PHYSICAL_CASH'
-                    ? 'bg-purple-500/10 border-purple-500/50 shadow-lg shadow-purple-500/10'
-                    : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                    ? 'bg-purple-100 dark:bg-purple-500/10 border-purple-500/50 shadow-lg shadow-purple-500/10'
+                    : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-xl ${paymentMethod === 'PHYSICAL_CASH' ? 'bg-purple-500 text-white' : 'bg-slate-900 text-slate-500 group-hover:text-slate-300'}`}>
+                    <div className={`p-3 rounded-xl ${paymentMethod === 'PHYSICAL_CASH' ? 'bg-purple-600 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300'}`}>
                       <HandCoins className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className={`font-bold mb-1 ${paymentMethod === 'PHYSICAL_CASH' ? 'text-white' : 'text-slate-300'}`}>Physical Cash (Hard Cash)</p>
-                      <p className="text-sm text-slate-500">Provide your address for cash delivery</p>
+                      <p className={`font-bold mb-1 ${paymentMethod === 'PHYSICAL_CASH' ? 'text-purple-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>Physical Cash (Hard Cash)</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-500">Provide your address for cash delivery</p>
                     </div>
                   </div>
                 </button>
@@ -491,12 +491,12 @@ function BorrowAddMoneyContent() {
 
           {/* Step 2: Amount */}
           {step === 'amount' && (
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
-              <h2 className="text-xl font-bold text-white mb-6">Enter Amount</h2>
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm dark:shadow-none">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Enter Amount</h2>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-2">
+                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                     Amount (USDT)
                   </label>
                   <input
@@ -504,21 +504,21 @@ function BorrowAddMoneyContent() {
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="Enter amount"
-                    className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     min="1"
                     step="0.01"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-2">
+                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                     Notes (Optional)
                   </label>
                   <textarea
                     value={borrowerNotes}
                     onChange={(e) => setBorrowerNotes(e.target.value)}
                     placeholder="Add any notes for the lender..."
-                    className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     rows={3}
                   />
                 </div>
@@ -527,7 +527,7 @@ function BorrowAddMoneyContent() {
               <div className="flex gap-4 mt-8">
                 <button
                   onClick={() => setStep('method')}
-                  className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors"
+                  className="flex-1 py-4 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors"
                 >
                   Back
                 </button>
@@ -544,14 +544,14 @@ function BorrowAddMoneyContent() {
 
           {/* Step 3: Details */}
           {step === 'details' && (
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
-              <h2 className="text-xl font-bold text-white mb-6">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm dark:shadow-none">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
                 {paymentMethod === 'ONLINE_TRANSFER' ? 'Lender Details' : 'Your Contact Details'}
               </h2>
 
               {paymentMethod === 'ONLINE_TRANSFER' ? (
                 <div>
-                  <label className="block text-sm font-medium text-slate-400 mb-2">
+                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                     Lender's Referral Code *
                   </label>
                   <input
@@ -559,16 +559,16 @@ function BorrowAddMoneyContent() {
                     value={lenderReferralCode}
                     onChange={(e) => setLenderReferralCode(e.target.value.toUpperCase())}
                     placeholder="Enter referral code (e.g., REFCODE)"
-                    className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                   />
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
                     Enter the referral code of the user you want to borrow from
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                       Address *
                     </label>
                     <input
@@ -576,13 +576,13 @@ function BorrowAddMoneyContent() {
                       value={contactDetails.address}
                       onChange={(e) => setContactDetails({ ...contactDetails, address: e.target.value })}
                       placeholder="Street address"
-                      className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-2">
+                      <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                         City *
                       </label>
                       <input
@@ -590,11 +590,11 @@ function BorrowAddMoneyContent() {
                         value={contactDetails.city}
                         onChange={(e) => setContactDetails({ ...contactDetails, city: e.target.value })}
                         placeholder="City"
-                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-2">
+                      <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                         State *
                       </label>
                       <input
@@ -602,14 +602,14 @@ function BorrowAddMoneyContent() {
                         value={contactDetails.state}
                         onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
                         placeholder="State"
-                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-2">
+                      <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                         PIN Code *
                       </label>
                       <input
@@ -617,11 +617,11 @@ function BorrowAddMoneyContent() {
                         value={contactDetails.pinCode}
                         onChange={(e) => setContactDetails({ ...contactDetails, pinCode: e.target.value })}
                         placeholder="PIN Code"
-                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-400 mb-2">
+                      <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                         Country *
                       </label>
                       <input
@@ -629,13 +629,13 @@ function BorrowAddMoneyContent() {
                         value={contactDetails.country}
                         onChange={(e) => setContactDetails({ ...contactDetails, country: e.target.value })}
                         placeholder="Country"
-                        className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                        className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                       Phone Number 1 *
                     </label>
                     <input
@@ -643,12 +643,12 @@ function BorrowAddMoneyContent() {
                       value={contactDetails.phoneNumber1}
                       onChange={(e) => setContactDetails({ ...contactDetails, phoneNumber1: e.target.value })}
                       placeholder="+91 9876543210"
-                      className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-2">
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                       Phone Number 2 (Optional)
                     </label>
                     <input
@@ -656,7 +656,7 @@ function BorrowAddMoneyContent() {
                       value={contactDetails.phoneNumber2}
                       onChange={(e) => setContactDetails({ ...contactDetails, phoneNumber2: e.target.value })}
                       placeholder="+91 9876543211"
-                      className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -665,7 +665,7 @@ function BorrowAddMoneyContent() {
               <div className="flex gap-4 mt-8">
                 <button
                   onClick={() => setStep('amount')}
-                  className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors"
+                  className="flex-1 py-4 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors"
                 >
                   Back
                 </button>
@@ -686,31 +686,31 @@ function BorrowAddMoneyContent() {
 
           {/* Step 4: Review */}
           {step === 'review' && (
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8">
-              <h2 className="text-xl font-bold text-white mb-6">Review Request</h2>
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm dark:shadow-none">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Review Request</h2>
 
               <div className="space-y-4 mb-8">
-                <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
-                  <p className="text-sm text-slate-500 mb-1">Amount</p>
-                  <p className="text-2xl font-bold text-white">{amount} USDT</p>
+                <div className="p-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Amount</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{amount} USDT</p>
                 </div>
 
-                <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
-                  <p className="text-sm text-slate-500 mb-1">Payment Method</p>
-                  <p className="font-bold text-white">
+                <div className="p-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                  <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Payment Method</p>
+                  <p className="font-bold text-slate-900 dark:text-white">
                     {paymentMethod === 'ONLINE_TRANSFER' ? 'Online Transfer' : 'Physical Cash'}
                   </p>
                 </div>
 
                 {paymentMethod === 'ONLINE_TRANSFER' ? (
-                  <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
-                    <p className="text-sm text-slate-500 mb-1">Lender Referral Code</p>
-                    <p className="font-bold text-white font-mono">{lenderReferralCode}</p>
+                  <div className="p-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Lender Referral Code</p>
+                    <p className="font-bold text-slate-900 dark:text-white font-mono">{lenderReferralCode}</p>
                   </div>
                 ) : (
-                  <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
-                    <p className="text-sm text-slate-500 mb-2">Contact Details</p>
-                    <div className="space-y-1 text-sm text-slate-300">
+                  <div className="p-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-500 mb-2">Contact Details</p>
+                    <div className="space-y-1 text-sm text-slate-700 dark:text-slate-300">
                       <p>{contactDetails.address}</p>
                       <p>{contactDetails.city}, {contactDetails.state}</p>
                       <p>{contactDetails.country} - {contactDetails.pinCode}</p>
@@ -723,9 +723,9 @@ function BorrowAddMoneyContent() {
                 )}
 
                 {borrowerNotes && (
-                  <div className="p-4 bg-slate-950/50 rounded-xl border border-slate-800">
-                    <p className="text-sm text-slate-500 mb-1">Notes</p>
-                    <p className="text-sm text-slate-300 italic">"{borrowerNotes}"</p>
+                  <div className="p-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Notes</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 italic">"{borrowerNotes}"</p>
                   </div>
                 )}
               </div>
@@ -734,7 +734,7 @@ function BorrowAddMoneyContent() {
                 <button
                   onClick={() => setStep('details')}
                   disabled={creating}
-                  className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
+                  className="flex-1 py-4 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
                 >
                   Back
                 </button>
@@ -762,8 +762,8 @@ function BorrowAddMoneyContent() {
 export default function BorrowAddMoneyPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
+        <Loader2 className="w-12 h-12 text-purple-600 dark:text-purple-500 animate-spin" />
       </div>
     }>
       <BorrowAddMoneyContent />

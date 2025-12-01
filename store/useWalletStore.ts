@@ -16,7 +16,8 @@ import {
   WalletBalance,
   WalletEarnings,
   WalletStatistics,
-  WalletRestrictions
+  WalletRestrictions,
+  WalletBreakdown
 } from '@/api/wallet-api';
 import { TransactionType } from '@/types';
 
@@ -27,6 +28,7 @@ interface WalletState {
   earnings: WalletEarnings | null;
   statistics: WalletStatistics | null;
   restrictions: WalletRestrictions | null;
+  breakdown: WalletBreakdown | null;
   
   // Transactions
   transactions: TransactionResponse[];
@@ -77,6 +79,7 @@ const initialState = {
   earnings: null,
   statistics: null,
   restrictions: null,
+  breakdown: null,
   transactions: [],
   transactionsPagination: null,
   balanceLogs: [],
@@ -112,6 +115,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
           earnings: data.earnings,
           statistics: data.statistics,
           restrictions: data.restrictions,
+          breakdown: data.breakdown,
           isLoadingWallet: false,
         });
       } else {
@@ -140,8 +144,8 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       
       if (response.success && response.data) {
         set({
-          transactions: response.data.data || [],
-          transactionsPagination: response.data.pagination,
+          transactions: response.data || [],
+          transactionsPagination: response.pagination || null,
           isLoadingTransactions: false,
         });
       } else {
@@ -164,20 +168,16 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   /**
    * Fetch balance logs with pagination and optional operation filter
    */
-  fetchBalanceLogs: async (page = 1, limit = 20, operation?: 'CREDIT' | 'DEBIT') => {
+  fetchBalanceLogs: async (page = 1, limit = 20, operation?: 'CREDIT' | 'DEBIT' | 'LOCK') => {
     set({ isLoadingBalanceLogs: true, balanceLogsError: null });
 
     try {
       const response = await getBalanceLogs(page, limit, operation);
       
       if (response.success && response.data) {
-        // Check if response.data is an array (direct) or has a data property (paginated)
-        const logsArray = Array.isArray(response.data) ? response.data : (response.data.data || []);
-        const pagination = Array.isArray(response.data) ? undefined : response.data.pagination;
-        
         set({
-          balanceLogs: logsArray,
-          balanceLogsPagination: pagination,
+          balanceLogs: response.data || [],
+          balanceLogsPagination: response.pagination || null,
           isLoadingBalanceLogs: false,
         });
       } else {
@@ -261,6 +261,7 @@ export const selectBalance = (state: WalletState) => state.balance;
 export const selectEarnings = (state: WalletState) => state.earnings;
 export const selectStatistics = (state: WalletState) => state.statistics;
 export const selectRestrictions = (state: WalletState) => state.restrictions;
+export const selectBreakdown = (state: WalletState) => state.breakdown;
 export const selectTransactions = (state: WalletState) => state.transactions;
 export const selectBalanceLogs = (state: WalletState) => state.balanceLogs;
 export const selectStats = (state: WalletState) => state.stats;

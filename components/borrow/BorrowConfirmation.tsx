@@ -25,35 +25,35 @@ export default function BorrowConfirmation({ requestId, lenderName, amount, paym
 
       {/* Success Message */}
       <div>
-        <h3 className="text-3xl font-bold text-white mb-2">Request Submitted</h3>
-        <p className="text-slate-400">Your borrow request has been sent to the lender.</p>
+        <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Request Submitted</h3>
+        <p className="text-slate-600 dark:text-slate-400">Your borrow request has been sent to the lender.</p>
       </div>
 
       {/* Request Details */}
-      <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-6 text-left max-w-md mx-auto relative overflow-hidden">
+      <div className="bg-white dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 text-left max-w-md mx-auto relative overflow-hidden shadow-sm">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-emerald-500"></div>
         <div className="space-y-4">
-          <div className="flex justify-between items-center pb-4 border-b border-slate-800">
+          <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-800">
             <span className="text-slate-500 text-sm">Request ID</span>
-            <span className="font-bold text-slate-300 font-mono text-sm">{requestId}</span>
+            <span className="font-bold text-slate-700 dark:text-slate-300 font-mono text-sm">{requestId}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-500 text-sm">Lender</span>
-            <span className="font-bold text-white">{lenderName}</span>
+            <span className="font-bold text-slate-900 dark:text-white">{lenderName}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-500 text-sm">Amount</span>
-            <span className="font-bold text-purple-400 text-xl">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
+            <span className="font-bold text-purple-600 dark:text-purple-400 text-xl">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-500 text-sm">Method</span>
-            <span className="font-medium text-slate-300 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 text-sm">
+            <span className="font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-800 text-sm">
               {paymentMethod === 'soft-cash' ? 'Soft Cash (Digital)' : 'Hard Cash (Physical)'}
             </span>
           </div>
           <div className="flex justify-between items-center pt-2">
             <span className="text-slate-500 text-sm">Status</span>
-            <span className="px-3 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-full text-xs font-bold uppercase tracking-wide">
+            <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-500 border border-yellow-200 dark:border-yellow-500/20 rounded-full text-xs font-bold uppercase tracking-wide">
               Awaiting Approval
             </span>
           </div>
@@ -61,9 +61,9 @@ export default function BorrowConfirmation({ requestId, lenderName, amount, paym
       </div>
 
       {/* Info Message */}
-      <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-5 max-w-md mx-auto text-left">
-        <p className="text-sm text-blue-300/90 leading-relaxed">
-          <strong className="text-blue-400 block mb-1">What's Next?</strong>
+      <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-5 max-w-md mx-auto text-left">
+        <p className="text-sm text-blue-700 dark:text-blue-300/90 leading-relaxed">
+          <strong className="text-blue-800 dark:text-blue-400 block mb-1">What's Next?</strong>
           You will be notified once the lender responds to your request.
           {paymentMethod === 'soft-cash'
             ? ' If approved, the lender will transfer money to your bank account.'
@@ -83,7 +83,7 @@ export default function BorrowConfirmation({ requestId, lenderName, amount, paym
         </button>
         <button
           onClick={() => router.push('/dashboard')}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl font-bold transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl font-bold transition-colors"
         >
           Dashboard
           <ArrowRight className="w-4 h-4" />
@@ -91,7 +91,7 @@ export default function BorrowConfirmation({ requestId, lenderName, amount, paym
       </div>
 
       {/* Download Receipt Option */}
-      <button className="text-slate-500 hover:text-white font-medium text-sm flex items-center gap-2 mx-auto transition-colors group">
+      <button className="text-slate-500 hover:text-slate-900 dark:hover:text-white font-medium text-sm flex items-center gap-2 mx-auto transition-colors group">
         <Download className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
         Download Receipt
       </button>

@@ -9,10 +9,12 @@ import Link from 'next/link';
 import { handleUserRegistrationFlow } from '@/api/register-user-api';
 import Logo from '@/components/Logo';
 import { dark } from '@clerk/themes';
+import { useTheme } from 'next-themes';
 
 export default function LoginPage() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
+  const { resolvedTheme } = useTheme();
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
   // Check user registration status after login
@@ -47,13 +49,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
       {/* Background Effects */}
       <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] animate-blob"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[100px] animate-blob animation-delay-2000"></div>
 
       <div className="w-full max-w-md relative z-10">
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
+        <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl dark:shadow-none">
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <Logo size="lg" subtitle="Welcome back to AuramX" />
@@ -63,16 +65,16 @@ export default function LoginPage() {
           <div className="flex justify-center">
             <SignIn
               appearance={{
-                baseTheme: dark,
+                baseTheme: resolvedTheme === 'dark' ? dark : undefined,
                 elements: {
                   rootBox: "w-full",
                   card: "bg-transparent shadow-none p-0 w-full",
                   headerTitle: "hidden",
                   headerSubtitle: "hidden",
                   formButtonPrimary: "bg-blue-600 hover:bg-blue-500 text-white",
-                  formFieldInput: "bg-slate-950 border-slate-800 text-white",
-                  formFieldLabel: "text-slate-400",
-                  footerActionLink: "text-blue-400 hover:text-blue-300"
+                  formFieldInput: "bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white",
+                  formFieldLabel: "text-slate-600 dark:text-slate-400",
+                  footerActionLink: "text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
                 }
               }}
               routing="hash"
@@ -83,8 +85,8 @@ export default function LoginPage() {
           </div>
 
           {/* Back to Home */}
-          <div className="mt-8 text-center border-t border-slate-800 pt-6">
-            <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-white transition-colors">
+          <div className="mt-8 text-center border-t border-slate-200 dark:border-slate-800 pt-6">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back to Home
             </Link>
           </div>

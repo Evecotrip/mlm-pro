@@ -68,10 +68,10 @@ export default function AddMoneyPage() {
 
   if (!isLoaded || !user) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading...</p>
+          <Loader2 className="w-12 h-12 text-blue-600 dark:text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Loading...</p>
         </div>
       </div>
     );
@@ -214,7 +214,7 @@ export default function AddMoneyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30 transition-colors duration-300">
       <Navbar onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8 relative">
@@ -226,40 +226,42 @@ export default function AddMoneyPage() {
 
         <div className="relative z-10 max-w-4xl mx-auto">
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
               <button
                 onClick={() => router.push('/wallet')}
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group"
+                className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors group"
               >
                 <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                 <span className="font-medium">Back to Wallet</span>
               </button>
-              <button
-                onClick={() => router.push('/my-add-money-requests')}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-colors border border-slate-700 hover:border-slate-600"
-              >
-                <Clock className="w-4 h-4" />
-                <span className="hidden sm:inline">My Add Money Requests</span>
-              </button>
-              <button
-                onClick={() => router.push('/lend-requests')}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-colors border border-slate-700 hover:border-slate-600"
-              >
-                <Clock className="w-4 h-4" />
-                <span className="hidden sm:inline">Lending Requests</span>
-              </button>
-              <button
-                onClick={() => router.push('/my-borrow-requests')}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-colors border border-slate-700 hover:border-slate-600"
-              >
-                <Clock className="w-4 h-4" />
-                <span className="hidden sm:inline">My Borrow Requests</span>
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => router.push('/my-add-money-requests')}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-semibold transition-colors border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span className="hidden sm:inline">My Add Money Requests</span>
+                </button>
+                <button
+                  onClick={() => router.push('/lend-requests')}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-semibold transition-colors border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span className="hidden sm:inline">Lending Requests</span>
+                </button>
+                <button
+                  onClick={() => router.push('/my-borrow-requests')}
+                  className="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-semibold transition-colors border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
+                >
+                  <Clock className="w-4 h-4" />
+                  <span className="hidden sm:inline">My Borrow Requests</span>
+                </button>
+              </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
               Add Money to Wallet
             </h1>
-            <p className="text-slate-400">Choose your preferred method to add funds securely</p>
+            <p className="text-slate-600 dark:text-slate-400">Choose your preferred method to add funds securely</p>
           </div>
 
           {!selectedMethod ? (
@@ -268,21 +270,21 @@ export default function AddMoneyPage() {
               {/* Borrow Money */}
               <button
                 onClick={() => router.push('/borrow-add-money')}
-                className="group relative bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 text-left transition-all hover:scale-[1.02] hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 overflow-hidden"
+                className="group relative bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-left transition-all hover:scale-[1.02] hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 overflow-hidden shadow-sm dark:shadow-none"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20 group-hover:border-purple-500/50 transition-colors">
-                    <HandCoins className="w-8 h-8 text-purple-500" />
+                  <div className="w-16 h-16 bg-purple-100 dark:bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-200 dark:border-purple-500/20 group-hover:border-purple-500/50 transition-colors">
+                    <HandCoins className="w-8 h-8 text-purple-600 dark:text-purple-500" />
                   </div>
 
-                  <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Borrow from User</h2>
-                  <p className="text-slate-400 mb-6">
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Borrow from User</h2>
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">
                     Request funds directly from another platform user. Perfect for peer-to-peer transfers.
                   </p>
 
-                  <div className="flex items-center gap-2 text-sm font-bold text-purple-500">
+                  <div className="flex items-center gap-2 text-sm font-bold text-purple-600 dark:text-purple-500">
                     Select Method <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -291,21 +293,21 @@ export default function AddMoneyPage() {
               {/* Direct Add */}
               <button
                 onClick={() => router.push('/direct-add-money')}
-                className="group relative bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 text-left transition-all hover:scale-[1.02] hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 overflow-hidden"
+                className="group relative bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-left transition-all hover:scale-[1.02] hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 overflow-hidden shadow-sm dark:shadow-none"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/5 to-teal-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                 <div className="relative z-10">
-                  <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20 group-hover:border-emerald-500/50 transition-colors">
-                    <Wallet className="w-8 h-8 text-emerald-500" />
+                  <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 border border-emerald-200 dark:border-emerald-500/20 group-hover:border-emerald-500/50 transition-colors">
+                    <Wallet className="w-8 h-8 text-emerald-600 dark:text-emerald-500" />
                   </div>
 
-                  <h2 className="text-2xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">Direct Deposit</h2>
-                  <p className="text-slate-400 mb-6">
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Direct Deposit</h2>
+                  <p className="text-slate-600 dark:text-slate-400 mb-6">
                     Add funds directly using bank transfer, UPI, or other digital payment methods.
                   </p>
 
-                  <div className="flex items-center gap-2 text-sm font-bold text-emerald-500">
+                  <div className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-500">
                     Select Method <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -313,12 +315,12 @@ export default function AddMoneyPage() {
             </div>
           ) : selectedMethod === 'borrow' ? (
             /* Borrow Money Flow */
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 overflow-hidden">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm dark:shadow-none">
               {/* Header */}
-              <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
                 <div>
-                  <h2 className="text-xl font-bold text-white">Borrow Money Request</h2>
-                  <p className="text-sm text-slate-400">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Borrow Money Request</h2>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
                     {borrowStep === 'lender-details' && 'Enter lender details and amount'}
                     {borrowStep === 'payment-method' && 'Select payment method'}
                     {borrowStep === 'payment-details' && 'Provide payment details'}
@@ -327,7 +329,7 @@ export default function AddMoneyPage() {
                 </div>
                 <button
                   onClick={resetForm}
-                  className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                  className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -380,12 +382,12 @@ export default function AddMoneyPage() {
             </div>
           ) : (
             /* Direct Add Money Flow */
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 overflow-hidden">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm dark:shadow-none">
               {/* Header */}
-              <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
                 <div>
-                  <h2 className="text-xl font-bold text-white">Direct Add Money</h2>
-                  <p className="text-sm text-slate-400">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Direct Add Money</h2>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
                     {directStep === 'initial' && 'Enter amount to add'}
                     {directStep === 'payment-method' && 'Select payment method'}
                     {directStep === 'digital-options' && 'Choose digital payment option'}
@@ -394,7 +396,7 @@ export default function AddMoneyPage() {
                 </div>
                 <button
                   onClick={resetForm}
-                  className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                  className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>

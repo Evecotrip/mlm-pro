@@ -130,12 +130,12 @@ export default function LendRequestsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
-      case 'PROCESSING': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
-      case 'PENDING': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
-      case 'REJECTED': return 'text-red-400 bg-red-400/10 border-red-400/20';
-      case 'CANCELLED': return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
-      default: return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
+      case 'COMPLETED': return 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-400/10 border-emerald-200 dark:border-emerald-400/20';
+      case 'PROCESSING': return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-400/10 border-blue-200 dark:border-blue-400/20';
+      case 'PENDING': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-400/10 border-yellow-200 dark:border-yellow-400/20';
+      case 'REJECTED': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-400/10 border-red-200 dark:border-red-400/20';
+      case 'CANCELLED': return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
+      default: return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
     }
   };
 
@@ -158,17 +158,17 @@ export default function LendRequestsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading lend requests...</p>
+          <Loader2 className="w-12 h-12 text-blue-600 dark:text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Loading lend requests...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-blue-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30 transition-colors duration-300">
       <Navbar onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
@@ -176,7 +176,7 @@ export default function LendRequestsPage() {
           {/* Back Button */}
           <button
             onClick={() => router.push('/dashboard')}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
@@ -189,10 +189,10 @@ export default function LendRequestsPage() {
                 <HandCoins className="w-8 h-8 text-emerald-500" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                   Lend Requests
                 </h1>
-                <p className="text-slate-400">Borrow requests from users asking you to lend money</p>
+                <p className="text-slate-600 dark:text-slate-400">Borrow requests from users asking you to lend money</p>
               </div>
             </div>
           </div>
@@ -211,14 +211,14 @@ export default function LendRequestsPage() {
                   key={status}
                   onClick={() => setStatusFilter(status as any)}
                   className={`p-4 rounded-xl border transition-all text-left ${isActive
-                      ? 'bg-slate-800 border-blue-500/50 shadow-lg shadow-blue-500/10'
-                      : 'bg-slate-900/50 border-slate-800 hover:border-slate-700'
+                    ? 'bg-slate-200 dark:bg-slate-800 border-blue-500/50 shadow-lg shadow-blue-500/10'
+                    : 'bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                     }`}
                 >
-                  <p className={`text-2xl font-bold ${isActive ? 'text-white' : 'text-slate-300'}`}>
+                  <p className={`text-2xl font-bold ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'}`}>
                     {count}
                   </p>
-                  <p className="text-xs text-slate-500 mt-1 capitalize font-medium">
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 capitalize font-medium">
                     {status === 'all' ? 'Total' : status.toLowerCase()}
                   </p>
                 </button>
@@ -248,17 +248,17 @@ export default function LendRequestsPage() {
               {requests.map((request) => (
                 <div
                   key={request.id}
-                  className="group bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800 p-6 hover:border-blue-500/50 transition-all"
+                  className="group bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 p-6 hover:border-blue-500/50 transition-all shadow-sm dark:shadow-none"
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-4 mb-4">
-                        <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                          <HandCoins className="w-6 h-6 text-emerald-500" />
+                        <div className="p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                          <HandCoins className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
                         </div>
                         <div>
                           <div className="flex items-center gap-3 mb-1">
-                            <h3 className="text-2xl font-bold text-white">
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                               {request.amount} USDT
                             </h3>
                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1.5 uppercase tracking-wide ${getStatusColor(request.status)}`}>
@@ -266,42 +266,42 @@ export default function LendRequestsPage() {
                               {request.status}
                             </span>
                           </div>
-                          <p className="text-sm text-slate-500 font-mono">
+                          <p className="text-sm text-slate-500 dark:text-slate-500 font-mono">
                             ID: {request.id.slice(0, 12)}...
                           </p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-950/50 rounded-xl p-4 border border-slate-800">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl p-4 border border-slate-200 dark:border-slate-800">
                         <div>
-                          <p className="text-xs text-slate-500 mb-1">Borrower</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Borrower</p>
                           <div className="flex items-center gap-2">
-                            <User className="w-3.5 h-3.5 text-slate-400" />
-                            <p className="text-sm font-medium text-slate-200">
+                            <User className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
                               {request.borrower.firstName} {request.borrower.lastName}
                             </p>
                           </div>
                         </div>
 
                         <div>
-                          <p className="text-xs text-slate-500 mb-1">Payment Method</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Payment Method</p>
                           <div className="flex items-center gap-2">
                             {request.paymentMethod === 'ONLINE_TRANSFER' ? (
-                              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
+                              <CreditCard className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
                             ) : (
-                              <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                              <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
                             )}
-                            <p className="text-sm font-medium text-slate-200">
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
                               {request.paymentMethod === 'ONLINE_TRANSFER' ? 'Online' : 'Physical'}
                             </p>
                           </div>
                         </div>
 
                         <div>
-                          <p className="text-xs text-slate-500 mb-1">Created</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Created</p>
                           <div className="flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                            <p className="text-sm font-medium text-slate-200">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
                               {formatDate(request.createdAt)}
                             </p>
                           </div>
@@ -309,10 +309,10 @@ export default function LendRequestsPage() {
 
                         {request.completedAt && (
                           <div>
-                            <p className="text-xs text-slate-500 mb-1">Completed</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Completed</p>
                             <div className="flex items-center gap-2">
-                              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                              <p className="text-sm font-medium text-slate-200">
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500" />
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
                                 {formatDate(request.completedAt)}
                               </p>
                             </div>
@@ -321,17 +321,17 @@ export default function LendRequestsPage() {
                       </div>
 
                       {request.borrowerNotes && (
-                        <div className="mt-4 p-3 bg-blue-500/5 rounded-lg border border-blue-500/10">
-                          <p className="text-xs text-blue-400 mb-1 font-bold uppercase">Borrower's Notes</p>
-                          <p className="text-sm text-blue-200 italic">"{request.borrowerNotes}"</p>
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-500/5 rounded-lg border border-blue-200 dark:border-blue-500/10">
+                          <p className="text-xs text-blue-600 dark:text-blue-400 mb-1 font-bold uppercase">Borrower's Notes</p>
+                          <p className="text-sm text-blue-800 dark:text-blue-200 italic">"{request.borrowerNotes}"</p>
                         </div>
                       )}
 
                       {/* Contact Details for Physical Cash */}
                       {request.paymentMethod === 'PHYSICAL_CASH' && request.borrowerDetails.contactDetails && (
-                        <div className="mt-4 p-4 bg-slate-950 rounded-xl border border-slate-800">
-                          <p className="text-xs text-slate-500 mb-2 font-bold uppercase tracking-wider">Contact Details</p>
-                          <div className="text-sm text-slate-300 space-y-1">
+                        <div className="mt-4 p-4 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-2 font-bold uppercase tracking-wider">Contact Details</p>
+                          <div className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
                             <p>📍 {request.borrowerDetails.contactDetails.address}</p>
                             <p>{request.borrowerDetails.contactDetails.city}, {request.borrowerDetails.contactDetails.state}</p>
                             <p>{request.borrowerDetails.contactDetails.country} - {request.borrowerDetails.contactDetails.pinCode}</p>
@@ -364,7 +364,7 @@ export default function LendRequestsPage() {
                             setShowRejectModal(true);
                           }}
                           disabled={processingId === request.id}
-                          className="flex-1 lg:flex-none px-4 py-3 bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-500 border border-slate-700 hover:border-red-500/50 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                          className="flex-1 lg:flex-none px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-red-100 dark:hover:bg-red-500/20 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-500 border border-slate-300 dark:border-slate-700 hover:border-red-500/50 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                           <ThumbsDown className="w-4 h-4" />
                           Reject
@@ -376,11 +376,11 @@ export default function LendRequestsPage() {
               ))}
             </div>
           ) : !error ? (
-            <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-12 text-center">
-              <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HandCoins className="w-10 h-10 text-slate-600" />
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center shadow-sm dark:shadow-none">
+              <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <HandCoins className="w-10 h-10 text-slate-400 dark:text-slate-600" />
               </div>
-              <p className="text-slate-400 font-medium text-lg mb-2">No lend requests found</p>
+              <p className="text-slate-600 dark:text-slate-400 font-medium text-lg mb-2">No lend requests found</p>
               <p className="text-slate-500 text-sm">
                 {statusFilter !== 'all'
                   ? 'Try changing the status filter'
@@ -394,19 +394,19 @@ export default function LendRequestsPage() {
       {/* Approve Modal */}
       {showApproveModal && selectedRequest && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-4">Approve Borrow Request</h3>
-            <p className="text-slate-400 mb-6">
-              Approve <span className="text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-white font-bold">{selectedRequest.amount} USDT</span>?
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Approve Borrow Request</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              Approve <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} USDT</span>?
             </p>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Notes (Optional)
               </label>
               <textarea
                 value={lenderNotes}
                 onChange={(e) => setLenderNotes(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
                 rows={3}
                 placeholder="Add any notes for the borrower..."
               />
@@ -426,7 +426,7 @@ export default function LendRequestsPage() {
                   setSelectedRequest(null);
                 }}
                 disabled={processingId === selectedRequest.id}
-                className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -438,19 +438,19 @@ export default function LendRequestsPage() {
       {/* Reject Modal */}
       {showRejectModal && selectedRequest && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-xl font-bold text-white mb-4">Reject Borrow Request</h3>
-            <p className="text-slate-400 mb-6">
-              Reject <span className="text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-white font-bold">{selectedRequest.amount} USDT</span>?
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Reject Borrow Request</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              Reject <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} USDT</span>?
             </p>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Rejection Reason *
               </label>
               <textarea
                 value={lenderNotes}
                 onChange={(e) => setLenderNotes(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                 rows={3}
                 placeholder="Explain why you're rejecting this request..."
                 required
@@ -471,7 +471,7 @@ export default function LendRequestsPage() {
                   setSelectedRequest(null);
                 }}
                 disabled={processingId === selectedRequest.id}
-                className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

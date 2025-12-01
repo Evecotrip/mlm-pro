@@ -109,17 +109,17 @@ export default function ValidateAndRegisterUserPage() {
 
   if (!isLoaded || isCheckingStatus) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading...</p>
+          <Loader2 className="w-12 h-12 text-blue-600 dark:text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
       {/* Background Effects */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px]"></div>
@@ -131,22 +131,22 @@ export default function ValidateAndRegisterUserPage() {
           <Logo size="lg" className="justify-center mb-6" />
         </div>
 
-        <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 shadow-2xl">
+        <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xl dark:shadow-2xl">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20">
-              <ShieldCheck className="w-8 h-8 text-blue-500" />
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-500/20">
+              <ShieldCheck className="w-8 h-8 text-blue-600 dark:text-blue-500" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
               Enter Referral Code
             </h1>
-            <p className="text-slate-400">
+            <p className="text-slate-600 dark:text-slate-400">
               Please enter the referral code provided by your referrer to complete registration.
             </p>
           </div>
 
           <div className="space-y-6">
             <div>
-              <label htmlFor="referralCode" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="referralCode" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Referral Code
               </label>
               <div className="relative">
@@ -160,7 +160,7 @@ export default function ValidateAndRegisterUserPage() {
                     setError('');
                   }}
                   placeholder="Enter code (e.g., RE....)"
-                  className="w-full px-4 py-4 bg-slate-950 border border-slate-800 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase font-mono text-lg tracking-wider placeholder:normal-case placeholder:tracking-normal"
+                  className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase font-mono text-lg tracking-wider placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 dark:placeholder:text-slate-600"
                   disabled={isValidating || isRegistering}
                 />
               </div>
@@ -168,13 +168,13 @@ export default function ValidateAndRegisterUserPage() {
 
             {/* Validation Status */}
             {validationStatus.valid === true && (
-              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
-                <CheckCircle className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-3 p-4 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
+                <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-500 mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
-                  <p className="font-bold text-emerald-400">{validationStatus.message}</p>
+                  <p className="font-bold text-emerald-700 dark:text-emerald-400">{validationStatus.message}</p>
                   {validationStatus.referrerName && (
-                    <p className="text-emerald-200/80 mt-1">
-                      Referrer: <span className="text-white font-medium">{validationStatus.referrerName}</span>
+                    <p className="text-emerald-600/80 dark:text-emerald-200/80 mt-1">
+                      Referrer: <span className="text-slate-900 dark:text-white font-medium">{validationStatus.referrerName}</span>
                     </p>
                   )}
                 </div>
@@ -182,19 +182,19 @@ export default function ValidateAndRegisterUserPage() {
             )}
 
             {validationStatus.valid === false && (
-              <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
-                <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-3 p-4 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
+                <XCircle className="w-5 h-5 text-red-600 dark:text-red-500 mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
-                  <p className="font-bold text-red-400">{validationStatus.message}</p>
+                  <p className="font-bold text-red-700 dark:text-red-400">{validationStatus.message}</p>
                 </div>
               </div>
             )}
 
             {error && (
-              <div className="flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
-                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-3 p-4 bg-red-100 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl animate-in fade-in slide-in-from-top-2">
+                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-500 mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
-                  <p className="font-bold text-red-400">{error}</p>
+                  <p className="font-bold text-red-700 dark:text-red-400">{error}</p>
                 </div>
               </div>
             )}
@@ -242,10 +242,10 @@ export default function ValidateAndRegisterUserPage() {
           </div>
 
           {/* Info Box */}
-          <div className="mt-8 pt-6 border-t border-slate-800 text-center">
-            <p className="text-sm text-slate-400">
+          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Need a referral code? <br />
-              <span className="text-blue-400">Contact your referrer for assistance.</span>
+              <span className="text-blue-600 dark:text-blue-400">Contact your referrer for assistance.</span>
             </p>
           </div>
         </div>
