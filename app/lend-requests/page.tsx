@@ -66,6 +66,7 @@ export default function LendRequestsPage() {
 
       if (response.success && response.data) {
         const requestsData = Array.isArray(response.data) ? response.data : (response.data.data || []);
+        console.log('Fetched requests:', requestsData);
         setRequests(requestsData);
       } else {
         setError(response.error || 'Failed to fetch requests');
