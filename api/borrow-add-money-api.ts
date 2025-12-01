@@ -351,6 +351,9 @@ export async function getReceivedBorrowRequests(
     return result;
   } catch (error) {
     console.error('Error fetching received borrow requests');
+
+    console.error('Error details:', error);
+    
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
