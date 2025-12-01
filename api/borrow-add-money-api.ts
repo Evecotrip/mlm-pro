@@ -1,6 +1,6 @@
 import { getTokenFromCookies } from './register-user-api';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001';
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
 
 // ==================== INTERFACES ====================
 
@@ -352,7 +352,7 @@ export async function getReceivedBorrowRequests(
   } catch (error) {
     console.error('Error fetching received borrow requests');
 
-    console.error('Error details:', error);
+    //console.error('Error details:', error);
     
     return {
       success: false,
