@@ -191,48 +191,48 @@ export default function WalletPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-blue-500/30 transition-colors duration-300">
       <Navbar onLogout={handleLogout} showWalletButton={false} />
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-3 gap-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
 
           {/* Left Column: Balance Card & Quick Actions */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* Balance Card */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 to-purple-700 p-8 shadow-2xl border border-white/10 group">
+            <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-blue-600 to-purple-700 p-5 sm:p-8 shadow-2xl border border-white/10 group">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-500"></div>
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/20 rounded-full blur-3xl"></div>
 
               <div className="relative z-10">
-                <div className="flex justify-between items-start mb-8">
+                <div className="flex justify-between items-start mb-5 sm:mb-8">
                   <div>
-                    <p className="text-blue-100 text-sm font-medium mb-1">Total Balance</p>
-                    <h2 className="text-4xl font-bold text-white tracking-tight">{availableBalance.toLocaleString('en-IN')} <span className="text-lg opacity-70">USDT</span></h2>
+                    <p className="text-blue-100 text-xs sm:text-sm font-medium mb-1">Total Balance</p>
+                    <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">{availableBalance.toLocaleString('en-IN')} <span className="text-sm sm:text-lg opacity-70">USDT</span></h2>
                   </div>
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
-                    <Wallet className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl flex items-center justify-center border border-white/20">
+                    <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
 
-                <div className="space-y-1 mb-8">
-                  <div className="flex justify-between text-sm text-blue-100/80">
+                <div className="space-y-1 mb-5 sm:mb-8">
+                  <div className="flex justify-between text-xs sm:text-sm text-blue-100/80">
                     <span>Total Earnings</span>
                     <span className="font-medium text-white">{parseFloat(earnings?.total || '0').toLocaleString('en-IN')} USDT</span>
                   </div>
-                  <div className="flex justify-between text-sm text-blue-100/80">
+                  <div className="flex justify-between text-xs sm:text-sm text-blue-100/80">
                     <span>Total Invested</span>
                     <span className="font-medium text-white">{parseFloat(statistics?.totalInvested || '0').toLocaleString('en-IN')} USDT</span>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3">
                   <button
                     onClick={() => router.push('/add-money')}
-                    className="flex-1 bg-white text-blue-600 py-3 rounded-xl font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg"
+                    className="flex-1 bg-white text-blue-600 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-50 transition-colors shadow-lg"
                   >
                     Add Money
                   </button>
                   <button
                     onClick={() => router.push('/withdrawals')}
-                    className="flex-1 bg-blue-800/50 backdrop-blur-md text-white border border-blue-400/30 py-3 rounded-xl font-bold text-sm hover:bg-blue-800/70 transition-colors"
+                    className="flex-1 bg-blue-800/50 backdrop-blur-md text-white border border-blue-400/30 py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm hover:bg-blue-800/70 transition-colors"
                   >
                     Withdraw
                   </button>
@@ -241,26 +241,26 @@ export default function WalletPage() {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-none">
-                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-3">
-                  <ArrowDownRight className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm dark:shadow-none">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3">
+                  <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-500" />
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 text-xs mb-1">Total Credit</p>
-                <p className="text-lg font-bold text-slate-900 dark:text-white">{totalCredit.toLocaleString('en-IN')}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mb-1">Total Credit</p>
+                <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{totalCredit.toLocaleString('en-IN')}</p>
               </div>
-              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-none">
-                <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center mb-3">
-                  <ArrowUpRight className="w-5 h-5 text-red-600 dark:text-red-500" />
+              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm dark:shadow-none">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3">
+                  <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-500" />
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 text-xs mb-1">Total Debit</p>
-                <p className="text-lg font-bold text-slate-900 dark:text-white">{totalDebit.toLocaleString('en-IN')}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mb-1">Total Debit</p>
+                <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{totalDebit.toLocaleString('en-IN')}</p>
               </div>
             </div>
 
             {/* Wallet Breakdown */}
             {breakdown && (
-              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm dark:shadow-none">
+              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm dark:shadow-none">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Wallet Breakdown</h3>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -295,7 +295,7 @@ export default function WalletPage() {
             {/* Transfer Action */}
             <button
               onClick={() => setShowTransferForm(true)}
-              className="w-full bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between group hover:border-blue-500/50 transition-all shadow-sm dark:shadow-none"
+              className="w-full bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 flex items-center justify-between group hover:border-blue-500/50 transition-all shadow-sm dark:shadow-none"
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
@@ -313,57 +313,59 @@ export default function WalletPage() {
           </div>
 
           {/* Right Column: Transactions & Balance Logs */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-6 min-h-[600px] shadow-sm dark:shadow-none">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 min-h-[400px] sm:min-h-[600px] shadow-sm dark:shadow-none">
               {/* Tab Navigation */}
-              <div className="flex items-center gap-4 mb-6 border-b border-slate-200 dark:border-slate-800 pb-4">
+              <div className="flex items-center gap-2 sm:gap-4 mb-4 sm:mb-6 border-b border-slate-200 dark:border-slate-800 pb-3 sm:pb-4 overflow-x-auto scrollbar-hide">
                 <button
                   onClick={() => setActiveTab('transactions')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${activeTab === 'transactions'
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${activeTab === 'transactions'
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                 >
-                  <CreditCard className="w-4 h-4" />
-                  Transactions
+                  <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Transactions</span>
+                  <span className="sm:hidden">Txns</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('logs')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${activeTab === 'logs'
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${activeTab === 'logs'
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                 >
-                  <FileText className="w-4 h-4" />
-                  Balance Logs
+                  <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  Logs
                 </button>
                 <button
                   onClick={() => setActiveTab('commissions')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${activeTab === 'commissions'
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${activeTab === 'commissions'
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                 >
-                  <Award className="w-4 h-4" />
-                  Commissions
+                  <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Commissions</span>
+                  <span className="sm:hidden">Comm</span>
                 </button>
               </div>
 
               {/* Transactions Tab */}
               {activeTab === 'transactions' && (
                 <>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">Transactions</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Recent activity on your wallet</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Transactions</h3>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Recent activity on your wallet</p>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-950 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 dark:bg-slate-950 rounded-lg sm:rounded-xl p-1 border border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-hide w-full sm:w-auto">
                       {['all', 'COMMISSION', 'INVESTMENT', 'WITHDRAWAL'].map((f) => (
                         <button
                           key={f}
                           onClick={() => setFilter(f)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${filter === f
+                          className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all whitespace-nowrap ${filter === f
                             ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                             }`}
@@ -374,7 +376,7 @@ export default function WalletPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {filteredTransactions.length === 0 ? (
                       <div className="text-center py-20">
                         <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -386,36 +388,36 @@ export default function WalletPage() {
                       filteredTransactions.map((txn) => (
                         <div
                           key={txn.id}
-                          className="group flex items-center justify-between p-4 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-800"
+                          className="group flex items-start sm:items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-800 gap-2 sm:gap-3"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isCredit(txn.direction) ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500' : 'bg-red-500/10 text-red-600 dark:text-red-500'
+                          <div className="flex items-start sm:items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                            <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 ${isCredit(txn.direction) ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500' : 'bg-red-500/10 text-red-600 dark:text-red-500'
                               }`}>
                               {getTypeIcon(txn.type)}
                             </div>
-                            <div className="flex-1">
-                              <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm mb-0.5 truncate">
                                 {txn.description || txn.type.replace(/_/g, ' ')}
                               </h4>
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="text-xs text-slate-500">{formatDate(txn.createdAt)}</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded border ${getStatusColor(txn.status)}`}>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                                <span className="text-[10px] sm:text-xs text-slate-500 whitespace-nowrap">{formatDate(txn.createdAt)}</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded border ${getStatusColor(txn.status)} w-fit`}>
                                   {txn.status}
                                 </span>
                                 {txn.direction === 'SENT' && txn.receiver && (
-                                  <span className="text-xs text-slate-500">To: {txn.receiver.firstName} {txn.receiver.lastName}</span>
+                                  <span className="text-[10px] sm:text-xs text-slate-500 truncate">To: {txn.receiver.firstName} {txn.receiver.lastName}</span>
                                 )}
                                 {txn.direction === 'RECEIVED' && txn.sender && (
-                                  <span className="text-xs text-slate-500">From: {txn.sender.firstName} {txn.sender.lastName}</span>
+                                  <span className="text-[10px] sm:text-xs text-slate-500 truncate">From: {txn.sender.firstName} {txn.sender.lastName}</span>
                                 )}
                               </div>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className={`font-bold ${isCredit(txn.direction) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
+                          <div className="text-right shrink-0 ml-2">
+                            <p className={`font-bold text-sm sm:text-base whitespace-nowrap ${isCredit(txn.direction) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
                               {isCredit(txn.direction) ? '+' : '-'}{parseFloat(txn.amount).toLocaleString('en-IN')}
                             </p>
-                            <p className="text-xs text-slate-500">USDT</p>
+                            <p className="text-[10px] sm:text-xs text-slate-500">USDT</p>
                           </div>
                         </div>
                       ))
@@ -427,18 +429,18 @@ export default function WalletPage() {
               {/* Balance Logs Tab */}
               {activeTab === 'logs' && (
                 <>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">Balance Logs</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Detailed balance change history</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Balance Logs</h3>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Detailed balance change history</p>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-950 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 dark:bg-slate-950 rounded-lg sm:rounded-xl p-1 border border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-hide w-full sm:w-auto">
                       {['all', 'CREDIT', 'DEBIT', 'LOCK'].map((f) => (
                         <button
                           key={f}
                           onClick={() => setLogFilter(f as 'all' | 'CREDIT' | 'DEBIT' | 'LOCK')}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${logFilter === f
+                          className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all whitespace-nowrap ${logFilter === f
                             ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                             }`}
@@ -449,7 +451,7 @@ export default function WalletPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {isLoadingBalanceLogs ? (
                       <div className="text-center py-20">
                         <Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-4" />
@@ -534,18 +536,18 @@ export default function WalletPage() {
               {/* Commissions Tab */}
               {activeTab === 'commissions' && (
                 <>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">Commissions</h3>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">Your referral and profit commissions</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Commissions</h3>
+                      <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Your referral and profit commissions</p>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-950 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 dark:bg-slate-950 rounded-lg sm:rounded-xl p-1 border border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-hide w-full sm:w-auto">
                       {['all', 'REFERRAL_BONUS', 'PROFIT_DISTRIBUTION'].map((f) => (
                         <button
                           key={f}
                           onClick={() => setCommissionFilter(f as any)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${commissionFilter === f
+                          className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all whitespace-nowrap ${commissionFilter === f
                             ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                             }`}
@@ -558,7 +560,7 @@ export default function WalletPage() {
 
                   {/* Commission Stats Cards */}
                   {commissionStats && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                       <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl p-4">
                         <p className="text-xs text-emerald-600 dark:text-emerald-400 mb-1">Total Earned</p>
                         <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{parseFloat(commissionStats.totalEarned).toLocaleString('en-IN')}</p>

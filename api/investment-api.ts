@@ -498,7 +498,7 @@ export async function getPendingApprovals(
 
     const result = await response.json();
 
-    //console.log("URL:", url);
+    console.log("URL:", url);
 
     //console.log('Pending approvals response:', result);
     //console.log('Response status:', response.status);

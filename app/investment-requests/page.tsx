@@ -43,13 +43,13 @@ export default function InvestmentRequestsPage() {
     try {
       const filters: PendingApprovalsFilters = {
         page: 1,
-        limit: 50
+        limit: 60
       };
       if (profileFilter !== 'all') {
         filters.profile = profileFilter;
       }
       const response = await getPendingApprovals(filters);
-      //console.log('Fetched investments response:', response);
+      console.log('Fetched investments response:', response);
       if (response.success && response.data) {
         // response.data is already the array of investments
         const investmentsArray = Array.isArray(response.data) ? response.data : (response.data.data || []);

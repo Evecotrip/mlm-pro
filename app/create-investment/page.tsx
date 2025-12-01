@@ -372,7 +372,7 @@ function CreateInvestmentContent() {
               </p>
             </div>
 
-            {/* Expected Returns Display */}
+            {/* Expected Returns Display 
             {amount && parseFloat(amount) > 0 && (
               <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-6 mb-6">
                 <p className="text-sm text-emerald-600 dark:text-emerald-400 mb-4 font-medium">Expected Returns Calculator</p>
@@ -393,7 +393,8 @@ function CreateInvestmentContent() {
                 </div>
               </div>
             )}
-
+              */}
+              
             {/* Notes Input */}
             <div className="mb-8">
               <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
