@@ -69,6 +69,7 @@ export default function LendRequestsPage() {
         console.log('Fetched requests:', requestsData);
         setRequests(requestsData);
       } else {
+        console.log('API response:', response);
         setError(response.error || 'Failed to fetch requests');
         setRequests([]);
       }
