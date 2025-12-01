@@ -49,11 +49,11 @@ export default function InvestmentRequestsPage() {
         filters.profile = profileFilter;
       }
       const response = await getPendingApprovals(filters);
-      console.log('Fetched investments response:', response);
+      //console.log('Fetched investments response:', response);
       if (response.success && response.data) {
         // response.data is already the array of investments
         const investmentsArray = Array.isArray(response.data) ? response.data : (response.data.data || []);
-        console.log('Setting investments:', investmentsArray);
+        //console.log('Setting investments:', investmentsArray);
         setInvestments(investmentsArray);
       }
     } catch (error) {
@@ -70,14 +70,14 @@ export default function InvestmentRequestsPage() {
   const handleApprove = async () => {
     if (!selectedInvestment) return;
 
-    console.log('Approving investment:', selectedInvestment.id, 'with notes:', adminNotes);
+    //console.log('Approving investment:', selectedInvestment.id, 'with notes:', adminNotes);
     setProcessingId(selectedInvestment.id);
     try {
       const response = await approveInvestment(selectedInvestment.id, adminNotes);
-      console.log('Approve response:', response);
+      //console.log('Approve response:', response);
 
       if (response.success) {
-        console.log('Investment approved successfully');
+        //console.log('Investment approved successfully');
         setShowApproveModal(false);
         setAdminNotes('');
         setSelectedInvestment(null);
@@ -97,14 +97,14 @@ export default function InvestmentRequestsPage() {
   const handleReject = async () => {
     if (!selectedInvestment || !rejectionReason.trim()) return;
 
-    console.log('Rejecting investment:', selectedInvestment.id, 'with reason:', rejectionReason);
+    //console.log('Rejecting investment:', selectedInvestment.id, 'with reason:', rejectionReason);
     setProcessingId(selectedInvestment.id);
     try {
       const response = await rejectInvestment(selectedInvestment.id, rejectionReason);
-      console.log('Reject response:', response);
+      //console.log('Reject response:', response);
 
       if (response.success) {
-        console.log('Investment rejected successfully');
+        //console.log('Investment rejected successfully');
         setShowRejectModal(false);
         setRejectionReason('');
         setSelectedInvestment(null);

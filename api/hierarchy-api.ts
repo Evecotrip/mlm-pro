@@ -159,7 +159,7 @@ export async function getHierarchyTree(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching hierarchy tree:", error);
+    console.error("Error fetching hierarchy tree");
     return {
       success: false,
       message: "Network error while fetching hierarchy tree",
@@ -205,7 +205,7 @@ export async function searchHierarchy(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error searching hierarchy:", error);
+    console.error("Error searching hierarchy");
     return {
       success: false,
       message: "Network error while searching hierarchy",
@@ -250,7 +250,7 @@ export async function getMembersAtLevel(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(`Error fetching members at level ${level}:`, error);
+    console.error(`Error fetching members at level ${level}`);
     return {
       success: false,
       message: "Network error while fetching level members",
@@ -292,7 +292,7 @@ export async function getHierarchyStats(): Promise<ApiResponse<HierarchyStats>> 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching hierarchy statistics:", error);
+    console.error("Error fetching hierarchy statistics");
     return {
       success: false,
       message: "Network error while fetching hierarchy statistics",

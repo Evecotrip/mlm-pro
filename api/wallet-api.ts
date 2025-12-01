@@ -218,7 +218,7 @@ export async function getWallet(): Promise<ApiResponse<WalletData>> {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching wallet:", error);
+    console.error("Error fetching wallet");
     return {
       success: false,
       message: "Network error while fetching wallet data",
@@ -293,7 +293,7 @@ export async function getTransactions(
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching transactions:", error);
+    console.error("Error fetching transactions");
     return {
       success: false,
       message: "Network error while fetching transactions",
@@ -368,7 +368,7 @@ export async function getBalanceLogs(
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching balance logs:", error);
+    console.error("Error fetching balance logs");
     return {
       success: false,
       message: "Network error while fetching balance logs",
@@ -409,7 +409,7 @@ export async function getWalletStats(): Promise<ApiResponse<WalletStats>> {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching wallet stats:", error);
+    console.error("Error fetching wallet stats");
     return {
       success: false,
       message: "Network error while fetching wallet stats",

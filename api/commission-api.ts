@@ -109,7 +109,7 @@ export async function getMyCommissions(
       queryParams.toString() ? `?${queryParams.toString()}` : ''
     }`;
 
-    console.log('Fetching commissions:', url);
+    //console.log('Fetching commissions:', url);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -120,7 +120,7 @@ export async function getMyCommissions(
     });
 
     const result = await response.json();
-    console.log('Commissions response:', result);
+    //console.log('Commissions response:', result);
 
     if (!response.ok) {
       return {
@@ -131,7 +131,7 @@ export async function getMyCommissions(
 
     return result;
   } catch (error) {
-    console.error('Error fetching commissions:', error);
+    console.error('Error fetching commissions');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -169,7 +169,7 @@ export async function getCommissionById(
     );
 
     const result = await response.json();
-    console.log('Commission details response:', result);
+    //console.log('Commission details response:', result);
 
     if (!response.ok) {
       return {
@@ -180,7 +180,7 @@ export async function getCommissionById(
 
     return result;
   } catch (error) {
-    console.error('Error fetching commission details:', error);
+    console.error('Error fetching commission details');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -215,7 +215,7 @@ export async function getMyCommissionStats(): Promise<ApiResponse<CommissionStat
     );
 
     const result = await response.json();
-    console.log('Commission stats response:', result);
+    //console.log('Commission stats response:', result);
 
     if (!response.ok) {
       return {
@@ -226,7 +226,7 @@ export async function getMyCommissionStats(): Promise<ApiResponse<CommissionStat
 
     return result;
   } catch (error) {
-    console.error('Error fetching commission stats:', error);
+    console.error('Error fetching commission stats');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -264,7 +264,7 @@ export async function getCommissionsByInvestment(
     );
 
     const result = await response.json();
-    console.log('Investment commissions response:', result);
+    //console.log('Investment commissions response:', result);
 
     if (!response.ok) {
       return {
@@ -275,7 +275,7 @@ export async function getCommissionsByInvestment(
 
     return result;
   } catch (error) {
-    console.error('Error fetching investment commissions:', error);
+    console.error('Error fetching investment commissions');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'

@@ -115,7 +115,7 @@ export async function getPendingApprovals(
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching pending approvals:", error);
+    console.error("Error fetching pending approvals");
     return {
       success: false,
       message: "Network error while fetching pending approvals",
@@ -161,7 +161,7 @@ export async function getPendingApprovalCount(): Promise<
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching pending approval count:", error);
+    console.error("Error fetching pending approval count");
     return {
       success: false,
       message: "Network error while fetching pending approval count",
@@ -216,7 +216,7 @@ export async function processApproval(
 
     return await response.json();
   } catch (error) {
-    console.error("Error processing approval:", error);
+    console.error("Error processing approval");
     return {
       success: false,
       message: "Network error while processing approval",
@@ -302,7 +302,7 @@ export async function getAllApprovals(
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching approvals:", error);
+    console.error("Error fetching approvals");
     return {
       success: false,
       message: "Network error while fetching approvals",
@@ -349,7 +349,7 @@ export async function getApprovalById(
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching approval details:", error);
+    console.error("Error fetching approval details");
     return {
       success: false,
       message: "Network error while fetching approval details",

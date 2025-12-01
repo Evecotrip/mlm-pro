@@ -207,7 +207,7 @@ export async function getExchangeRate(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching exchange rate:", error);
+    console.error("Error fetching exchange rate");
     return {
       success: false,
       message: "Failed to fetch exchange rate",
@@ -250,7 +250,7 @@ export async function calculateConversion(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error calculating conversion:", error);
+    console.error("Error calculating conversion");
     return {
       success: false,
       message: "Failed to calculate conversion",
@@ -288,7 +288,7 @@ export async function createAddMoneyRequest(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creating add money request:", error);
+    console.error("Error creating add money request");
     return {
       success: false,
       message: "Failed to create add money request",
@@ -335,7 +335,7 @@ export async function getMyAddMoneyRequests(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching add money requests:", error);
+    console.error("Error fetching add money requests");
     return {
       success: false,
       message: "Failed to fetch add money requests",
@@ -375,7 +375,7 @@ export async function getBankDetailsForCurrency(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching bank details:", error);
+    console.error("Error fetching bank details");
     return {
       success: false,
       message: "Failed to fetch bank details",
@@ -415,7 +415,7 @@ export async function getAddMoneyRequestById(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching add money request:", error);
+    console.error("Error fetching add money request");
     return {
       success: false,
       message: "Failed to fetch add money request",
@@ -461,7 +461,7 @@ export async function uploadPaymentProof(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error uploading payment proof:", error);
+    console.error("Error uploading payment proof");
     return {
       success: false,
       message: "Failed to upload payment proof",

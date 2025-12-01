@@ -93,7 +93,7 @@ export async function validateReferralCode(
 
     return await response.json();
   } catch (error) {
-    console.error("Error validating referral code:", error);
+    console.error("Error validating referral code");
     return {
       success: false,
       message: "Network error while validating referral code",
@@ -133,7 +133,7 @@ export async function registerUser(
 
     return await response.json();
   } catch (error) {
-    console.error("Error registering user:", error);
+    console.error("Error registering user");
     return {
       success: false,
       message: "Network error while registering user",
@@ -170,7 +170,7 @@ export async function checkUserExists(
 
     return await response.json();
   } catch (error) {
-    console.error("Error checking user existence:", error);
+    console.error("Error checking user existence");
     return {
       success: false,
       message: "Network error while checking user existence",
@@ -207,7 +207,7 @@ export async function generateToken(
 
     return await response.json();
   } catch (error) {
-    console.error("Error generating token:", error);
+    console.error("Error generating token");
     return {
       success: false,
       message: "Network error while generating token",
@@ -242,7 +242,7 @@ export async function getUserProfile(
 
     return await response.json();
   } catch (error) {
-    console.error("Error getting user profile:", error);
+    console.error("Error getting user profile");
     return {
       success: false,
       message: "Network error while getting user profile",
@@ -348,7 +348,7 @@ export async function handleUserRegistrationFlow(clerkUserId: string): Promise<{
       };
     }
   } catch (error) {
-    console.error("Error in registration flow:", error);
+    console.error("Error in registration flow");
     return {
       redirectTo: "/login",
       message: "An error occurred. Please try again.",

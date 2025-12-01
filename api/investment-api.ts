@@ -182,7 +182,7 @@ export async function getExchangeRate(
 
     return result;
   } catch (error) {
-    console.error('Error fetching exchange rate:', error);
+    console.error('Error fetching exchange rate');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -226,7 +226,7 @@ export async function getInvestmentProfiles(): Promise<ApiResponse<InvestmentPro
 
     return result;
   } catch (error) {
-    console.error('Error fetching investment profiles:', error);
+    console.error('Error fetching investment profiles');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -273,7 +273,7 @@ export async function createInvestment(
 
     return result;
   } catch (error) {
-    console.error('Error creating investment:', error);
+    console.error('Error creating investment');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -345,7 +345,7 @@ export async function getInvestments(
       }
     };
   } catch (error) {
-    console.error('Error fetching investments:', error);
+    console.error('Error fetching investments');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -391,7 +391,7 @@ export async function getInvestmentById(
 
     return result;
   } catch (error) {
-    console.error('Error fetching investment:', error);
+    console.error('Error fetching investment');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -435,7 +435,7 @@ export async function getInvestmentStats(): Promise<ApiResponse<InvestmentStats>
 
     return result;
   } catch (error) {
-    console.error('Error fetching investment statistics:', error);
+    console.error('Error fetching investment statistics');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -498,10 +498,10 @@ export async function getPendingApprovals(
 
     const result = await response.json();
 
-    console.log("URL:", url);
+    //console.log("URL:", url);
 
-    console.log('Pending approvals response:', result);
-    console.log('Response status:', response.status);
+    //console.log('Pending approvals response:', result);
+    //console.log('Response status:', response.status);
 
     if (!response.ok) {
       return {
@@ -512,7 +512,7 @@ export async function getPendingApprovals(
 
     return result;
   } catch (error) {
-    console.error('Error fetching pending approvals:', error);
+    console.error('Error fetching pending approvals');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -546,7 +546,7 @@ export async function approveInvestment(
       body.adminNotes = adminNotes.trim();
     }
 
-    console.log('Approve investment API call:', { investmentId, body });
+    //console.log('Approve investment API call:', { investmentId, body });
 
     const response = await fetch(
       `${BASE_URL}/api/v1/investments/${investmentId}/approve`,
@@ -561,7 +561,7 @@ export async function approveInvestment(
     );
 
     const result = await response.json();
-    console.log('Approve investment API response:', { status: response.status, result });
+    //console.log('Approve investment API response:', { status: response.status, result });
 
     if (!response.ok) {
       return {
@@ -572,7 +572,7 @@ export async function approveInvestment(
 
     return result;
   } catch (error) {
-    console.error('Error approving investment:', error);
+    console.error('Error approving investment');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -601,7 +601,7 @@ export async function rejectInvestment(
     }
 
     const body = { rejectionReason: rejectionReason.trim() };
-    console.log('Reject investment API call:', { investmentId, body });
+    //console.log('Reject investment API call:', { investmentId, body });
 
     const response = await fetch(
       `${BASE_URL}/api/v1/investments/${investmentId}/reject`,
@@ -616,7 +616,7 @@ export async function rejectInvestment(
     );
 
     const result = await response.json();
-    console.log('Reject investment API response:', { status: response.status, result });
+    //console.log('Reject investment API response:', { status: response.status, result });
 
     if (!response.ok) {
       return {
@@ -627,7 +627,7 @@ export async function rejectInvestment(
 
     return result;
   } catch (error) {
-    console.error('Error rejecting investment:', error);
+    console.error('Error rejecting investment');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'

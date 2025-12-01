@@ -145,7 +145,7 @@ export async function createTransferRequest(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creating transfer request:", error);
+    console.error("Error creating transfer request");
     return {
       success: false,
       message: "Network error while creating transfer request",
@@ -203,7 +203,7 @@ export async function getTransfers(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching transfers:", error);
+    console.error("Error fetching transfers");
     return {
       success: false,
       message: "Network error while fetching transfers",
@@ -288,7 +288,7 @@ export async function acceptTransfer(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error accepting transfer:", error);
+    console.error("Error accepting transfer");
     return {
       success: false,
       message: "Network error while accepting transfer",
@@ -333,7 +333,7 @@ export async function rejectTransfer(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error rejecting transfer:", error);
+    console.error("Error rejecting transfer");
     return {
       success: false,
       message: "Network error while rejecting transfer",
@@ -375,7 +375,7 @@ export async function getTransferStats(): Promise<ApiResponse<TransferStats>> {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching transfer statistics:", error);
+    console.error("Error fetching transfer statistics");
     return {
       success: false,
       message: "Network error while fetching transfer statistics",

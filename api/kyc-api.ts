@@ -224,7 +224,7 @@ export async function uploadAadhaarFront(file: File): Promise<ApiResponse<KYCDoc
 
     return await response.json();
   } catch (error) {
-    console.error('Error uploading Aadhaar front:', error);
+    console.error('Error uploading Aadhaar front');
     return {
       success: false,
       error: 'Failed to upload Aadhaar front image',
@@ -251,7 +251,7 @@ export async function uploadAadhaarBack(file: File): Promise<ApiResponse<KYCDocu
 
     return await response.json();
   } catch (error) {
-    console.error('Error uploading Aadhaar back:', error);
+    console.error('Error uploading Aadhaar back');
     return {
       success: false,
       error: 'Failed to upload Aadhaar back image',
@@ -278,7 +278,7 @@ export async function uploadPanCard(file: File): Promise<ApiResponse<KYCDocument
 
     return await response.json();
   } catch (error) {
-    console.error('Error uploading PAN card:', error);
+    console.error('Error uploading PAN card');
     return {
       success: false,
       error: 'Failed to upload PAN card image',
@@ -305,7 +305,7 @@ export async function uploadSelfie(file: File): Promise<ApiResponse<KYCDocument>
 
     return await response.json();
   } catch (error) {
-    console.error('Error uploading selfie:', error);
+    console.error('Error uploading selfie');
     return {
       success: false,
       error: 'Failed to upload selfie',
@@ -332,7 +332,7 @@ export async function uploadBankProof(file: File): Promise<ApiResponse<KYCDocume
 
     return await response.json();
   } catch (error) {
-    console.error('Error uploading bank proof:', error);
+    console.error('Error uploading bank proof');
     return {
       success: false,
       error: 'Failed to upload bank proof',
@@ -359,7 +359,7 @@ export async function uploadAddressProof(file: File): Promise<ApiResponse<KYCDoc
 
     return await response.json();
   } catch (error) {
-    console.error('Error uploading address proof:', error);
+    console.error('Error uploading address proof');
     return {
       success: false,
       error: 'Failed to upload address proof',
@@ -389,7 +389,7 @@ export async function uploadDocument(
 
     return await response.json();
   } catch (error) {
-    console.error(`Error uploading ${documentType}:`, error);
+    console.error(`Error uploading ${documentType}`);
     return {
       success: false,
       error: `Failed to upload ${documentType}`,
@@ -413,7 +413,7 @@ export async function submitKYC(data: SubmitKYCRequest): Promise<ApiResponse<KYC
 
     return await response.json();
   } catch (error) {
-    console.error('Error submitting KYC:', error);
+    console.error('Error submitting KYC');
     return {
       success: false,
       error: 'Failed to submit KYC for review',
@@ -435,7 +435,7 @@ export async function getKYCStatus(): Promise<ApiResponse<KYCResponse>> {
 
     return await response.json();
   } catch (error) {
-    console.error('Error fetching KYC status:', error);
+    console.error('Error fetching KYC status');
     return {
       success: false,
       error: 'Failed to fetch KYC status',
@@ -457,7 +457,7 @@ export async function deleteDocument(documentType: DocumentType): Promise<ApiRes
 
     return await response.json();
   } catch (error) {
-    console.error(`Error deleting ${documentType}:`, error);
+    console.error(`Error deleting ${documentType}`);
     return {
       success: false,
       error: `Failed to delete ${documentType}`,

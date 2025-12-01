@@ -147,7 +147,7 @@ export async function createBorrowRequest(
 
     return result;
   } catch (error) {
-    console.error('Error creating borrow request:', error);
+    console.error('Error creating borrow request');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -201,7 +201,7 @@ export async function getSentBorrowRequests(
 
     return result;
   } catch (error) {
-    console.error('Error fetching sent borrow requests:', error);
+    console.error('Error fetching sent borrow requests');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -246,7 +246,7 @@ export async function getBorrowRequestById(
 
     return result;
   } catch (error) {
-    console.error('Error fetching borrow request:', error);
+    console.error('Error fetching borrow request');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -294,7 +294,7 @@ export async function cancelBorrowRequest(
 
     return result;
   } catch (error) {
-    console.error('Error cancelling borrow request:', error);
+    console.error('Error cancelling borrow request');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -350,7 +350,7 @@ export async function getReceivedBorrowRequests(
 
     return result;
   } catch (error) {
-    console.error('Error fetching received borrow requests:', error);
+    console.error('Error fetching received borrow requests');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -401,7 +401,7 @@ export async function approveBorrowRequest(
 
     return result;
   } catch (error) {
-    console.error('Error approving borrow request:', error);
+    console.error('Error approving borrow request');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -452,7 +452,7 @@ export async function rejectBorrowRequest(
 
     return result;
   } catch (error) {
-    console.error('Error rejecting borrow request:', error);
+    console.error('Error rejecting borrow request');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -523,7 +523,7 @@ export async function uploadPaymentProof(
 
     return result;
   } catch (error) {
-    console.error('Error uploading payment proof:', error);
+    console.error('Error uploading payment proof');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'
@@ -594,7 +594,7 @@ export async function uploadConfirmationProof(
 
     return result;
   } catch (error) {
-    console.error('Error uploading confirmation proof:', error);
+    console.error('Error uploading confirmation proof');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An error occurred'

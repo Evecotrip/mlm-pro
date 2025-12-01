@@ -191,7 +191,7 @@ export async function createWithdrawalRequest(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creating withdrawal request:", error);
+    console.error("Error creating withdrawal request");
     return {
       success: false,
       message: "Network error while creating withdrawal request",
@@ -250,7 +250,7 @@ export async function getWithdrawalRequests(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching withdrawal requests:", error);
+    console.error("Error fetching withdrawal requests");
     return {
       success: false,
       message: "Network error while fetching withdrawal requests",
@@ -295,7 +295,7 @@ export async function getWithdrawalById(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching withdrawal request:", error);
+    console.error("Error fetching withdrawal request");
     return {
       success: false,
       message: "Network error while fetching withdrawal request",
@@ -340,7 +340,7 @@ export async function cancelWithdrawalRequest(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error cancelling withdrawal request:", error);
+    console.error("Error cancelling withdrawal request");
     return {
       success: false,
       message: "Network error while cancelling withdrawal request",
