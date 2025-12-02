@@ -109,7 +109,7 @@ function UserNode({ data }: { data: any }) {
               <DollarSign className="w-3 h-3 text-emerald-600 dark:text-emerald-500" />
               <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">Invested</span>
             </div>
-            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">₹{parseFloat(user.totalInvestment || '0').toLocaleString('en-IN')}</p>
+            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{parseFloat(user.totalInvestment || '0').toLocaleString('en-IN')}</p>
           </div>
 
           <div className="bg-slate-50 dark:bg-slate-950/50 rounded-lg p-2 border border-slate-200 dark:border-slate-800">
@@ -454,7 +454,7 @@ export default function HierarchyFlowPage() {
 
                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
                   <span className="text-sm text-slate-600 dark:text-slate-400">Total Earnings</span>
-                  <span className="font-bold text-blue-600 dark:text-blue-400">₹{parseFloat(selectedUser.totalEarnings || '0').toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-blue-600 dark:text-blue-400">{parseFloat(selectedUser.totalEarnings || '0').toLocaleString('en-IN')}</span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
