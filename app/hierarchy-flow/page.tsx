@@ -21,7 +21,7 @@ import '@xyflow/react/dist/style.css';
 import {
   TrendingUp, LogOut, ArrowLeft, Users, DollarSign,
   Activity, Crown, Phone, Mail, Target, Zap, Wallet,
-  Search, X, ChevronRight, Loader2, AlertCircle
+  Search, X, ChevronRight, Loader2, AlertCircle, ChevronDown, ChevronUp
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import {
@@ -41,12 +41,24 @@ import {
 function UserNode({ data }: { data: any }) {
   const user: HierarchyNode = data.user;
   const isRoot = data.isRoot;
+  const isExpanded = data.isExpanded;
+  const hasChildren = data.hasChildren;
+
+  const handleNodeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    data.onUserClick(data.user);
+  };
+
+  const handleExpandClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    data.onExpandToggle(data.user.id);
+  };
 
   return (
     <div
       className={`relative group transition-all duration-300 ${isRoot ? 'scale-110' : 'hover:scale-105'
         }`}
-      onClick={() => data.onUserClick(data.user)}
+      onClick={handleNodeClick}
     >
       {/* Glow Effect */}
       <div className={`absolute -inset-0.5 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-500 ${isRoot ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-slate-300 to-slate-200 dark:from-slate-600 dark:to-slate-400'
@@ -114,6 +126,21 @@ function UserNode({ data }: { data: any }) {
           <span className="text-[10px] text-slate-500 dark:text-slate-500">Code</span>
           <span className="font-mono text-[10px] text-slate-700 dark:text-slate-300">{user.referralCode}</span>
         </div>
+
+        {/* Expand/Collapse Button */}
+        {hasChildren && (
+          <button
+            onClick={handleExpandClick}
+            className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all z-20 border-2 border-white dark:border-slate-900"
+            title={isExpanded ? 'Collapse' : 'Expand'}
+          >
+            {isExpanded ? (
+              <ChevronUp className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5" />
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -135,6 +162,7 @@ export default function HierarchyFlowPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const hasFetchedData = useRef(false);
 
   // Check authentication
@@ -165,6 +193,10 @@ export default function HierarchyFlowPage() {
       const response = await getHierarchyTree(5);
       if (response.success && response.data) {
         setHierarchyData(response.data);
+        // Initialize root node as expanded
+        if (response.data.root?.id) {
+          setExpandedNodes(new Set([response.data.root.id]));
+        }
       } else {
         setError(response.message || 'Failed to load hierarchy');
       }
@@ -179,6 +211,18 @@ export default function HierarchyFlowPage() {
   const handleUserClick = useCallback((node: HierarchyNode) => {
     setSelectedUser(node);
     setShowSidebar(true);
+  }, []);
+
+  const handleExpandToggle = useCallback((nodeId: string) => {
+    setExpandedNodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
   }, []);
 
   const handleSearch = async () => {
@@ -201,11 +245,16 @@ export default function HierarchyFlowPage() {
   // Build the flow graph
   useEffect(() => {
     if (hierarchyData?.root) {
-      const { nodes: flowNodes, edges: flowEdges } = buildFlowGraph(hierarchyData.root, handleUserClick);
+      const { nodes: flowNodes, edges: flowEdges } = buildFlowGraph(
+        hierarchyData.root, 
+        handleUserClick, 
+        handleExpandToggle,
+        expandedNodes
+      );
       setNodes(flowNodes);
       setEdges(flowEdges);
     }
-  }, [hierarchyData, handleUserClick, setNodes, setEdges]);
+  }, [hierarchyData, handleUserClick, handleExpandToggle, expandedNodes, setNodes, setEdges]);
 
   const handleLogout = async () => {
     await signOut();
@@ -457,7 +506,12 @@ export default function HierarchyFlowPage() {
 }
 
 // Helper function to build the flow graph
-function buildFlowGraph(rootNode: HierarchyNode, onUserClick: (node: HierarchyNode) => void) {
+function buildFlowGraph(
+  rootNode: HierarchyNode, 
+  onUserClick: (node: HierarchyNode) => void,
+  onExpandToggle: (nodeId: string) => void,
+  expandedNodes: Set<string>
+) {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
   const levelGap = 200;
@@ -481,12 +535,14 @@ function buildFlowGraph(rootNode: HierarchyNode, onUserClick: (node: HierarchyNo
   ): number {
     const nodeId = node.id;
     const children = node.children || [];
+    const hasChildren = children.length > 0;
+    const isExpanded = expandedNodes.has(nodeId) || parentId === null; // Root is always expanded
 
     let currentX = startX;
     const childPositions: number[] = [];
 
-    // Position all children first and collect their X positions
-    if (children.length > 0) {
+    // Position all children first and collect their X positions (only if expanded)
+    if (hasChildren && isExpanded) {
       children.forEach((child) => {
         const childWidth = calculateSubtreeWidth(child);
         const childCenterX = addUserNode(child, level + 1, nodeId, currentX);
@@ -506,7 +562,10 @@ function buildFlowGraph(rootNode: HierarchyNode, onUserClick: (node: HierarchyNo
         data: {
           user: node,
           isRoot: parentId === null,
-          onUserClick
+          hasChildren,
+          isExpanded,
+          onUserClick,
+          onExpandToggle
         },
       });
 
@@ -523,7 +582,7 @@ function buildFlowGraph(rootNode: HierarchyNode, onUserClick: (node: HierarchyNo
 
       return parentX;
     } else {
-      // Leaf node - position at current X
+      // Leaf node or collapsed node - position at current X
       const x = startX + nodeWidth / 2;
       nodes.push({
         id: nodeId,
@@ -532,7 +591,10 @@ function buildFlowGraph(rootNode: HierarchyNode, onUserClick: (node: HierarchyNo
         data: {
           user: node,
           isRoot: parentId === null,
-          onUserClick
+          hasChildren,
+          isExpanded,
+          onUserClick,
+          onExpandToggle
         },
       });
       return x;
