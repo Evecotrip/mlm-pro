@@ -465,7 +465,7 @@ function buildFlowGraph(rootNode: HierarchyNode, onUserClick: (node: HierarchyNo
 
   // First pass: calculate subtree widths
   function calculateSubtreeWidth(node: HierarchyNode): number {
-    if (node.children.length === 0) {
+    if (!node.children || node.children.length === 0) {
       return 1; // Leaf node takes 1 unit of width
     }
     // Sum of all children's widths
@@ -480,7 +480,7 @@ function buildFlowGraph(rootNode: HierarchyNode, onUserClick: (node: HierarchyNo
     startX: number
   ): number {
     const nodeId = node.id;
-    const children = node.children;
+    const children = node.children || [];
 
     let currentX = startX;
     const childPositions: number[] = [];
