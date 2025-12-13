@@ -150,7 +150,7 @@ export interface TransactionResponse {
 /**
  * Balance log operation types
  */
-export type BalanceLogOperation = 'CREDIT' | 'DEBIT' | 'LOCK';
+export type BalanceLogOperation = 'CREDIT' | 'DEBIT' | 'LOCK' | 'COMMISSION';
 
 /**
  * Balance log with pagination

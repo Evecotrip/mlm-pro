@@ -25,7 +25,9 @@ import {
   TrendingDown,
   Award,
   Users,
-  Lock
+  Lock,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import TransferForm from '@/components/TransferForm';
 import WithdrawalForm from '@/components/WithdrawalForm';
@@ -46,7 +48,10 @@ export default function WalletPage() {
   const breakdown = useWalletStore(state => state.breakdown);
   const transactions = useWalletStore(state => state.transactions);
   const balanceLogs = useWalletStore(state => state.balanceLogs);
+  const balanceLogsPagination = useWalletStore(state => state.balanceLogsPagination);
+  const transactionsPagination = useWalletStore(state => state.transactionsPagination);
   const isLoadingWallet = useWalletStore(state => state.isLoadingWallet);
+  const isLoadingTransactions = useWalletStore(state => state.isLoadingTransactions);
   const isLoadingBalanceLogs = useWalletStore(state => state.isLoadingBalanceLogs);
   const fetchWallet = useWalletStore(state => state.fetchWallet);
   const fetchTransactions = useWalletStore(state => state.fetchTransactions);
@@ -54,8 +59,15 @@ export default function WalletPage() {
 
   const [activeTab, setActiveTab] = useState<'transactions' | 'logs' | 'commissions'>('transactions');
   const [filter, setFilter] = useState<string>('all');
-  const [logFilter, setLogFilter] = useState<'all' | 'CREDIT' | 'DEBIT' | 'LOCK'>('all');
+  const [logFilter, setLogFilter] = useState<'all' | 'CREDIT' | 'DEBIT' | 'LOCK' | 'COMMISSION'>('all');
   const [commissionFilter, setCommissionFilter] = useState<'all' | CommissionType>('all');
+  
+  // Pagination state
+  const [transactionsPage, setTransactionsPage] = useState(1);
+  const [logsPage, setLogsPage] = useState(1);
+  const [commissionsPage, setCommissionsPage] = useState(1);
+  const [commissionsPagination, setCommissionsPagination] = useState<{ page: number; limit: number; total: number; totalPages: number } | null>(null);
+  const ITEMS_PER_PAGE = 10;
   const [showTransferForm, setShowTransferForm] = useState(false);
   const [showWithdrawalForm, setShowWithdrawalForm] = useState(false);
   
@@ -83,28 +95,21 @@ export default function WalletPage() {
     
     // Fetch wallet data from store
     fetchWallet();
-    fetchTransactions(1, 50);
-    fetchBalanceLogs(1, 50);
+    fetchTransactions(1, ITEMS_PER_PAGE);
+    fetchBalanceLogs(1, ITEMS_PER_PAGE);
     
     // Fetch commissions
+    fetchCommissions(1);
+    
+    // Fetch commission stats
     (async () => {
-      setIsLoadingCommissions(true);
       try {
-        const [commissionsRes, statsRes] = await Promise.all([
-          getMyCommissions({ page: 1, limit: 50 }),
-          getMyCommissionStats()
-        ]);
-        
-        if (commissionsRes.success && commissionsRes.data) {
-          setCommissions(commissionsRes.data);
-        }
+        const statsRes = await getMyCommissionStats();
         if (statsRes.success && statsRes.data) {
           setCommissionStats(statsRes.data);
         }
       } catch (error) {
-        console.error('Error fetching commissions:', error);
-      } finally {
-        setIsLoadingCommissions(false);
+        console.error('Error fetching commission stats:', error);
       }
     })();
     
@@ -114,6 +119,40 @@ export default function WalletPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  // Fetch commissions helper
+  const fetchCommissions = async (page: number) => {
+    setIsLoadingCommissions(true);
+    try {
+      const commissionsRes = await getMyCommissions({ page, limit: ITEMS_PER_PAGE });
+      if (commissionsRes.success && commissionsRes.data) {
+        setCommissions(commissionsRes.data);
+        if (commissionsRes.pagination) {
+          setCommissionsPagination(commissionsRes.pagination);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching commissions:', error);
+    } finally {
+      setIsLoadingCommissions(false);
+    }
+  };
+
+  // Handle page changes
+  const handleTransactionsPageChange = (page: number) => {
+    setTransactionsPage(page);
+    fetchTransactions(page, ITEMS_PER_PAGE);
+  };
+
+  const handleLogsPageChange = (page: number) => {
+    setLogsPage(page);
+    fetchBalanceLogs(page, ITEMS_PER_PAGE);
+  };
+
+  const handleCommissionsPageChange = (page: number) => {
+    setCommissionsPage(page);
+    fetchCommissions(page);
+  };
 
   if (!isLoaded || (isLoadingWallet && !balance)) {
     return (
@@ -423,6 +462,34 @@ export default function WalletPage() {
                       ))
                     )}
                   </div>
+
+                  {/* Transactions Pagination */}
+                  {transactionsPagination && transactionsPagination.totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                      <p className="text-xs text-slate-500">
+                        Page {transactionsPage} of {transactionsPagination.totalPages} ({transactionsPagination.total} items)
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleTransactionsPageChange(transactionsPage - 1)}
+                          disabled={transactionsPage <= 1 || isLoadingTransactions}
+                          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[3rem] text-center">
+                          {transactionsPage}
+                        </span>
+                        <button
+                          onClick={() => handleTransactionsPageChange(transactionsPage + 1)}
+                          disabled={transactionsPage >= transactionsPagination.totalPages || isLoadingTransactions}
+                          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -436,10 +503,10 @@ export default function WalletPage() {
                     </div>
 
                     <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 dark:bg-slate-950 rounded-lg sm:rounded-xl p-1 border border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-hide w-full sm:w-auto">
-                      {['all', 'CREDIT', 'DEBIT', 'LOCK'].map((f) => (
+                      {['all', 'CREDIT', 'DEBIT', 'LOCK', 'COMMISSION'].map((f) => (
                         <button
                           key={f}
-                          onClick={() => setLogFilter(f as 'all' | 'CREDIT' | 'DEBIT' | 'LOCK')}
+                          onClick={() => setLogFilter(f as 'all' | 'CREDIT' | 'DEBIT' | 'LOCK' | 'COMMISSION')}
                           className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all whitespace-nowrap ${logFilter === f
                             ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
                             : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -478,9 +545,11 @@ export default function WalletPage() {
                                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500' 
                                     : log.operation === 'LOCK'
                                     ? 'bg-blue-500/10 text-blue-600 dark:text-blue-500'
+                                    : log.operation === 'COMMISSION'
+                                    ? 'bg-purple-500/10 text-purple-600 dark:text-purple-500'
                                     : 'bg-red-500/10 text-red-600 dark:text-red-500'
                                   }`}>
-                                  {log.operation === 'CREDIT' ? <TrendingUp className="w-5 h-5" /> : log.operation === 'LOCK' ? <Lock className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                                  {log.operation === 'CREDIT' ? <TrendingUp className="w-5 h-5" /> : log.operation === 'LOCK' ? <Lock className="w-5 h-5" /> : log.operation === 'COMMISSION' ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1">
@@ -488,6 +557,8 @@ export default function WalletPage() {
                                         ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20'
                                         : log.operation === 'LOCK'
                                         ? 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20'
+                                        : log.operation === 'COMMISSION'
+                                        ? 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20'
                                         : 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-500/10 border-red-200 dark:border-red-500/20'
                                       }`}>
                                       {log.operation}
@@ -505,9 +576,11 @@ export default function WalletPage() {
                                     ? 'text-emerald-600 dark:text-emerald-400' 
                                     : log.operation === 'LOCK'
                                     ? 'text-blue-600 dark:text-blue-400'
+                                    : log.operation === 'COMMISSION'
+                                    ? 'text-purple-600 dark:text-purple-400'
                                     : 'text-red-600 dark:text-red-400'
                                   }`}>
-                                  {log.operation === 'CREDIT' ? '+' : log.operation === 'LOCK' ? '🔒 ' : '-'}{Math.abs(parseFloat(log.amount)).toLocaleString('en-IN')}
+                                  {log.operation === 'CREDIT' ? '+' : log.operation === 'LOCK' ? '🔒 ' : log.operation === 'COMMISSION' ? '+' : '-'}{Math.abs(parseFloat(log.amount)).toLocaleString('en-IN')}
                                 </p>
                                 <p className="text-xs text-slate-500">USDT</p>
                               </div>
@@ -530,6 +603,34 @@ export default function WalletPage() {
                       )
                     )}
                   </div>
+
+                  {/* Balance Logs Pagination */}
+                  {balanceLogsPagination && balanceLogsPagination.totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                      <p className="text-xs text-slate-500">
+                        Page {logsPage} of {balanceLogsPagination.totalPages} ({balanceLogsPagination.total} items)
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleLogsPageChange(logsPage - 1)}
+                          disabled={logsPage <= 1 || isLoadingBalanceLogs}
+                          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[3rem] text-center">
+                          {logsPage}
+                        </span>
+                        <button
+                          onClick={() => handleLogsPageChange(logsPage + 1)}
+                          disabled={logsPage >= balanceLogsPagination.totalPages || isLoadingBalanceLogs}
+                          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -642,6 +743,34 @@ export default function WalletPage() {
                       )
                     )}
                   </div>
+
+                  {/* Commissions Pagination */}
+                  {commissionsPagination && commissionsPagination.totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                      <p className="text-xs text-slate-500">
+                        Page {commissionsPage} of {commissionsPagination.totalPages} ({commissionsPagination.total} items)
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleCommissionsPageChange(commissionsPage - 1)}
+                          disabled={commissionsPage <= 1 || isLoadingCommissions}
+                          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[3rem] text-center">
+                          {commissionsPage}
+                        </span>
+                        <button
+                          onClick={() => handleCommissionsPageChange(commissionsPage + 1)}
+                          disabled={commissionsPage >= commissionsPagination.totalPages || isLoadingCommissions}
+                          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
