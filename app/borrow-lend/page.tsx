@@ -1,0 +1,572 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import Navbar from '@/components/Navbar';
+import {
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertCircle,
+  ArrowLeft,
+  HandCoins,
+  User,
+  Calendar,
+  CreditCard,
+  MapPin,
+  ThumbsUp,
+  ThumbsDown,
+  Loader2,
+  ArrowUpRight,
+  ArrowDownLeft
+} from 'lucide-react';
+import {
+  getReceivedBorrowRequests,
+  getSentBorrowRequests,
+  approveBorrowRequest,
+  rejectBorrowRequest,
+  BorrowRequest,
+  BorrowRequestFilters
+} from '@/api/borrow-add-money-api';
+
+type TabType = 'lend' | 'borrow';
+
+export default function BorrowLendPage() {
+  const router = useRouter();
+  const { isLoaded, user } = useUser();
+  const [activeTab, setActiveTab] = useState<TabType>('lend');
+  const [requests, setRequests] = useState<BorrowRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'REJECTED' | 'CANCELLED'>('all');
+  const [processingId, setProcessingId] = useState<string | null>(null);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<BorrowRequest | null>(null);
+  const [lenderNotes, setLenderNotes] = useState('');
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    fetchRequests();
+  }, [isLoaded, user, router, statusFilter, activeTab]);
+
+  const fetchRequests = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const filters: BorrowRequestFilters = {
+        page: 1,
+        limit: 50
+      };
+      if (statusFilter !== 'all') {
+        filters.status = statusFilter;
+      }
+
+      const response = activeTab === 'lend' 
+        ? await getReceivedBorrowRequests(filters)
+        : await getSentBorrowRequests(filters);
+
+      if (response.success && response.data) {
+        const requestsData = Array.isArray(response.data) ? response.data : (response.data.data || []);
+        setRequests(requestsData);
+      } else {
+        setError(response.error || 'Failed to fetch requests');
+        setRequests([]);
+      }
+    } catch (error) {
+      console.error('Exception fetching requests:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred');
+      setRequests([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!selectedRequest) return;
+
+    setProcessingId(selectedRequest.id);
+    try {
+      const response = await approveBorrowRequest(selectedRequest.id, lenderNotes || undefined);
+      if (response.success) {
+        setShowApproveModal(false);
+        setLenderNotes('');
+        setSelectedRequest(null);
+        fetchRequests();
+      } else {
+        alert(response.error || 'Failed to approve request');
+      }
+    } catch (error) {
+      console.error('Error approving request:', error);
+      alert('An error occurred while approving');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!selectedRequest || !lenderNotes.trim()) return;
+
+    setProcessingId(selectedRequest.id);
+    try {
+      const response = await rejectBorrowRequest(selectedRequest.id, lenderNotes);
+      if (response.success) {
+        setShowRejectModal(false);
+        setLenderNotes('');
+        setSelectedRequest(null);
+        fetchRequests();
+      } else {
+        alert(response.error || 'Failed to reject request');
+      }
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      alert('An error occurred while rejecting');
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleLogout = async () => {
+    router.push('/');
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'COMPLETED': return 'text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-400/10 border-emerald-200 dark:border-emerald-400/20';
+      case 'PROCESSING': return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-400/10 border-blue-200 dark:border-blue-400/20';
+      case 'PENDING': return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-400/10 border-yellow-200 dark:border-yellow-400/20';
+      case 'REJECTED': return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-400/10 border-red-200 dark:border-red-400/20';
+      case 'CANCELLED': return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
+      default: return 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-400/10 border-slate-200 dark:border-slate-400/20';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'COMPLETED': return <CheckCircle className="w-4 h-4" />;
+      case 'PROCESSING': return <Loader2 className="w-4 h-4 animate-spin" />;
+      case 'PENDING': return <Clock className="w-4 h-4" />;
+      case 'REJECTED':
+      case 'CANCELLED': return <XCircle className="w-4 h-4" />;
+      default: return <AlertCircle className="w-4 h-4" />;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  };
+
+  // Calculate stats
+  const stats = {
+    total: requests.length,
+    pending: requests.filter(r => r.status === 'PENDING').length,
+    processing: requests.filter(r => r.status === 'PROCESSING').length,
+    completed: requests.filter(r => r.status === 'COMPLETED').length,
+    rejected: requests.filter(r => r.status === 'REJECTED').length,
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center transition-colors duration-300">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-emerald-600 dark:text-emerald-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">Loading requests...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 selection:bg-emerald-500/30 transition-colors duration-300">
+      <Navbar onLogout={handleLogout} />
+
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Back Button */}
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Dashboard
+          </button>
+
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                <HandCoins className="w-8 h-8 text-emerald-500" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                  Borrow & Lend
+                </h1>
+                <p className="text-slate-600 dark:text-slate-400">Manage peer-to-peer money requests</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mb-6 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 w-fit">
+            <button
+              onClick={() => { setActiveTab('lend'); setStatusFilter('all'); }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                activeTab === 'lend'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-lg border border-slate-200 dark:border-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <ArrowDownLeft className="w-4 h-4" />
+              Lend Requests
+              {activeTab === 'lend' && stats.pending > 0 && (
+                <span className="ml-1 px-2 py-0.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 rounded-full text-xs font-bold">
+                  {stats.pending}
+                </span>
+              )}
+            </button>
+            
+            <button
+              onClick={() => { setActiveTab('borrow'); setStatusFilter('all'); }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                activeTab === 'borrow'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-lg border border-slate-200 dark:border-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              <ArrowUpRight className="w-4 h-4" />
+              My Borrow Requests
+            </button>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            {['all', 'PENDING', 'PROCESSING', 'COMPLETED', 'REJECTED'].map((status) => {
+              const count = status === 'all' ? stats.total : stats[status.toLowerCase() as keyof typeof stats] || 0;
+              const isActive = statusFilter === status;
+
+              return (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status as any)}
+                  className={`p-4 rounded-xl border transition-all text-left ${isActive
+                    ? 'bg-slate-200 dark:bg-slate-800 border-emerald-500/50 shadow-lg shadow-emerald-500/10'
+                    : 'bg-white/50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  <p className={`text-2xl font-bold ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'}`}>
+                    {count}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 capitalize font-medium">
+                    {status === 'all' ? 'Total' : status.toLowerCase()}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500" />
+              <div className="flex-1">
+                <p className="text-sm text-red-400 font-medium">Error: {error}</p>
+              </div>
+              <button
+                onClick={fetchRequests}
+                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-bold transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {/* Requests List */}
+          {!error && requests.length > 0 ? (
+            <div className="space-y-4">
+              {requests.map((request) => (
+                <div
+                  key={request.id}
+                  className={`group bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 p-6 hover:border-emerald-500/50 transition-all shadow-sm dark:shadow-none ${activeTab === 'borrow' ? 'cursor-pointer' : ''}`}
+                  onClick={() => activeTab === 'borrow' && router.push(`/borrow-add-money?requestId=${request.id}`)}
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="p-3 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                          <HandCoins className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                              {request.amount} USDT
+                            </h3>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1.5 uppercase tracking-wide ${getStatusColor(request.status)}`}>
+                              {getStatusIcon(request.status)}
+                              {request.status}
+                            </span>
+                          </div>
+                          <p className="text-sm text-slate-500 dark:text-slate-500 font-mono">
+                            ID: {request.id.slice(0, 12)}...
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl p-4 border border-slate-200 dark:border-slate-800">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">
+                            {activeTab === 'lend' ? 'Borrower' : 'Lender'}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <User className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                              {activeTab === 'lend' 
+                                ? `${request.borrower.firstName} ${request.borrower.lastName}`
+                                : `${request.lender.firstName} ${request.lender.lastName}`
+                              }
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Payment Method</p>
+                          <div className="flex items-center gap-2">
+                            {request.paymentMethod === 'ONLINE_TRANSFER' ? (
+                              <CreditCard className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
+                            ) : (
+                              <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
+                            )}
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                              {request.paymentMethod === 'ONLINE_TRANSFER' ? 'Online' : 'Physical'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Created</p>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-400" />
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                              {formatDate(request.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+
+                        {request.completedAt && (
+                          <div>
+                            <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Completed</p>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500" />
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                                {formatDate(request.completedAt)}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {request.borrowerNotes && (
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-500/5 rounded-lg border border-blue-200 dark:border-blue-500/10">
+                          <p className="text-xs text-blue-600 dark:text-blue-400 mb-1 font-bold uppercase">
+                            {activeTab === 'lend' ? "Borrower's Notes" : 'Your Notes'}
+                          </p>
+                          <p className="text-sm text-blue-800 dark:text-blue-200 italic">"{request.borrowerNotes}"</p>
+                        </div>
+                      )}
+
+                      {activeTab === 'borrow' && request.lenderNotes && (
+                        <div className="mt-2 p-3 bg-emerald-50 dark:bg-emerald-500/5 rounded-lg border border-emerald-200 dark:border-emerald-500/10">
+                          <p className="text-xs text-emerald-600 dark:text-emerald-400 mb-1 font-bold uppercase">Lender's Notes</p>
+                          <p className="text-sm text-emerald-800 dark:text-emerald-200 italic">"{request.lenderNotes}"</p>
+                        </div>
+                      )}
+
+                      {/* Contact Details for Physical Cash (Lend tab only) */}
+                      {activeTab === 'lend' && request.paymentMethod === 'PHYSICAL_CASH' && request.borrowerDetails?.contactDetails && (
+                        <div className="mt-4 p-4 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                          <p className="text-xs text-slate-500 dark:text-slate-500 mb-2 font-bold uppercase tracking-wider">Contact Details</p>
+                          <div className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                            <p>📍 {request.borrowerDetails.contactDetails.address}</p>
+                            <p>{request.borrowerDetails.contactDetails.city}, {request.borrowerDetails.contactDetails.state}</p>
+                            <p>{request.borrowerDetails.contactDetails.country} - {request.borrowerDetails.contactDetails.pinCode}</p>
+                            <p>📞 {request.borrowerDetails.contactDetails.phoneNumber1}</p>
+                            {request.borrowerDetails.contactDetails.phoneNumber2 && (
+                              <p>📞 {request.borrowerDetails.contactDetails.phoneNumber2}</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Buttons - Only for Lend tab with PENDING status */}
+                    {activeTab === 'lend' && request.status === 'PENDING' && (
+                      <div className="flex lg:flex-col gap-3 w-full lg:w-auto min-w-[140px]">
+                        <button
+                          onClick={() => {
+                            setSelectedRequest(request);
+                            setShowApproveModal(true);
+                          }}
+                          disabled={processingId === request.id}
+                          className="flex-1 lg:flex-none px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-emerald-600/20"
+                        >
+                          <ThumbsUp className="w-4 h-4" />
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedRequest(request);
+                            setShowRejectModal(true);
+                          }}
+                          disabled={processingId === request.id}
+                          className="flex-1 lg:flex-none px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-red-100 dark:hover:bg-red-500/20 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-500 border border-slate-300 dark:border-slate-700 hover:border-red-500/50 rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                        >
+                          <ThumbsDown className="w-4 h-4" />
+                          Reject
+                        </button>
+                      </div>
+                    )}
+
+                    {/* View Details button for Borrow tab */}
+                    {activeTab === 'borrow' && (
+                      <div className="flex lg:flex-col gap-2 lg:items-end justify-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/borrow-add-money?requestId=${request.id}`);
+                          }}
+                          className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20 text-sm whitespace-nowrap"
+                        >
+                          View Details
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : !error ? (
+            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-12 text-center shadow-sm dark:shadow-none">
+              <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                <HandCoins className="w-10 h-10 text-slate-400 dark:text-slate-600" />
+              </div>
+              <p className="text-slate-600 dark:text-slate-400 font-medium text-lg mb-2">
+                {activeTab === 'lend' ? 'No lend requests found' : 'No borrow requests found'}
+              </p>
+              <p className="text-slate-500 text-sm mb-6">
+                {statusFilter !== 'all'
+                  ? 'Try changing the status filter'
+                  : activeTab === 'lend' 
+                    ? 'Borrow requests from other users will appear here'
+                    : 'Create your first borrow request to get started'
+                }
+              </p>
+              {activeTab === 'borrow' && (
+                <button
+                  onClick={() => router.push('/borrow-add-money')}
+                  className="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20 hover:scale-105"
+                >
+                  Create Borrow Request
+                </button>
+              )}
+            </div>
+          ) : null}
+        </div>
+      </main>
+
+      {/* Approve Modal */}
+      {showApproveModal && selectedRequest && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Approve Borrow Request</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              Approve <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} USDT</span>?
+            </p>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Notes (Optional)
+              </label>
+              <textarea
+                value={lenderNotes}
+                onChange={(e) => setLenderNotes(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                rows={3}
+                placeholder="Add any notes for the borrower..."
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleApprove}
+                disabled={processingId === selectedRequest.id}
+                className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-colors disabled:opacity-50"
+              >
+                {processingId === selectedRequest.id ? 'Approving...' : 'Confirm Approval'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowApproveModal(false);
+                  setLenderNotes('');
+                  setSelectedRequest(null);
+                }}
+                disabled={processingId === selectedRequest.id}
+                className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {showRejectModal && selectedRequest && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Reject Borrow Request</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-6">
+              Reject <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} USDT</span>?
+            </p>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Rejection Reason *
+              </label>
+              <textarea
+                value={lenderNotes}
+                onChange={(e) => setLenderNotes(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                rows={3}
+                placeholder="Explain why you're rejecting this request..."
+                required
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleReject}
+                disabled={processingId === selectedRequest.id || !lenderNotes.trim()}
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-colors disabled:opacity-50"
+              >
+                {processingId === selectedRequest.id ? 'Rejecting...' : 'Confirm Rejection'}
+              </button>
+              <button
+                onClick={() => {
+                  setShowRejectModal(false);
+                  setLenderNotes('');
+                  setSelectedRequest(null);
+                }}
+                disabled={processingId === selectedRequest.id}
+                className="flex-1 px-4 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

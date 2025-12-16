@@ -16,9 +16,9 @@ export default function Logo({ size = 'md', subtitle, className = '' }: LogoProp
   // Size configurations
   const sizeConfig = {
     sm: {
-      container: 'w-14 h-14 sm:w-16 sm:h-16 -ml-3',
-      text: 'text-xl sm:text-2xl',
-      subtitle: 'text-xs sm:text-sm',
+      container: 'w-10 h-10 -ml-2',
+      text: 'text-lg',
+      subtitle: 'text-xs',
     },
     md: {
       container: 'w-16 h-16 sm:w-20 sm:h-20 -ml-3',
@@ -59,8 +59,8 @@ export default function Logo({ size = 'md', subtitle, className = '' }: LogoProp
   }, []);
 
   return (
-    <div className={`text-center ${className}`}>
-      <div className="flex items-center justify-center mb-2">
+    <div className={`${className}`}>
+      <div className="flex items-center">
         <span className={`${config.text} font-bold text-slate-900 dark:text-white`}>AuramX</span>
         <div ref={animationContainer} className={config.container} />
       </div>

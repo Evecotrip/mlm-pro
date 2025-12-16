@@ -6,7 +6,8 @@ import { useUser, useClerk } from '@clerk/nextjs';
 import {
   TrendingUp, LogOut, Users, DollarSign, Network,
   Plus, Copy, Check, UserCheck, Activity, Wallet, Sparkles, Loader2,
-  ArrowUpRight, ShieldCheck, Clock, ChevronRight, Bell
+  ArrowUpRight, ShieldCheck, Clock, ChevronRight, Bell,
+  Table
 } from 'lucide-react';
 import {
   mockUsers, mockInvestments, getDirectReferrals,
@@ -17,6 +18,8 @@ import Navbar from '@/components/Navbar';
 import { useUserStore } from '@/store/useUserStore';
 import { useWalletStore } from '@/store/useWalletStore';
 import { getInvestments, Investment } from '@/api/investment-api';
+import { getHierarchyStats, HierarchyStats } from '@/api/hierarchy-api';
+import { getKYCStatus, KYCStatus, KYCResponse } from '@/api/kyc-api';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -27,6 +30,8 @@ export default function DashboardPage() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [loadingInvestments, setLoadingInvestments] = useState(false);
+  const [hierarchyStats, setHierarchyStats] = useState<HierarchyStats | null>(null);
+  const [kycStatus, setKycStatus] = useState<KYCStatus | null>(null);
 
   // User store
   const userProfile = useUserStore(state => state.userProfile);
@@ -56,6 +61,10 @@ export default function DashboardPage() {
       }
       // Fetch investments
       fetchDashboardInvestments();
+      // Fetch hierarchy stats
+      fetchHierarchyStats();
+      // Fetch KYC status
+      fetchKYCStatus();
     }
   }, [isLoaded, user, router]);
 
@@ -75,6 +84,44 @@ export default function DashboardPage() {
       console.error('Error fetching investments:', error);
     } finally {
       setLoadingInvestments(false);
+    }
+  };
+
+  const fetchHierarchyStats = async () => {
+    try {
+      const response = await getHierarchyStats();
+      if (response.success && response.data) {
+        setHierarchyStats(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching hierarchy stats:', error);
+    }
+  };
+
+  const fetchKYCStatus = async () => {
+    try {
+      const response = await getKYCStatus();
+      if (response.success && response.data) {
+        setKycStatus(response.data.status);
+      }
+    } catch (error) {
+      console.error('Error fetching KYC status:', error);
+    }
+  };
+
+  const getKYCStatusDisplay = () => {
+    switch (kycStatus) {
+      case KYCStatus.APPROVED:
+        return { label: 'Verified', color: 'emerald', badge: 'Verified' };
+      case KYCStatus.PENDING:
+        return { label: 'Pending Review', color: 'yellow', badge: 'Pending' };
+      case KYCStatus.REJECTED:
+        return { label: 'Rejected', color: 'red', badge: 'Rejected' };
+      case KYCStatus.EXPIRED:
+        return { label: 'Expired', color: 'orange', badge: 'Expired' };
+      case KYCStatus.NOT_SUBMITTED:
+      default:
+        return { label: 'Not Submitted', color: 'slate', badge: 'Required' };
     }
   };
 
@@ -238,7 +285,9 @@ export default function DashboardPage() {
           </div>
 
           {/* Stats Row - Spans 12 cols (3x4) */}
+          
           <div className="md:col-span-4 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 hover:border-slate-300 dark:hover:border-slate-700 transition-colors group shadow-sm dark:shadow-none">
+          <button onClick={() => router.push("/wallet")}>
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 bg-emerald-500/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
                 <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-500" />
@@ -247,28 +296,48 @@ export default function DashboardPage() {
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm mb-1">Total Earnings</p>
             <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{totalEarnings.toLocaleString('en-IN')} USDT</h3>
+            </button>
           </div>
+          
 
           <div className="md:col-span-4 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 hover:border-slate-300 dark:hover:border-slate-700 transition-colors group shadow-sm dark:shadow-none">
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 bg-orange-500/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
                 <Network className="w-6 h-6 text-orange-600 dark:text-orange-500" />
               </div>
-              <span className="bg-orange-500/10 text-orange-600 dark:text-orange-500 text-xs font-bold px-2 py-1 rounded-full">Level 3</span>
+              <span className="bg-orange-500/10 text-orange-600 dark:text-orange-500 text-xs font-bold px-2 py-1 rounded-full">Level</span>
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mb-1">Network Size</p>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{allDownline.length} Members</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mb-1">Downline Network Size</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{hierarchyStats?.totalDownline ?? 0} Members</h3>
           </div>
 
-          <div className="md:col-span-4 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 hover:border-slate-300 dark:hover:border-slate-700 transition-colors group shadow-sm dark:shadow-none">
+          <div 
+            onClick={() => router.push('/kyc')}
+            className="md:col-span-4 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 hover:border-slate-300 dark:hover:border-slate-700 transition-colors group shadow-sm dark:shadow-none cursor-pointer"
+          >
             <div className="flex items-start justify-between mb-4">
-              <div className="p-3 bg-purple-500/10 rounded-2xl group-hover:scale-110 transition-transform duration-300">
-                <ShieldCheck className="w-6 h-6 text-purple-600 dark:text-purple-500" />
+              <div className={`p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300 ${
+                kycStatus === KYCStatus.APPROVED ? 'bg-emerald-500/10' :
+                kycStatus === KYCStatus.PENDING ? 'bg-yellow-500/10' :
+                kycStatus === KYCStatus.REJECTED ? 'bg-red-500/10' :
+                'bg-purple-500/10'
+              }`}>
+                <ShieldCheck className={`w-6 h-6 ${
+                  kycStatus === KYCStatus.APPROVED ? 'text-emerald-600 dark:text-emerald-500' :
+                  kycStatus === KYCStatus.PENDING ? 'text-yellow-600 dark:text-yellow-500' :
+                  kycStatus === KYCStatus.REJECTED ? 'text-red-600 dark:text-red-500' :
+                  'text-purple-600 dark:text-purple-500'
+                }`} />
               </div>
-              <span className="bg-purple-500/10 text-purple-600 dark:text-purple-500 text-xs font-bold px-2 py-1 rounded-full">Verified</span>
+              <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                kycStatus === KYCStatus.APPROVED ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-500' :
+                kycStatus === KYCStatus.PENDING ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-500' :
+                kycStatus === KYCStatus.REJECTED ? 'bg-red-500/10 text-red-600 dark:text-red-500' :
+                'bg-purple-500/10 text-purple-600 dark:text-purple-500'
+              }`}>{getKYCStatusDisplay().badge}</span>
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mb-1">Account Status</p>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Premium Tier</h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mb-1">KYC Status</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{getKYCStatusDisplay().label}</h3>
           </div>
 
           {/* Recent Investments List - Spans 8 cols */}
@@ -367,7 +436,14 @@ export default function DashboardPage() {
               className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
             >
               <Network className="w-5 h-5" />
-              Explore Network
+              Explore Network Tree
+            </button>
+            <button
+              onClick={() => router.push('/hierarchy-table')}
+              className="w-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+            >
+              <Table className="w-5 h-5" />
+              View Network Table
             </button>
           </div>
 
