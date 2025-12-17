@@ -70,10 +70,14 @@ export interface BankAccount {
  * Bank details for currency
  */
 export interface CurrencyBankDetails {
-  currency: string;
-  currencyName: string;
-  currencySymbol: string;
-  bankAccounts: BankAccount[];
+  id: string;
+  accountName: string;
+  accountHolder: string;
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
+  branch: string;
+  upiId: string;
   qrCodeUrl: string;
   qrCodeProvider: string;
   instructions: string;
@@ -108,22 +112,15 @@ export interface BankDetails {
 export interface AddMoneyRequest {
   id: string;
   userId: string;
-  currency: string;
-  currencyAmount: number;
-  usdtAmount: string;
-  exchangeRate: string;
-  exchangeRateSource: string;
-  rateTimestamp: string;
   amount: string;
   bonusAmount: string;
   totalAmount: string;
   bankDetailsProvided: CurrencyBankDetails | null;
-  bankDetails?: BankDetails | null;
   bankDetailsSentAt: string | null;
   bankDetailsSentBy: string | null;
   method: PaymentMethod;
   status: AddMoneyStatus;
-  paymentDetails: PaymentDetails;
+  paymentDetails: PaymentDetails | null;
   masterNodeId: string | null;
   processedAt: string | null;
   verifiedAt: string | null;
@@ -142,10 +139,8 @@ export interface AddMoneyRequest {
  * Create add money request payload
  */
 export interface CreateAddMoneyRequestPayload {
-  currency: string;
-  currencyAmount: number;
+  amount: number;
   method: PaymentMethod;
-  paymentDetails: PaymentDetails;
   userNotes?: string;
 }
 

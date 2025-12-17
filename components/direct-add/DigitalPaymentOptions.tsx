@@ -38,16 +38,9 @@ export default function DigitalPaymentOptions({
     <div className="space-y-8">
       {/* Amount Summary */}
       <div className="bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-slate-500 dark:text-slate-400 text-sm">Amount to Add ({currency})</span>
-            <span className="font-bold text-slate-900 dark:text-white text-lg">{parseFloat(amount).toLocaleString('en-IN')}</span>
-          </div>
-          <div className="h-px bg-slate-200 dark:bg-slate-800"></div>
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-slate-700 dark:text-slate-300">Total Credit (USDT)</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xl">{totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
+        <div className="flex justify-between items-center">
+          <span className="text-slate-500 dark:text-slate-400 text-sm">Amount to Add</span>
+          <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xl">₹{parseFloat(amount).toLocaleString('en-IN')}</span>
         </div>
       </div>
 

@@ -26,8 +26,8 @@ export default function PaymentMethodSelection({
   const [error, setError] = useState('');
 
   const amountValue = parseFloat(amount);
-  // Cash enabled for amounts >= 1,192.30 USDT (equivalent to ₹1,00,000)
-  const isCashEnabled = totalCredit >= 1192.30;
+  // Cash enabled for amounts >= ₹1,00,000
+  const isCashEnabled = amountValue >= 100000;
 
   const handleContinue = () => {
     setError('');
@@ -42,16 +42,9 @@ export default function PaymentMethodSelection({
     <div className="space-y-8">
       {/* Amount Summary */}
       <div className="bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-slate-500 dark:text-slate-400 text-sm">Amount to Add ({currency})</span>
-            <span className="font-bold text-slate-900 dark:text-white text-lg">{amountValue.toLocaleString('en-IN')}</span>
-          </div>
-          <div className="h-px bg-slate-200 dark:bg-slate-800"></div>
-          <div className="flex justify-between items-center">
-            <span className="font-bold text-slate-700 dark:text-slate-300">Total Credit (USDT)</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xl">{totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          </div>
+        <div className="flex justify-between items-center">
+          <span className="text-slate-500 dark:text-slate-400 text-sm">Amount to Add</span>
+          <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xl">₹{amountValue.toLocaleString('en-IN')}</span>
         </div>
       </div>
 
@@ -90,7 +83,7 @@ export default function PaymentMethodSelection({
                   {paymentMethod === 'cash' && isCashEnabled && <Check className="w-5 h-5 text-emerald-500" />}
                 </div>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {isCashEnabled ? 'Our team will collect cash from you' : 'Minimum 1,192.30 USDT required'}
+                  {isCashEnabled ? 'Our team will collect cash from you' : 'Minimum ₹1,00,000 required'}
                 </p>
               </div>
             </div>
@@ -128,7 +121,7 @@ export default function PaymentMethodSelection({
         <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl p-4 flex items-start gap-3">
           <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-blue-700 dark:text-blue-300/90">
-            <strong className="text-blue-800 dark:text-blue-400">Note:</strong> Cash payment is available only for amounts ₹1 Lakh and above.
+            <strong className="text-blue-800 dark:text-blue-400">Note:</strong> Cash payment is available only for amounts ₹1,00,000 and above.
             For smaller amounts, please use digital payment methods.
           </p>
         </div>

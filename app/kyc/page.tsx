@@ -4,8 +4,8 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser, useClerk } from '@clerk/nextjs';
 import {
-  ArrowLeft, Upload, CheckCircle2, XCircle, FileText, Camera,
-  CreditCard, Home, Building2, Loader2, AlertCircle, Shield,
+  ArrowLeft, Upload, CheckCircle2, XCircle, Camera,
+  CreditCard, Loader2, AlertCircle, Shield,
   Eye, Trash2
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -16,17 +16,13 @@ import {
   deleteDocument,
   KYCStatus,
   DocumentType,
-  AddressProofType,
   KYCResponse,
   getKYCStatusColor,
   getDocumentTypeName,
-  getAddressProofTypeName,
   validateAadhaarNumber,
-  validatePANNumber,
   validateIFSCCode,
   validateAccountNumber,
   validateFile,
-  areAllDocumentsUploaded,
   getKYCCompletionPercentage,
   formatKYCDate,
 } from '@/api/kyc-api';
@@ -45,11 +41,9 @@ export default function KYCPage() {
   
   // Form data
   const [aadhaarNumber, setAadhaarNumber] = useState('');
-  const [panNumber, setPanNumber] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [ifscCode, setIfscCode] = useState('');
   const [accountHolderName, setAccountHolderName] = useState('');
-  const [addressProofType, setAddressProofType] = useState<AddressProofType>(AddressProofType.ELECTRICITY_BILL);
   
   const hasFetchedData = useRef(false);
 
@@ -83,16 +77,10 @@ export default function KYCPage() {
         if (response.data.documents.aadhaar?.number) {
           setAadhaarNumber(response.data.documents.aadhaar.number);
         }
-        if (response.data.documents.pan?.number) {
-          setPanNumber(response.data.documents.pan.number);
-        }
         if (response.data.documents.bankDetails) {
           setAccountNumber(response.data.documents.bankDetails.accountNumber);
           setIfscCode(response.data.documents.bankDetails.ifscCode);
           setAccountHolderName(response.data.documents.bankDetails.accountHolderName);
-        }
-        if (response.data.documents.addressProof?.type) {
-          setAddressProofType(response.data.documents.addressProof.type);
         }
       }
     } catch (error) {
@@ -169,12 +157,6 @@ export default function KYCPage() {
       return;
     }
     
-    const panValidation = validatePANNumber(panNumber);
-    if (!panValidation.isValid) {
-      setError(panValidation.errors.join(', '));
-      return;
-    }
-    
     const accountValidation = validateAccountNumber(accountNumber);
     if (!accountValidation.isValid) {
       setError(accountValidation.errors.join(', '));
@@ -192,9 +174,9 @@ export default function KYCPage() {
       return;
     }
     
-    // Check if all documents are uploaded
-    if (!kycData || !areAllDocumentsUploaded(kycData.documents)) {
-      setError('Please upload all required documents before submitting');
+    // Check if required documents are uploaded (Aadhaar front, back, and selfie)
+    if (!kycData?.documents.aadhaar?.frontImage || !kycData?.documents.aadhaar?.backImage || !kycData?.documents.selfie) {
+      setError('Please upload Aadhaar (front & back) and Selfie before submitting');
       return;
     }
     
@@ -203,11 +185,9 @@ export default function KYCPage() {
     try {
       const response = await submitKYC({
         aadhaarNumber: aadhaarNumber.replace(/[\s-]/g, ''),
-        panNumber: panNumber.toUpperCase().trim(),
         accountNumber: accountNumber.replace(/\s/g, ''),
         ifscCode: ifscCode.toUpperCase().trim(),
         accountHolderName: accountHolderName.trim(),
-        addressProofType,
       });
       
       if (response.success) {
@@ -427,24 +407,6 @@ export default function KYCPage() {
               canEdit={canEdit}
             />
 
-            {/* PAN Card */}
-            <DocumentUploadCard
-              title="PAN Card"
-              description="Upload a clear image of your PAN card"
-              icon={<FileText className="w-6 h-6" />}
-              documents={[
-                {
-                  type: DocumentType.PAN_CARD,
-                  label: 'PAN Card',
-                  uploaded: kycData?.documents.pan?.image,
-                },
-              ]}
-              onUpload={handleFileUpload}
-              onDelete={handleDeleteDocument}
-              uploading={uploading}
-              canEdit={canEdit}
-            />
-
             {/* Selfie */}
             <DocumentUploadCard
               title="Selfie"
@@ -455,42 +417,6 @@ export default function KYCPage() {
                   type: DocumentType.SELFIE,
                   label: 'Selfie with Aadhaar',
                   uploaded: kycData?.documents.selfie,
-                },
-              ]}
-              onUpload={handleFileUpload}
-              onDelete={handleDeleteDocument}
-              uploading={uploading}
-              canEdit={canEdit}
-            />
-
-            {/* Bank Proof */}
-            <DocumentUploadCard
-              title="Bank Proof"
-              description="Upload bank passbook, statement, or cancelled cheque"
-              icon={<Building2 className="w-6 h-6" />}
-              documents={[
-                {
-                  type: DocumentType.BANK_PROOF,
-                  label: 'Bank Document',
-                  uploaded: kycData?.documents.bankDetails?.proofImage,
-                },
-              ]}
-              onUpload={handleFileUpload}
-              onDelete={handleDeleteDocument}
-              uploading={uploading}
-              canEdit={canEdit}
-            />
-
-            {/* Address Proof */}
-            <DocumentUploadCard
-              title="Address Proof"
-              description="Upload electricity bill, water bill, or other address proof"
-              icon={<Home className="w-6 h-6" />}
-              documents={[
-                {
-                  type: DocumentType.ADDRESS_PROOF,
-                  label: 'Address Document',
-                  uploaded: kycData?.documents.addressProof?.image,
                 },
               ]}
               onUpload={handleFileUpload}
@@ -519,22 +445,6 @@ export default function KYCPage() {
                     maxLength={14}
                     disabled={!canEdit}
                     className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
-                </div>
-
-                {/* PAN Number */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
-                    PAN Number
-                  </label>
-                  <input
-                    type="text"
-                    value={panNumber}
-                    onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                    placeholder="ABCDE1234F"
-                    maxLength={10}
-                    disabled={!canEdit}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white uppercase disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
 
@@ -584,25 +494,7 @@ export default function KYCPage() {
                   />
                 </div>
 
-                {/* Address Proof Type */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
-                    Address Proof Type
-                  </label>
-                  <select
-                    value={addressProofType}
-                    onChange={(e) => setAddressProofType(e.target.value as AddressProofType)}
-                    disabled={!canEdit}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {Object.values(AddressProofType).map((type) => (
-                      <option key={type} value={type}>
-                        {getAddressProofTypeName(type)}
-                      </option>
-                    ))}
-                  </select>
                 </div>
-              </div>
             </div>
 
             {/* Submit Button */}

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LogOut, UserCheck, Wallet, HandCoins, Send, Menu, X, HelpCircle } from 'lucide-react';
+import { LogOut, UserCheck, Wallet, HandCoins, Send, Menu, X, HelpCircle, Users } from 'lucide-react';
 import Logo from './Logo';
 import { useUserStore } from '@/store/useUserStore';
 import { useWalletStore } from '@/store/useWalletStore';
@@ -123,6 +123,15 @@ export default function Navbar({
               title="Transfers"
             >
               <Send className="w-5 h-5" />
+            </button>
+
+            {/* KYC Requests */}
+            <button
+              onClick={() => router.push('/kyc-requests')}
+              className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
+              title="KYC Requests"
+            >
+              <Users className="w-5 h-5" />
             </button>
 
             {/* Divider */}

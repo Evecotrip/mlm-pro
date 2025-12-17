@@ -7,11 +7,9 @@ import Navbar from '@/components/Navbar';
 import {
   getAddMoneyRequestById,
   uploadPaymentProof,
-  calculateConversion,
   createAddMoneyRequest,
   getBankDetailsForCurrency,
-  AddMoneyRequest,
-  ConversionCalculation
+  AddMoneyRequest
 } from '@/api/direct-add-money-api';
 import DirectAddInitial from '@/components/direct-add/DirectAddInitial';
 import PaymentMethodSelection, { DirectPaymentMethod } from '@/components/direct-add/PaymentMethodSelection';
@@ -47,11 +45,8 @@ function DirectAddMoneyContent() {
   // Form flow state
   const [directStep, setDirectStep] = useState<'initial' | 'payment-method' | 'digital-options'>('initial');
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('INR');
-  const [totalCredit, setTotalCredit] = useState(0);
   const [directPaymentMethod, setDirectPaymentMethod] = useState<DirectPaymentMethod>(null);
   const [digitalOption, setDigitalOption] = useState<DigitalOption>(null);
-  const [conversionData, setConversionData] = useState<ConversionCalculation | null>(null);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -77,7 +72,7 @@ function DirectAddMoneyContent() {
       if (response.success && response.data) {
         setRequest(response.data);
 
-        const bankResponse = await getBankDetailsForCurrency(response.data.currency);
+        const bankResponse = await getBankDetailsForCurrency('INR');
         if (bankResponse.success && bankResponse.data) {
           setBankDetails(bankResponse.data);
         }
@@ -144,25 +139,7 @@ function DirectAddMoneyContent() {
 
   const handleDirectInitialContinue = async (directAmount: string, selectedCurrency: string) => {
     setAmount(directAmount);
-    setCurrency(selectedCurrency);
-    setLoading(true);
-
-    try {
-      const response = await calculateConversion(selectedCurrency, parseFloat(directAmount));
-
-      if (response.success && response.data) {
-        setConversionData(response.data);
-        setTotalCredit(parseFloat(response.data.usdtAmount));
-        setDirectStep('payment-method');
-      } else {
-        alert(response.message || 'Failed to calculate conversion');
-      }
-    } catch (error) {
-      console.error('Error calculating conversion:', error);
-      alert('Failed to calculate conversion. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    setDirectStep('payment-method');
   };
 
   const handleDirectPaymentMethodContinue = async (method: DirectPaymentMethod) => {
@@ -185,12 +162,8 @@ function DirectAddMoneyContent() {
 
     try {
       const requestResponse = await createAddMoneyRequest({
-        currency: currency,
-        currencyAmount: parseFloat(amount),
+        amount: parseFloat(amount),
         method: method,
-        paymentDetails: {
-          upiId: method === 'UPI' ? 'user@paytm' : undefined,
-        },
         userNotes: 'Direct add money request'
       });
 
@@ -281,8 +254,8 @@ function DirectAddMoneyContent() {
                   <PaymentMethodSelection
                     amount={amount}
                     bonus={0}
-                    totalCredit={totalCredit}
-                    currency={currency}
+                    totalCredit={parseFloat(amount)}
+                    currency="INR"
                     onContinue={handleDirectPaymentMethodContinue}
                     onBack={() => setDirectStep('initial')}
                   />
@@ -292,8 +265,8 @@ function DirectAddMoneyContent() {
                   <DigitalPaymentOptions
                     amount={amount}
                     bonus={0}
-                    totalCredit={totalCredit}
-                    currency={currency}
+                    totalCredit={parseFloat(amount)}
+                    currency="INR"
                     onContinue={handleDigitalOptionContinue}
                     onBack={() => setDirectStep('payment-method')}
                   />
@@ -346,34 +319,21 @@ function DirectAddMoneyContent() {
           </button>
 
           {/* Status Header */}
-          <div className="bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-800 p-8 mb-6">
+          <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 mb-6 shadow-sm dark:shadow-none">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <div className={`p-3 rounded-xl border ${getStatusColor(request.status)}`}>
                   {getStatusIcon(request.status)}
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Add Money Request</h1>
-                  <p className="text-sm text-slate-400 font-mono">ID: {request.id.slice(0, 8)}...</p>
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Add Money Request</h1>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 font-mono">ID: {request.id.slice(0, 8)}...</p>
                 </div>
               </div>
               <span className={`px-4 py-1.5 rounded-full text-sm font-bold border uppercase tracking-wide ${getStatusColor(request.status)}`}>
                 {request.status}
               </span>
             </div>
-
-            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-3xl border border-slate-200 dark:border-slate-800 p-8 mb-6 shadow-sm dark:shadow-none">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl border ${getStatusColor(request.status)}`}>
-                    {getStatusIcon(request.status)}
-                  </div>
-                  <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Add Money Request</h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 font-mono">ID: {request.id.slice(0, 8)}...</p>
-                  </div>
-                </div>
-              </div>
 
               {/* Bank Details Section */}
               {showBankDetails && bankDetails && (
@@ -383,7 +343,7 @@ function DirectAddMoneyContent() {
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white">Bank Details</h2>
                   </div>
                   <p className="text-sm text-blue-800 dark:text-blue-200 mb-6">
-                    Please transfer {request.currencyAmount} {request.currency} to the following bank account:
+                    Please transfer ₹{request.amount} to the following bank account:
                   </p>
 
                   {/* QR Code if available */}
@@ -399,83 +359,94 @@ function DirectAddMoneyContent() {
                   )}
 
                   <div className="bg-white/50 dark:bg-slate-950/50 rounded-xl p-6 space-y-4 border border-blue-200 dark:border-blue-500/20">
-                    {bankDetails.bankAccounts && bankDetails.bankAccounts.length > 0 && (
-                      <>
-                        {bankDetails.bankAccounts[0].accountName && (
-                          <div className="flex justify-between items-center group">
-                            <div>
-                              <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Account Holder</p>
-                              <p className="font-medium text-slate-900 dark:text-white">{bankDetails.bankAccounts[0].accountName}</p>
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(bankDetails.bankAccounts[0].accountName, 'holder')}
-                              className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                            >
-                              {copiedField === 'holder' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        )}
+                    {bankDetails.accountHolder && (
+                      <div className="flex justify-between items-center group">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Account Holder</p>
+                          <p className="font-medium text-slate-900 dark:text-white">{bankDetails.accountHolder}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(bankDetails.accountHolder, 'holder')}
+                          className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          {copiedField === 'holder' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
 
-                        {bankDetails.bankAccounts[0].accountNumber && (
-                          <div className="flex justify-between items-center group">
-                            <div>
-                              <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Account Number</p>
-                              <p className="font-medium text-slate-900 dark:text-white font-mono">{bankDetails.bankAccounts[0].accountNumber}</p>
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(bankDetails.bankAccounts[0].accountNumber, 'account')}
-                              className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                            >
-                              {copiedField === 'account' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        )}
+                    {bankDetails.accountNumber && (
+                      <div className="flex justify-between items-center group">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Account Number</p>
+                          <p className="font-medium text-slate-900 dark:text-white font-mono">{bankDetails.accountNumber}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(bankDetails.accountNumber, 'account')}
+                          className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          {copiedField === 'account' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
 
-                        {bankDetails.bankAccounts[0].bankName && (
-                          <div className="flex justify-between items-center group">
-                            <div>
-                              <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Bank Name</p>
-                              <p className="font-medium text-slate-900 dark:text-white">{bankDetails.bankAccounts[0].bankName}</p>
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(bankDetails.bankAccounts[0].bankName, 'bank')}
-                              className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                            >
-                              {copiedField === 'bank' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        )}
+                    {bankDetails.bankName && (
+                      <div className="flex justify-between items-center group">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Bank Name</p>
+                          <p className="font-medium text-slate-900 dark:text-white">{bankDetails.bankName}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(bankDetails.bankName, 'bank')}
+                          className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          {copiedField === 'bank' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
 
-                        {bankDetails.bankAccounts[0].ifscCode && (
-                          <div className="flex justify-between items-center group">
-                            <div>
-                              <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">IFSC Code</p>
-                              <p className="font-medium text-slate-900 dark:text-white font-mono">{bankDetails.bankAccounts[0].ifscCode}</p>
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(bankDetails.bankAccounts[0].ifscCode, 'ifsc')}
-                              className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                            >
-                              {copiedField === 'ifsc' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        )}
+                    {bankDetails.branch && (
+                      <div className="flex justify-between items-center group">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">Branch</p>
+                          <p className="font-medium text-slate-900 dark:text-white">{bankDetails.branch}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(bankDetails.branch, 'branch')}
+                          className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          {copiedField === 'branch' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
 
-                        {bankDetails.bankAccounts[0].upiId && (
-                          <div className="flex justify-between items-center group">
-                            <div>
-                              <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">UPI ID</p>
-                              <p className="font-medium text-slate-900 dark:text-white font-mono">{bankDetails.bankAccounts[0].upiId}</p>
-                            </div>
-                            <button
-                              onClick={() => copyToClipboard(bankDetails.bankAccounts[0].upiId, 'upi')}
-                              className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                            >
-                              {copiedField === 'upi' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        )}
-                      </>
+                    {bankDetails.ifscCode && (
+                      <div className="flex justify-between items-center group">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">IFSC Code</p>
+                          <p className="font-medium text-slate-900 dark:text-white font-mono">{bankDetails.ifscCode}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(bankDetails.ifscCode, 'ifsc')}
+                          className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          {copiedField === 'ifsc' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
+
+                    {bankDetails.upiId && (
+                      <div className="flex justify-between items-center group">
+                        <div>
+                          <p className="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1">UPI ID</p>
+                          <p className="font-medium text-slate-900 dark:text-white font-mono">{bankDetails.upiId}</p>
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(bankDetails.upiId, 'upi')}
+                          className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        >
+                          {copiedField === 'upi' ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
                     )}
 
                     {bankDetails.instructions && (
@@ -591,7 +562,7 @@ function DirectAddMoneyContent() {
                 <div className="bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-2xl p-6">
                   <p className="text-sm text-emerald-800 dark:text-emerald-200">
                     <strong className="text-emerald-700 dark:text-emerald-400 block mb-1">✓ Transaction Completed</strong>
-                    Your payment has been verified and {request.usdtAmount} USDT has been credited to your wallet.
+                    Your payment has been verified and ₹{request.totalAmount} has been credited to your wallet.
                   </p>
                 </div>
               )}
@@ -604,12 +575,10 @@ function DirectAddMoneyContent() {
                   </p>
                 </div>
               )}
-            </div>
           </div>
         </div>
       </main>
     </div>
-
   );
 }
 

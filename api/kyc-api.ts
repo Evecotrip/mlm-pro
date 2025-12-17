@@ -89,11 +89,11 @@ export interface KYCDocuments {
  */
 export interface SubmitKYCRequest {
   aadhaarNumber: string;
-  panNumber: string;
   accountNumber: string;
   ifscCode: string;
   accountHolderName: string;
-  addressProofType: AddressProofType;
+  panNumber?: string;
+  addressProofType?: AddressProofType;
 }
 
 /**
@@ -465,6 +465,66 @@ export async function deleteDocument(documentType: DocumentType): Promise<ApiRes
   }
 }
 
+/**
+ * 10. Get KYC submissions from your referrals (pending)
+ */
+export async function getMyReferralsPendingKYC(
+  page: number = 1,
+  limit: number = 20
+): Promise<ApiResponse<PaginatedKYCList>> {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/v1/kyc/my-referrals-pending?page=${page}&limit=${limit}`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getTokenFromCookies()}`,
+        },
+      }
+    );
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching referrals pending KYC');
+    return {
+      success: false,
+      error: 'Failed to fetch pending KYC submissions from referrals',
+    };
+  }
+}
+
+/**
+ * 11. Review KYC (Approve/Reject) - For sponsors reviewing their referrals' KYC
+ */
+export async function reviewKYC(
+  userId: string,
+  action: 'APPROVE' | 'REJECT',
+  rejectionReason?: string
+): Promise<ApiResponse<KYCResponse>> {
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/kyc/review`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getTokenFromCookies()}`,
+      },
+      body: JSON.stringify({
+        userId,
+        action,
+        ...(rejectionReason && { rejectionReason }),
+      }),
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error reviewing KYC');
+    return {
+      success: false,
+      error: 'Failed to review KYC submission',
+    };
+  }
+}
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -665,47 +725,38 @@ export function validateFile(file: File): DocumentValidation {
 }
 
 /**
- * Check if all required documents are uploaded
+ * Check if all required documents are uploaded (Aadhaar front, back, and Selfie)
  */
 export function areAllDocumentsUploaded(documents: KYCDocuments): boolean {
   return !!(
     documents.aadhaar?.frontImage &&
     documents.aadhaar?.backImage &&
-    documents.pan?.image &&
-    documents.selfie &&
-    documents.bankDetails?.proofImage &&
-    documents.addressProof?.image
+    documents.selfie
   );
 }
 
 /**
- * Get uploaded documents count
+ * Get uploaded documents count (only required: Aadhaar front, back, Selfie)
  */
 export function getUploadedDocumentsCount(documents: KYCDocuments): number {
   let count = 0;
   
   if (documents.aadhaar?.frontImage) count++;
   if (documents.aadhaar?.backImage) count++;
-  if (documents.pan?.image) count++;
   if (documents.selfie) count++;
-  if (documents.bankDetails?.proofImage) count++;
-  if (documents.addressProof?.image) count++;
   
   return count;
 }
 
 /**
- * Get missing documents list
+ * Get missing documents list (only required: Aadhaar front, back, Selfie)
  */
 export function getMissingDocuments(documents: KYCDocuments): DocumentType[] {
   const missing: DocumentType[] = [];
   
   if (!documents.aadhaar?.frontImage) missing.push(DocumentType.AADHAAR_FRONT);
   if (!documents.aadhaar?.backImage) missing.push(DocumentType.AADHAAR_BACK);
-  if (!documents.pan?.image) missing.push(DocumentType.PAN_CARD);
   if (!documents.selfie) missing.push(DocumentType.SELFIE);
-  if (!documents.bankDetails?.proofImage) missing.push(DocumentType.BANK_PROOF);
-  if (!documents.addressProof?.image) missing.push(DocumentType.ADDRESS_PROOF);
   
   return missing;
 }
@@ -760,7 +811,7 @@ export function canSubmitKYC(kycData: KYCResponse): boolean {
  * Get KYC completion percentage
  */
 export function getKYCCompletionPercentage(documents: KYCDocuments): number {
-  const total = 6; // Total required documents
+  const total = 3; // Total required documents (Aadhaar front, back, Selfie)
   const uploaded = getUploadedDocumentsCount(documents);
   
   return Math.round((uploaded / total) * 100);

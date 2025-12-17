@@ -126,28 +126,8 @@ export default function AddMoneyPage() {
   // Direct Add handlers
   const handleDirectInitialContinue = async (directAmount: string, selectedCurrency: string) => {
     setAmount(directAmount);
-    setCurrency(selectedCurrency);
-    setLoading(true);
-
-    try {
-      // Calculate conversion with backend
-      const response = await calculateConversion(selectedCurrency, parseFloat(directAmount));
-
-      if (response.success && response.data) {
-        setConversionData(response.data);
-        // Use only USDT amount without bonus
-        setBonus(0);
-        setTotalCredit(parseFloat(response.data.usdtAmount));
-        setDirectStep('payment-method');
-      } else {
-        alert(response.message || 'Failed to calculate conversion');
-      }
-    } catch (error) {
-      console.error('Error calculating conversion:', error);
-      alert('Failed to calculate conversion. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    setCurrency('INR'); // Always use INR
+    setDirectStep('payment-method');
   };
 
   const handleDirectPaymentMethodContinue = async (method: DirectPaymentMethod) => {
@@ -170,14 +150,10 @@ export default function AddMoneyPage() {
     setLoading(true);
 
     try {
-      // Create add money request
+      // Create add money request with new API
       const requestResponse = await createAddMoneyRequest({
-        currency: currency,
-        currencyAmount: parseFloat(amount),
+        amount: parseFloat(amount),
         method: method,
-        paymentDetails: {
-          upiId: method === 'UPI' ? 'user@paytm' : undefined,
-        },
         userNotes: 'Direct add money request'
       });
 
