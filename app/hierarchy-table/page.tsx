@@ -314,7 +314,7 @@ export default function HierarchyTablePage() {
               <div className="flex items-center gap-4">
                 <div>
                   <p className="text-blue-200 text-xs">Investment</p>
-                  <p className="text-lg font-bold">{parseFloat(currentNode.totalInvestment || '0').toLocaleString('en-IN')} USDT</p>
+                  <p className="text-lg font-bold">{parseFloat(currentNode.totalInvestment || '0').toLocaleString('en-IN')} INR</p>
                 </div>
                 <div>
                   <p className="text-blue-200 text-xs">Team Size</p>

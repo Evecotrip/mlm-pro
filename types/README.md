@@ -88,13 +88,13 @@ const isValidPhone = VALIDATION.PHONE_REGEX.test(phoneNumber);
 ### Using Helper Functions
 
 ```typescript
-import { formatCurrency, formatUSDT, calculateMaturityAmount } from "@/types/utils.types";
+import { formatCurrency, formatINR, calculateMaturityAmount } from "@/types/utils.types";
 
 // Format currency
 const formatted = formatCurrency(10000); // "₹10,000.00"
 
-// Format USDT
-const usdtFormatted = formatUSDT(1.23456789); // "1.23456789 USDT"
+// Format INR
+const INRFormatted = formatINR(1.23456789); // "1.23456789 INR"
 
 // Calculate maturity
 const maturity = calculateMaturityAmount(100000, 10); // 110000

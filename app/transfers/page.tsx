@@ -392,7 +392,7 @@ export default function TransfersPage() {
                             {parseFloat(transfer.amount).toLocaleString('en-IN', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
-                            })} USDT
+                            })} INR
                           </p>
                         </td>
                         

@@ -126,12 +126,12 @@ function CreateInvestmentContent() {
     const maxAmount = parseFloat(profileDetails.maxInvestment);
 
     if (amountNum < minAmount) {
-      setError(`Minimum investment for ${selectedProfile} is ${minAmount} USDT`);
+      setError(`Minimum investment for ${selectedProfile} is ${minAmount} INR`);
       return;
     }
 
     if (profileDetails.maxInvestment !== '9999999999' && amountNum > maxAmount) {
-      setError(`Maximum investment for ${selectedProfile} is ${maxAmount} USDT`);
+      setError(`Maximum investment for ${selectedProfile} is ${maxAmount} INR`);
       return;
     }
 
@@ -213,12 +213,12 @@ function CreateInvestmentContent() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500 dark:text-slate-400">Amount</span>
-                  <span className="font-bold text-slate-900 dark:text-white text-lg">{createdInvestment.amount} USDT</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-lg">{createdInvestment.amount} INR</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500 dark:text-slate-400">Expected Returns</span>
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {createdInvestment.expectedMinReturn} - {createdInvestment.expectedMaxReturn} USDT
+                    {createdInvestment.expectedMinReturn} - {createdInvestment.expectedMaxReturn} INR
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -334,7 +334,7 @@ function CreateInvestmentContent() {
               </div>
               <div className="bg-slate-100 dark:bg-slate-950/50 rounded-xl p-3 border border-slate-200 dark:border-slate-800/50">
                 <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Min Amount</p>
-                <p className="font-bold text-slate-900 dark:text-white">{profileDetails.minInvestment} USDT</p>
+                <p className="font-bold text-slate-900 dark:text-white">{profileDetails.minInvestment} INR</p>
               </div>
             </div>
           </div>
@@ -349,26 +349,26 @@ function CreateInvestmentContent() {
             {/* Amount Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
-                Investment Amount (USDT) *
+                Investment Amount (INR) *
               </label>
               <div className="relative">
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount in USDT"
+                  placeholder="Enter amount in INR"
                   className="w-full px-4 py-4 bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-lg font-bold placeholder:font-normal"
                   min={profileDetails.minInvestment}
                   max={profileDetails.maxInvestment !== '9999999999' ? profileDetails.maxInvestment : undefined}
                   step="0.01"
                 />
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold pointer-events-none">
-                  USDT
+                  INR
                 </div>
               </div>
               <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
-                Range: {profileDetails.minInvestment} - {profileDetails.maxInvestment === '9999999999' ? '∞' : profileDetails.maxInvestment} USDT
+                Range: {profileDetails.minInvestment} - {profileDetails.maxInvestment === '9999999999' ? '∞' : profileDetails.maxInvestment} INR
               </p>
             </div>
 
@@ -380,14 +380,14 @@ function CreateInvestmentContent() {
                   <div>
                     <p className="text-xs text-slate-500 mb-1">Minimum Return</p>
                     <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                      {(parseFloat(amount) * parseFloat(profileDetails.minReturnRate) / 100).toFixed(2)} USDT
+                      {(parseFloat(amount) * parseFloat(profileDetails.minReturnRate) / 100).toFixed(2)} INR
                     </p>
                   </div>
                   <div className="h-8 w-px bg-slate-200 dark:bg-slate-800"></div>
                   <div className="text-right">
                     <p className="text-xs text-slate-500 mb-1">Maximum Return</p>
                     <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                      {(parseFloat(amount) * parseFloat(profileDetails.maxReturnRate) / 100).toFixed(2)} USDT
+                      {(parseFloat(amount) * parseFloat(profileDetails.maxReturnRate) / 100).toFixed(2)} INR
                     </p>
                   </div>
                 </div>

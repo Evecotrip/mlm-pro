@@ -262,7 +262,7 @@ export default function LendRequestsPage() {
                         <div>
                           <div className="flex items-center gap-3 mb-1">
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                              {request.amount} USDT
+                              {request.amount} INR
                             </h3>
                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold border flex items-center gap-1.5 uppercase tracking-wide ${getStatusColor(request.status)}`}>
                               {getStatusIcon(request.status)}
@@ -400,7 +400,7 @@ export default function LendRequestsPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Approve Borrow Request</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-6">
-              Approve <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} USDT</span>?
+              Approve <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} INR</span>?
             </p>
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -444,7 +444,7 @@ export default function LendRequestsPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Reject Borrow Request</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-6">
-              Reject <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} USDT</span>?
+              Reject <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.borrower.firstName}</span>'s request for <span className="text-slate-900 dark:text-white font-bold">{selectedRequest.amount} INR</span>?
             </p>
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">

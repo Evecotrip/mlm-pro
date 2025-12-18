@@ -243,7 +243,7 @@ function BorrowAddMoneyContent() {
                 </div>
                 <div>
                   <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Amount</p>
-                  <p className="text-xl font-bold text-slate-900 dark:text-white">{request.amount} USDT</p>
+                  <p className="text-xl font-bold text-slate-900 dark:text-white">{request.amount} INR</p>
                 </div>
                 <div>
                   <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Payment Method</p>
@@ -386,7 +386,7 @@ function BorrowAddMoneyContent() {
               <div className="bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-2xl p-6 mb-6">
                 <p className="text-sm text-emerald-800 dark:text-emerald-200">
                   <strong className="text-emerald-700 dark:text-emerald-400 block mb-1">✓ Transaction Completed</strong>
-                  The transaction has been completed and {request.amount} USDT has been credited to your wallet.
+                  The transaction has been completed and {request.amount} INR has been credited to your wallet.
                 </p>
               </div>
             )}
@@ -497,7 +497,7 @@ function BorrowAddMoneyContent() {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
-                    Amount (USDT)
+                    Amount (INR)
                   </label>
                   <input
                     type="number"
@@ -692,7 +692,7 @@ function BorrowAddMoneyContent() {
               <div className="space-y-4 mb-8">
                 <div className="p-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800">
                   <p className="text-sm text-slate-500 dark:text-slate-500 mb-1">Amount</p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{amount} USDT</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{amount} INR</p>
                 </div>
 
                 <div className="p-4 bg-slate-100 dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-800">

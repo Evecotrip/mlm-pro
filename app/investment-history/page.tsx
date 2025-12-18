@@ -148,7 +148,7 @@ export default function InvestmentHistoryPage() {
                 </div>
                 <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">Total Invested</span>
               </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalInvested.toLocaleString('en-IN')} USDT</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalInvested.toLocaleString('en-IN')} INR</p>
             </div>
           </div>
 
@@ -161,7 +161,7 @@ export default function InvestmentHistoryPage() {
                 </div>
                 <span className="text-slate-600 dark:text-slate-400 text-sm font-medium">Total Returns</span>
               </div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalReturns.toLocaleString('en-IN')} USDT</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{totalReturns.toLocaleString('en-IN')} INR</p>
             </div>
           </div>
         </div>
@@ -240,7 +240,7 @@ export default function InvestmentHistoryPage() {
                     <div>
                       <div className="flex items-center gap-3 mb-1">
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                          {inv.amount} USDT
+                          {inv.amount} INR
                         </h3>
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${getStatusColor(inv.status)}`}>
                           {inv.status.replace('_', ' ')}
@@ -268,7 +268,7 @@ export default function InvestmentHistoryPage() {
                   <div className="w-full md:w-auto pl-4 md:pl-0 border-l md:border-l-0 border-slate-200 dark:border-slate-800 md:text-right">
                     <p className="text-xs text-slate-500 mb-1 uppercase tracking-wider">Expected Return</p>
                     <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                      {inv.expectedMinReturn} - {inv.expectedMaxReturn} <span className="text-sm text-emerald-600/70 dark:text-emerald-500/70">USDT</span>
+                      {inv.expectedMinReturn} - {inv.expectedMaxReturn} <span className="text-sm text-emerald-600/70 dark:text-emerald-500/70">INR</span>
                     </p>
                     <p className="text-xs text-slate-500 mt-1">
                       {inv.minReturnRate}% - {inv.maxReturnRate}% ROI

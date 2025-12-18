@@ -8,6 +8,20 @@ import { useUserStore } from '@/store/useUserStore';
 import { useWalletStore } from '@/store/useWalletStore';
 import { ThemeToggle } from './ThemeToggle';
 
+// Format number with K, L (Lakhs), Cr suffixes for Indian numbering
+const formatCompactNumber = (num: number): string => {
+  if (num >= 10000000) {
+    return (num / 10000000).toFixed(1).replace(/\.0$/, '') + ' Cr';
+  }
+  if (num >= 100000) {
+    return (num / 100000).toFixed(1).replace(/\.0$/, '') + ' L';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  }
+  return num.toLocaleString('en-IN');
+};
+
 interface NavbarProps {
   onLogout: () => void;
   showWalletButton?: boolean;
@@ -76,7 +90,7 @@ export default function Navbar({
                   <Wallet className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500" />
                 </div>
                 <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                  {parseFloat(balance?.available || '0').toLocaleString('en-IN')} USDT
+                  {formatCompactNumber(parseFloat(balance?.available || '0'))} INR
                 </span>
               </button>
             )}

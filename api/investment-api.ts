@@ -145,7 +145,7 @@ export interface ApiResponse<T> {
 // ==================== API FUNCTIONS ====================
 
 /**
- * Get exchange rate for a currency to USDT
+ * Get exchange rate for a currency to INR
  */
 export async function getExchangeRate(
   currency: string

@@ -234,7 +234,7 @@ export default function InvestmentRequestsPage() {
                         <div>
                           <div className="flex items-center gap-3 mb-1">
                             <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                              {investment.amount} USDT
+                              {investment.amount} INR
                             </h3>
                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${styles.bg} ${styles.text} ${styles.border}`}>
                               {investment.profile}
@@ -261,7 +261,7 @@ export default function InvestmentRequestsPage() {
                         <div>
                           <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Expected Return</p>
                           <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                            {investment.expectedMinReturn} - {investment.expectedMaxReturn} USDT
+                            {investment.expectedMinReturn} - {investment.expectedMaxReturn} INR
                           </p>
                         </div>
                         <div>
@@ -346,7 +346,7 @@ export default function InvestmentRequestsPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Approve Investment</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-6">
-              Are you sure you want to approve this <span className="text-slate-900 dark:text-white font-bold">{selectedInvestment.amount} USDT</span> {selectedInvestment.profile} investment?
+              Are you sure you want to approve this <span className="text-slate-900 dark:text-white font-bold">{selectedInvestment.amount} INR</span> {selectedInvestment.profile} investment?
             </p>
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -390,7 +390,7 @@ export default function InvestmentRequestsPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Reject Investment</h3>
             <p className="text-slate-600 dark:text-slate-400 mb-6">
-              Please provide a reason for rejecting this <span className="text-slate-900 dark:text-white font-bold">{selectedInvestment.amount} USDT</span> investment.
+              Please provide a reason for rejecting this <span className="text-slate-900 dark:text-white font-bold">{selectedInvestment.amount} INR</span> investment.
             </p>
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">

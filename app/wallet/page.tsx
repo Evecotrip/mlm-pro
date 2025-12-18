@@ -244,7 +244,7 @@ export default function WalletPage() {
                 <div className="flex justify-between items-start mb-5 sm:mb-8">
                   <div>
                     <p className="text-blue-100 text-xs sm:text-sm font-medium mb-1">Total Balance</p>
-                    <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">{availableBalance.toLocaleString('en-IN')} <span className="text-sm sm:text-lg opacity-70">USDT</span></h2>
+                    <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">{availableBalance.toLocaleString('en-IN')} <span className="text-sm sm:text-lg opacity-70">INR</span></h2>
                   </div>
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl flex items-center justify-center border border-white/20">
                     <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
@@ -254,11 +254,11 @@ export default function WalletPage() {
                 <div className="space-y-1 mb-5 sm:mb-8">
                   <div className="flex justify-between text-xs sm:text-sm text-blue-100/80">
                     <span>Total Earnings</span>
-                    <span className="font-medium text-white">{parseFloat(earnings?.total || '0').toLocaleString('en-IN')} USDT</span>
+                    <span className="font-medium text-white">{parseFloat(earnings?.total || '0').toLocaleString('en-IN')} INR</span>
                   </div>
                   <div className="flex justify-between text-xs sm:text-sm text-blue-100/80">
                     <span>Total Invested</span>
-                    <span className="font-medium text-white">{parseFloat(statistics?.totalInvested || '0').toLocaleString('en-IN')} USDT</span>
+                    <span className="font-medium text-white">{parseFloat(statistics?.totalInvested || '0').toLocaleString('en-IN')} INR</span>
                   </div>
                 </div>
 
@@ -323,9 +323,16 @@ export default function WalletPage() {
                     </div>
                     <span className="text-sm font-semibold text-slate-900 dark:text-white">{parseFloat(breakdown.lentOut).toLocaleString('en-IN')}</span>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                      <span className="text-xs text-slate-600 dark:text-slate-400">Locked Profit</span>
+                    </div>
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white">{parseFloat(breakdown.lockedProfit).toLocaleString('en-IN')}</span>
+                  </div>
                   <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-900 dark:text-white">Total</span>
-                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{parseFloat(breakdown.total).toLocaleString('en-IN')} USDT</span>
+                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{parseFloat(breakdown.total).toLocaleString('en-IN')} INR</span>
                   </div>
                 </div>
               </div>
@@ -456,7 +463,7 @@ export default function WalletPage() {
                             <p className={`font-bold text-sm sm:text-base whitespace-nowrap ${isCredit(txn.direction) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
                               {isCredit(txn.direction) ? '+' : '-'}{parseFloat(txn.amount).toLocaleString('en-IN')}
                             </p>
-                            <p className="text-[10px] sm:text-xs text-slate-500">USDT</p>
+                            <p className="text-[10px] sm:text-xs text-slate-500">INR</p>
                           </div>
                         </div>
                       ))
@@ -582,7 +589,7 @@ export default function WalletPage() {
                                   }`}>
                                   {log.operation === 'CREDIT' ? '+' : log.operation === 'LOCK' ? '🔒 ' : log.operation === 'COMMISSION' ? '+' : '-'}{Math.abs(parseFloat(log.amount)).toLocaleString('en-IN')}
                                 </p>
-                                <p className="text-xs text-slate-500">USDT</p>
+                                <p className="text-xs text-slate-500">INR</p>
                               </div>
                             </div>
                             <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
@@ -735,7 +742,7 @@ export default function WalletPage() {
                                 <p className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
                                   +{parseFloat(commission.amount).toLocaleString('en-IN')}
                                 </p>
-                                <p className="text-xs text-slate-500">USDT</p>
+                                <p className="text-xs text-slate-500">INR</p>
                               </div>
                             </div>
                           </div>

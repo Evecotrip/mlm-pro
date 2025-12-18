@@ -26,6 +26,7 @@ export interface WalletBalance {
   total: string;
   available: string;
   locked: string;
+  lockedProfit: string;
   invested: string;
   lent: string;
 }
@@ -57,6 +58,7 @@ export interface WalletStatistics {
 export interface WalletBreakdown {
   inWallet: string;
   inInvestments: string;
+  lockedProfit: string;
   lentOut: string;
   total: string;
 }

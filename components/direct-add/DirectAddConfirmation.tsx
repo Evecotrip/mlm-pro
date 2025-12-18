@@ -93,7 +93,7 @@ export default function DirectAddConfirmation({
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-500 text-sm">Total Credit</span>
-            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xl">{totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xl">{totalCredit.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-slate-500 text-sm">Payment Method</span>

@@ -110,17 +110,15 @@ export default function LandingPage() {
           <source src="/hero-video-1.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/40"></div>
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
+        <div className="relative z-10 h-full flex flex-col items-center justify-start text-center px-6 pt-32 md:pt-30">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-white max-w-4xl mx-auto leading-[1.1]">
             The Future of <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">Decentralized Wealth</span>
           </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-12 leading-relaxed">
-            Experience a new era of financial growth with AuramX. Secure, transparent, and built for the modern investor.
-          </p>
+          
           <button
             onClick={handleGetStarted}
-            className="group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(37,99,235,0.5)]"
+            className="group relative px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(37,99,235,0.5)] mt-auto mb-24 md:mb-20"
           >
             <span className="flex items-center gap-2">
               Start Investing Now <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

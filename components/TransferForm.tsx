@@ -128,7 +128,7 @@ export default function TransferForm({ onClose, onSuccess }: TransferFormProps) 
             <div>
               <p className="text-sm text-blue-600 dark:text-blue-400 mb-1">Available Balance</p>
               <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-                {availableBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+                {availableBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
               </p>
               <p className="text-xs text-blue-500 dark:text-blue-400/70 mt-1">Your wallet balance</p>
             </div>
@@ -166,7 +166,7 @@ export default function TransferForm({ onClose, onSuccess }: TransferFormProps) 
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00 USDT"
+                placeholder="0.00 INR"
                 className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-xl font-bold placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-600"
                 min="1"
                 step="0.01"
@@ -236,13 +236,13 @@ export default function TransferForm({ onClose, onSuccess }: TransferFormProps) 
                 <div className="flex justify-between items-center">
                   <span className="text-slate-600 dark:text-slate-500">Amount</span>
                   <span className="font-bold text-xl text-emerald-600 dark:text-emerald-400">
-                    {parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+                    {parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
                   </span>
                 </div>
                 <div className="flex justify-between items-center pt-3 border-t border-slate-200 dark:border-slate-800">
                   <span className="text-slate-600 dark:text-slate-500 text-sm">Balance After Transfer</span>
                   <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    {(availableBalance - parseFloat(amount)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+                    {(availableBalance - parseFloat(amount)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} INR
                   </span>
                 </div>
                 {note && (
@@ -274,7 +274,7 @@ export default function TransferForm({ onClose, onSuccess }: TransferFormProps) 
             ) : (
               <>
                 <Send className="w-5 h-5" />
-                Send {amount || '0'} USDT
+                Send {amount || '0'} INR
                 <ArrowRight className="w-5 h-5" />
               </>
             )}

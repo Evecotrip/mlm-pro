@@ -234,7 +234,7 @@ export default function MyBorrowRequestsPage() {
                         <div>
                           <div className="flex items-center gap-3 mb-1">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                              {request.amount} USDT
+                              {request.amount} INR
                             </h3>
                             <span className={`px-3 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wide ${getStatusColor(request.status)}`}>
                               {request.status}

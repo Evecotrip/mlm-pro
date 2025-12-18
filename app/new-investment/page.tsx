@@ -6,7 +6,6 @@ import { useUser } from '@clerk/nextjs';
 import Navbar from '@/components/Navbar';
 import {
   getInvestmentProfiles,
-  getExchangeRate,
   InvestmentProfile
 } from '@/api/investment-api';
 import {
@@ -28,14 +27,6 @@ import {
   AlertCircle,
   Loader2
 } from 'lucide-react';
-
-const CURRENCIES = [
-  { code: 'USDT', name: 'USDT', symbol: '', rate: 1 },
-  { code: 'INR', name: 'Indian Rupee', symbol: '₹', rate: 0 },
-  { code: 'USD', name: 'US Dollar', symbol: '$', rate: 0 },
-  { code: 'EUR', name: 'Euro', symbol: '€', rate: 0 },
-  { code: 'GBP', name: 'British Pound', symbol: '£', rate: 0 },
-];
 
 const PROFILE_ICONS = {
   BRONZE: Award,
@@ -84,14 +75,6 @@ export default function NewInvestmentPage() {
   const { isLoaded, user } = useUser();
   const [profiles, setProfiles] = useState<InvestmentProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCurrency, setSelectedCurrency] = useState('USDT');
-  const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({
-    USDT: 1,
-    INR: 0,
-    USD: 0,
-    EUR: 0,
-    GBP: 0,
-  });
   
   // KYC Check
   const [showKYCModal, setShowKYCModal] = useState(false);
@@ -140,7 +123,6 @@ export default function NewInvestmentPage() {
         } else {
           // KYC approved, load investment profiles
           fetchInvestmentProfiles();
-          fetchExchangeRates();
         }
       }
     } catch (error) {
@@ -156,7 +138,6 @@ export default function NewInvestmentPage() {
     // Only fetch profiles if KYC is approved
     if (kycStatus === KYCStatus.APPROVED) {
       fetchInvestmentProfiles();
-      fetchExchangeRates();
     }
   }, [kycStatus]);
 
@@ -176,33 +157,8 @@ export default function NewInvestmentPage() {
     }
   };
 
-  const fetchExchangeRates = async () => {
-    try {
-      const currencies = ['INR', 'USD', 'EUR', 'GBP'];
-      const rates: { [key: string]: number } = { USDT: 1 };
-
-      for (const currency of currencies) {
-        const response = await getExchangeRate(currency);
-        if (response.success && response.data) {
-          rates[currency] = 1 / parseFloat(response.data.rate);
-        }
-      }
-
-      setExchangeRates(rates);
-    } catch (error) {
-      console.error('Error fetching exchange rates:', error);
-    }
-  };
-
-  const convertAmount = (usdtAmount: string): string => {
-    const amount = parseFloat(usdtAmount);
-    const rate = exchangeRates[selectedCurrency] || 1;
-    return (amount * rate).toFixed(2);
-  };
-
-  const getCurrencySymbol = (): string => {
-    const currency = CURRENCIES.find(c => c.code === selectedCurrency);
-    return currency?.symbol || '';
+  const formatAmount = (amount: string): string => {
+    return parseFloat(amount).toLocaleString('en-IN');
   };
 
   const handleSelectPlan = (profile: InvestmentProfile) => {
@@ -300,22 +256,7 @@ export default function NewInvestmentPage() {
             Select the perfect investment tier that matches your goals and watch your wealth grow with our secure, high-yield strategies.
           </p>
 
-          {/* Currency Selector */}
-          <div className="inline-flex items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-xl p-1 shadow-sm dark:shadow-none">
-            {CURRENCIES.map((currency) => (
-              <button
-                key={currency.code}
-                onClick={() => setSelectedCurrency(currency.code)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedCurrency === currency.code
-                  ? 'bg-slate-900 dark:bg-slate-800 text-white shadow-lg'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50'
-                  }`}
-              >
-                {currency.code}
-              </button>
-            ))}
           </div>
-        </div>
 
         {/* Investment Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 relative z-10">
@@ -357,9 +298,9 @@ export default function NewInvestmentPage() {
                   <div className="mb-6 p-4 bg-white/50 dark:bg-slate-950/50 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
                     <p className="text-xs text-slate-500 mb-1">Investment Range</p>
                     <p className="text-xl font-bold text-slate-900 dark:text-white">
-                      {getCurrencySymbol()}{convertAmount(profile.minInvestment)}
+                      ₹{formatAmount(profile.minInvestment)}
                       <span className="text-slate-400 dark:text-slate-500 text-sm font-normal mx-1">-</span>
-                      {profile.maxInvestment === '9999999999' ? '∞' : `${getCurrencySymbol()}${convertAmount(profile.maxInvestment)}`}
+                      {profile.maxInvestment === '999999999999' ? '∞' : `₹${formatAmount(profile.maxInvestment)}`}
                     </p>
                   </div>
 

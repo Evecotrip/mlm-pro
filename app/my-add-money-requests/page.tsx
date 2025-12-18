@@ -268,7 +268,7 @@ export default function MyAddMoneyRequestsPage() {
                           </span>
                         </div>
                         <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                          Total Credit: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{request.usdtAmount} USDT</span>
+                          Total Credit: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{request.INRAmount} INR</span>
                         </p>
                         <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-500">
                           <span className="flex items-center gap-1">
