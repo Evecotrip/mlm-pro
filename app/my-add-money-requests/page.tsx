@@ -261,14 +261,17 @@ export default function MyAddMoneyRequestsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-1">
                           <h4 className="font-bold text-slate-900 dark:text-white text-lg">
-                            {request.currencyAmount} {request.currency}
+                            ₹{parseFloat(request.amount).toLocaleString('en-IN')}
                           </h4>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wide ${getStatusColor(request.status)}`}>
                             {request.status}
                           </span>
                         </div>
                         <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                          Total Credit: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{request.INRAmount} INR</span>
+                          Total Credit: <span className="text-emerald-600 dark:text-emerald-400 font-bold">₹{parseFloat(request.totalAmount).toLocaleString('en-IN')}</span>
+                          {parseFloat(request.bonusAmount) > 0 && (
+                            <span className="ml-2 text-xs text-emerald-500">(+₹{parseFloat(request.bonusAmount).toLocaleString('en-IN')} bonus)</span>
+                          )}
                         </p>
                         <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-500">
                           <span className="flex items-center gap-1">
