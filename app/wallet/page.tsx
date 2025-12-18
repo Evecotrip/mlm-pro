@@ -641,7 +641,11 @@ export default function WalletPage() {
                 </>
               )}
 
-              {/* Commissions Tab */}
+
+
+
+              {/** 
+               Commissions Tab 
               {activeTab === 'commissions' && (
                 <>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
@@ -666,7 +670,7 @@ export default function WalletPage() {
                     </div>
                   </div>
 
-                  {/* Commission Stats Cards */}
+                  Commission Stats Cards 
                   {commissionStats && (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                       <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl p-4">
@@ -751,7 +755,7 @@ export default function WalletPage() {
                     )}
                   </div>
 
-                  {/* Commissions Pagination */}
+                  Commissions Pagination 
                   {commissionsPagination && commissionsPagination.totalPages > 1 && (
                     <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
                       <p className="text-xs text-slate-500">
@@ -779,7 +783,12 @@ export default function WalletPage() {
                     </div>
                   )}
                 </>
-              )}
+              )} 
+
+
+*/}
+
+
             </div>
           </div>
         </div>
