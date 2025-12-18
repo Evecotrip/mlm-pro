@@ -64,7 +64,7 @@ export default function LandingPage() {
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl">
         <nav className="flex items-center justify-between px-4 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-full shadow-lg shadow-slate-900/5 dark:shadow-black/20">
           <div className="flex items-center">
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 pl-2">AurumX</span>
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-yellow-400 dark:from-amber-400 dark:to-yellow-300 pl-2">AurumX</span>
             <div className="relative w-10 h-10 flex items-center justify-center ml-[-5px]">
               <div ref={animationContainer} className="absolute inset-0" />
             </div>
