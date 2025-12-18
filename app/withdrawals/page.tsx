@@ -29,6 +29,7 @@ import {
   getWithdrawalRequests,
   createWithdrawalRequest,
   cancelWithdrawalRequest,
+  checkWithdrawalEligibility,
   getWithdrawalStatusColor,
   getWithdrawalMethodName,
   formatWithdrawalDetails,
@@ -74,6 +75,8 @@ export default function WithdrawalsPage() {
   const [preferredTime, setPreferredTime] = useState('');
   
   const hasFetchedData = useRef(false);
+  const [canWithdraw, setCanWithdraw] = useState(false);
+  const [isCheckingEligibility, setIsCheckingEligibility] = useState(true);
 
   // Check authentication
   useEffect(() => {
@@ -83,18 +86,33 @@ export default function WithdrawalsPage() {
     }
   }, [isLoaded, user, router]);
 
-  // Fetch withdrawals
+  // Fetch withdrawals and check eligibility
   useEffect(() => {
     if (!user?.id || hasFetchedData.current) return;
     
     hasFetchedData.current = true;
     fetchWithdrawals();
+    checkEligibility();
     
     return () => {
       hasFetchedData.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
+
+  const checkEligibility = async () => {
+    setIsCheckingEligibility(true);
+    try {
+      const response = await checkWithdrawalEligibility();
+      if (response.success && response.data) {
+        setCanWithdraw(response.data.canWithdraw);
+      }
+    } catch (error) {
+      console.error('Error checking withdrawal eligibility:', error);
+    } finally {
+      setIsCheckingEligibility(false);
+    }
+  };
 
   const fetchWithdrawals = async () => {
     setIsLoading(true);
@@ -321,9 +339,19 @@ export default function WithdrawalsPage() {
           </div>
           <button
             onClick={handleOpenCreateModal}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-lg hover:shadow-xl"
+            disabled={!canWithdraw || isCheckingEligibility}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-colors shadow-lg ${
+              canWithdraw && !isCheckingEligibility
+                ? 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-xl'
+                : 'bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+            }`}
+            title={!canWithdraw ? 'You are not eligible to withdraw at this time' : ''}
           >
-            <Plus className="w-5 h-5" />
+            {isCheckingEligibility ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Plus className="w-5 h-5" />
+            )}
             New Withdrawal
           </button>
         </div>

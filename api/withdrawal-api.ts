@@ -348,6 +348,55 @@ export async function cancelWithdrawalRequest(
   }
 }
 
+/**
+ * Withdrawal eligibility response
+ */
+export interface WithdrawalEligibility {
+  canWithdraw: boolean;
+}
+
+/**
+ * Check if user is eligible to withdraw
+ * @returns Promise with eligibility status
+ */
+export async function checkWithdrawalEligibility(): Promise<ApiResponse<WithdrawalEligibility>> {
+  try {
+    const token = getTokenFromCookies();
+    
+    if (!token) {
+      return {
+        success: false,
+        message: "Authentication token not found. Please login again.",
+      };
+    }
+
+    const response = await fetch(`${BASE_URL}/api/v1/withdrawals/check-eligibility`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        success: false,
+        message: errorData.message || "Failed to check withdrawal eligibility",
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error checking withdrawal eligibility");
+    return {
+      success: false,
+      message: "Network error while checking withdrawal eligibility",
+    };
+  }
+}
+
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
