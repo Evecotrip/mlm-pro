@@ -33,7 +33,7 @@ export default function DisclaimerPage() {
       icon: Scale,
       title: 'Regulatory Compliance',
       content: [
-        'AuramX operates in compliance with applicable laws',
+        'AurumX operates in compliance with applicable laws',
         'Regulatory requirements may vary by jurisdiction',
         'Users are responsible for understanding local regulations',
         'Some features may not be available in all regions',
@@ -82,7 +82,7 @@ export default function DisclaimerPage() {
             Disclaimer
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Important information about the risks and limitations of using AuramX.
+            Important information about the risks and limitations of using AurumX.
           </p>
           <p className="text-sm text-slate-500 mt-4">Last updated: December 2024</p>
         </div>
@@ -94,7 +94,7 @@ export default function DisclaimerPage() {
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Important Notice</h2>
           </div>
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-            By using AuramX, you acknowledge that you have read, understood, and agree to be bound by this disclaimer. If you do not agree with any part of this disclaimer, please do not use our platform. Investment in financial products involves substantial risk and is not suitable for all investors.
+            By using AurumX, you acknowledge that you have read, understood, and agree to be bound by this disclaimer. If you do not agree with any part of this disclaimer, please do not use our platform. Investment in financial products involves substantial risk and is not suitable for all investors.
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export default function DisclaimerPage() {
         <div className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 mt-8">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Your Acknowledgment</h2>
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-            By continuing to use AuramX, you acknowledge and agree that:
+            By continuing to use AurumX, you acknowledge and agree that:
           </p>
           <ul className="space-y-2 text-slate-600 dark:text-slate-400">
             <li className="flex items-start gap-2">
@@ -144,7 +144,7 @@ export default function DisclaimerPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-emerald-500 mt-0.5">✓</span>
-              <span>You release AuramX from liability for any losses incurred</span>
+              <span>You release AurumX from liability for any losses incurred</span>
             </li>
           </ul>
         </div>

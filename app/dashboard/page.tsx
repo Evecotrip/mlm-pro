@@ -133,7 +133,7 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-blue-500 rounded-full opacity-20 animate-ping"></div>
             <Loader2 className="w-16 h-16 text-blue-500 animate-spin relative z-10" />
           </div>
-          <p className="text-slate-400 font-medium tracking-wide">Initializing AuramX...</p>
+          <p className="text-slate-400 font-medium tracking-wide">Initializing AurumX...</p>
         </div>
       </div>
     );

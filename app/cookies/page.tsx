@@ -59,7 +59,7 @@ export default function CookiePolicyPage() {
             Cookie Policy
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Learn how we use cookies to improve your experience on AuramX.
+            Learn how we use cookies to improve your experience on AurumX.
           </p>
           <p className="text-sm text-slate-500 mt-4">Last updated: December 2024</p>
         </div>

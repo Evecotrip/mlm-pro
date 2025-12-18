@@ -85,7 +85,7 @@ export default function RulesPage() {
         </h1>
         
         <p className="text-lg text-slate-600 dark:text-slate-400 mb-8">
-          Please read and understand these rules before using the AuramX platform. 
+          Please read and understand these rules before using the AurumX platform. 
           Violation of these rules may result in account suspension or termination.
         </p>
 
@@ -95,7 +95,7 @@ export default function RulesPage() {
           <div>
             <h3 className="font-bold text-amber-700 dark:text-amber-300 mb-2">Important Notice</h3>
             <p className="text-amber-700/80 dark:text-amber-300/80 text-sm">
-              By using AuramX, you agree to abide by all rules and guidelines. We reserve the right to 
+              By using AurumX, you agree to abide by all rules and guidelines. We reserve the right to 
               modify these rules at any time. Users will be notified of significant changes via email.
             </p>
           </div>

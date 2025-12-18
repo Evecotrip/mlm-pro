@@ -1,4 +1,4 @@
-# AuramX Platform - Usage Guide
+# AurumX Platform - Usage Guide
 
 ## Quick Start
 

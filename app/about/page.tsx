@@ -28,11 +28,11 @@ export default function AboutPage() {
       {/* Content */}
       <main className="relative z-10 container mx-auto px-6 py-12 max-w-4xl">
         <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-          About AuramX
+          About AurumX
         </h1>
         
         <p className="text-lg text-slate-600 dark:text-slate-400 mb-12 leading-relaxed">
-          AuramX is a next-generation decentralized investment platform designed to empower individuals 
+          AurumX is a next-generation decentralized investment platform designed to empower individuals 
           to build wealth through strategic investments and network growth.
         </p>
 
@@ -99,7 +99,7 @@ export default function AboutPage() {
         {/* CTA */}
         <div className="text-center bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-12">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Your Journey?</h2>
-          <p className="text-blue-100 mb-8">Join thousands of investors building their future with AuramX.</p>
+          <p className="text-blue-100 mb-8">Join thousands of investors building their future with AurumX.</p>
           <button
             onClick={() => router.push('/signup')}
             className="px-8 py-4 bg-white text-blue-600 rounded-2xl font-bold hover:bg-blue-50 transition-all hover:scale-105"

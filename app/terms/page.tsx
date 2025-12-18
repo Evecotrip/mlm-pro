@@ -92,7 +92,7 @@ export default function TermsOfServicePage() {
             Terms of Service
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Please read these terms carefully before using the AuramX platform.
+            Please read these terms carefully before using the AurumX platform.
           </p>
           <p className="text-sm text-slate-500 mt-4">Last updated: December 2024</p>
         </div>
@@ -101,7 +101,7 @@ export default function TermsOfServicePage() {
         <div className="bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 mb-8">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Agreement to Terms</h2>
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-            By accessing or using AuramX, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this platform. The materials contained in this platform are protected by applicable copyright and trademark law.
+            By accessing or using AurumX, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this platform. The materials contained in this platform are protected by applicable copyright and trademark law.
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export default function TermsOfServicePage() {
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Limitation of Liability</h2>
           </div>
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-            In no event shall AuramX or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on AuramX's platform, even if AuramX or an authorized representative has been notified orally or in writing of the possibility of such damage.
+            In no event shall AurumX or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on AurumX's platform, even if AurumX or an authorized representative has been notified orally or in writing of the possibility of such damage.
           </p>
         </div>
 

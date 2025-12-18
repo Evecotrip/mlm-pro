@@ -75,7 +75,7 @@ export default function RequestsPage() {
     try {
       const response = await approveUserRegistration(
         approvalId,
-        `Welcome to AuramX, ${userName}!`
+        `Welcome to AurumX, ${userName}!`
       );
 
       if (response.success) {

@@ -64,7 +64,7 @@ export default function LandingPage() {
       <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl">
         <nav className="flex items-center justify-between px-4 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/50 dark:border-slate-700/50 rounded-full shadow-lg shadow-slate-900/5 dark:shadow-black/20">
           <div className="flex items-center">
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 pl-2">AuramX</span>
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 pl-2">AurumX</span>
             <div className="relative w-10 h-10 flex items-center justify-center ml-[-5px]">
               <div ref={animationContainer} className="absolute inset-0" />
             </div>
@@ -140,7 +140,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-          Experience a new era of financial growth with AuramX. Secure, transparent, and built for the modern investor. Join the revolution today.
+          Experience a new era of financial growth with AurumX. Secure, transparent, and built for the modern investor. Join the revolution today.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -185,7 +185,7 @@ export default function LandingPage() {
       {/* Features Grid */}
       <section className="relative z-10 container mx-auto px-6 py-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Why Choose AuramX?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">Why Choose AurumX?</h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Built on advanced technology to ensure your assets are safe, growing, and always accessible.</p>
         </div>
 
@@ -232,7 +232,7 @@ export default function LandingPage() {
 
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to start your journey?</h2>
-            <p className="text-xl text-blue-100 dark:text-slate-300 mb-10">Join thousands of investors who are already building their future with AuramX.</p>
+            <p className="text-xl text-blue-100 dark:text-slate-300 mb-10">Join thousands of investors who are already building their future with AurumX.</p>
             <button
               onClick={handleGetStarted}
               className="px-10 py-5 bg-white text-blue-600 dark:text-blue-900 rounded-2xl font-bold text-lg hover:bg-blue-50 transition-all hover:scale-105 shadow-xl"
@@ -254,7 +254,7 @@ export default function LandingPage() {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
                   <span className="font-bold text-sm text-white">A</span>
                 </div>
-                <span className="text-xl font-bold text-slate-900 dark:text-white">AuramX</span>
+                <span className="text-xl font-bold text-slate-900 dark:text-white">AurumX</span>
               </div>
               <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
                 The future of decentralized wealth. Secure, transparent, and built for the modern investor.
@@ -304,7 +304,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                  <span>support@auramx.com</span>
+                  <span>support@AurumX.com</span>
                 </li>
               </ul>
             </div>
@@ -312,7 +312,7 @@ export default function LandingPage() {
 
           {/* Bottom Bar */}
           <div className="pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-slate-500 dark:text-slate-500">© {new Date().getFullYear()} AuramX. All rights reserved.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-500">© {new Date().getFullYear()} AurumX. All rights reserved.</p>
             <p className="text-xs text-slate-400 dark:text-slate-600">Built with trust, transparency, and security in mind.</p>
           </div>
         </div>

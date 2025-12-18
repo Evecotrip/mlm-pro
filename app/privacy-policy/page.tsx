@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
         <div className="bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 mb-8">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Introduction</h2>
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-            AuramX ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this privacy policy carefully. By using AuramX, you consent to the data practices described in this policy.
+            AurumX ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this privacy policy carefully. By using AurumX, you consent to the data practices described in this policy.
           </p>
         </div>
 

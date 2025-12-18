@@ -1,4 +1,4 @@
-# AuramX Platform (Dummy/Prototype)
+# AurumX Platform (Dummy/Prototype)
 
 A Multi-Level Marketing (MLM) investment platform prototype built with Next.js 16, featuring referral-based hierarchical structures, investment management with risk profiles, and approval workflows.
 
@@ -203,7 +203,7 @@ Example:
 - **For demonstration purposes only**
 
 ### Compliance Warning
-AuramX schemes are subject to strict regulations:
+AurumX schemes are subject to strict regulations:
 - SEBI guidelines
 - Prevention of Money Laundering Act (PMLA)
 - KYC requirements

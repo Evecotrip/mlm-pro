@@ -58,7 +58,7 @@ export default function LoginPage() {
         <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl dark:shadow-none">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <Logo size="lg" subtitle="Welcome back to AuramX" />
+            <Logo size="lg" subtitle="Welcome back to AurumX" />
           </div>
 
           {/* Clerk Sign In Component */}

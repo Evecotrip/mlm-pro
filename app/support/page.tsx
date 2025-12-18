@@ -30,7 +30,7 @@ export default function SupportPage() {
       icon: Mail,
       title: 'Email Support',
       description: 'Get help via email',
-      value: 'support@auramx.com',
+      value: 'support@AurumX.com',
       color: 'blue'
     },
     {
@@ -229,7 +229,7 @@ export default function SupportPage() {
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">Office Location</h3>
               </div>
               <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                AuramX Headquarters<br />
+                AurumX Headquarters<br />
                 Nizhneilimsky District <br />
                 Irkutsk Oblast 665699 <br/>
                 Russia
@@ -256,7 +256,7 @@ export default function SupportPage() {
                   onClick={() => router.push('/about')}
                   className="block w-full text-left text-blue-100 hover:text-white transition-colors"
                 >
-                  → About AuramX
+                  → About AurumX
                 </button>
               </div>
             </div>

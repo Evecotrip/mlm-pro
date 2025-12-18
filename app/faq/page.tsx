@@ -11,8 +11,8 @@ interface FAQItem {
 
 const faqs: FAQItem[] = [
   {
-    question: 'What is AuramX?',
-    answer: 'AuramX is a decentralized investment platform that allows users to invest in various profiles (Diamond, Gold, Silver, Bronze) and earn returns based on their investment amount and lock-in period. Users can also grow their network through referrals and earn additional commissions.'
+    question: 'What is AurumX?',
+    answer: 'AurumX is a decentralized investment platform that allows users to invest in various profiles (Diamond, Gold, Silver, Bronze) and earn returns based on their investment amount and lock-in period. Users can also grow their network through referrals and earn additional commissions.'
   },
   {
     question: 'How do I get started?',
@@ -48,7 +48,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'How do I contact support?',
-    answer: 'You can reach our support team through the Support page, email us at support@auramx.com, or contact your referrer for immediate assistance. We typically respond within 24 hours.'
+    answer: 'You can reach our support team through the Support page, email us at support@AurumX.com, or contact your referrer for immediate assistance. We typically respond within 24 hours.'
   }
 ];
 
@@ -82,7 +82,7 @@ export default function FAQPage() {
         </h1>
         
         <p className="text-lg text-slate-600 dark:text-slate-400 mb-12">
-          Find answers to common questions about AuramX platform.
+          Find answers to common questions about AurumX platform.
         </p>
 
         {/* FAQ Accordion */}
