@@ -289,7 +289,7 @@ export default function DashboardPage() {
                   <div className="p-2.5 bg-emerald-500/10 rounded-xl group-hover:scale-110 transition-transform duration-300">
                     <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 dark:text-emerald-500" />
                   </div>
-                  <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-xs font-bold px-2 py-0.5 rounded-full">+12.5%</span>
+                  <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-xs font-bold px-2 py-0.5 rounded-full"></span>
                 </div>
                 <p className="text-slate-500 dark:text-slate-400 text-xs mb-1">Total Earnings</p>
                 <h3 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">₹{totalEarnings.toLocaleString('en-IN')}</h3>
