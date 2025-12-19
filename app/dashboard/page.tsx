@@ -17,6 +17,7 @@ import { useWalletStore } from '@/store/useWalletStore';
 import { getInvestments, Investment } from '@/api/investment-api';
 import { getHierarchyStats, HierarchyStats } from '@/api/hierarchy-api';
 import { getKYCStatus, KYCStatus, KYCResponse } from '@/api/kyc-api';
+import { getCoinsMarkets, CoinMarketData } from '@/api/coingecko';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -29,6 +30,8 @@ export default function DashboardPage() {
   const [loadingInvestments, setLoadingInvestments] = useState(false);
   const [hierarchyStats, setHierarchyStats] = useState<HierarchyStats | null>(null);
   const [kycStatus, setKycStatus] = useState<KYCStatus | null>(null);
+  const [cryptoData, setCryptoData] = useState<CoinMarketData[]>([]);
+  const [loadingCrypto, setLoadingCrypto] = useState(false);
 
   // User store
   const userProfile = useUserStore(state => state.userProfile);
@@ -62,6 +65,8 @@ export default function DashboardPage() {
       fetchHierarchyStats();
       // Fetch KYC status
       fetchKYCStatus();
+      // Fetch crypto data
+      fetchCryptoData();
     }
   }, [isLoaded, user, router]);
 
@@ -106,6 +111,20 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Error fetching KYC status:', error);
+    }
+  };
+
+  const fetchCryptoData = async () => {
+    setLoadingCrypto(true);
+    try {
+      const response = await getCoinsMarkets('inr', 'market_cap_desc', 6, 1, false);
+      if (response.success && response.data) {
+        setCryptoData(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching crypto data:', error);
+    } finally {
+      setLoadingCrypto(false);
     }
   };
 
@@ -506,6 +525,74 @@ export default function DashboardPage() {
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* Live Crypto Ticker */}
+          <div className="md:col-span-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm dark:shadow-none">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-amber-500/10 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-amber-500" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white">Live Crypto Prices</h3>
+                  <p className="text-xs text-slate-500">Real-time market data</p>
+                </div>
+              </div>
+              <button
+                onClick={fetchCryptoData}
+                disabled={loadingCrypto}
+                className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 flex items-center gap-1"
+              >
+                {loadingCrypto ? <Loader2 className="w-3 h-3 animate-spin" /> : <Activity className="w-3 h-3" />}
+                Refresh
+              </button>
+            </div>
+
+            {loadingCrypto && cryptoData.length === 0 ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 text-amber-500 animate-spin" />
+              </div>
+            ) : cryptoData.length === 0 ? (
+              <div className="text-center py-8 text-slate-500">
+                <p>Unable to load crypto data</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                {cryptoData.map((coin) => (
+                  <div
+                    key={coin.id}
+                    className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-100 dark:border-slate-700/50 hover:border-amber-500/30 transition-all"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <img
+                        src={coin.image}
+                        alt={coin.name}
+                        className="w-6 h-6 rounded-full"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{coin.symbol.toUpperCase()}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white mb-1">
+                      ₹{coin.current_price.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                    </p>
+                    <div className={`flex items-center gap-1 text-xs font-medium ${
+                      coin.price_change_percentage_24h >= 0 
+                        ? 'text-emerald-600 dark:text-emerald-400' 
+                        : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {coin.price_change_percentage_24h >= 0 ? (
+                        <TrendingUp className="w-3 h-3" />
+                      ) : (
+                        <TrendingDown className="w-3 h-3" />
+                      )}
+                      {Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>

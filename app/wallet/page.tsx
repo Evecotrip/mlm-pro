@@ -57,7 +57,7 @@ export default function WalletPage() {
   const fetchTransactions = useWalletStore(state => state.fetchTransactions);
   const fetchBalanceLogs = useWalletStore(state => state.fetchBalanceLogs);
 
-  const [activeTab, setActiveTab] = useState<'transactions' | 'logs' | 'commissions'>('transactions');
+  const [activeTab, setActiveTab] = useState<'transactions' | 'logs'>('transactions');
   const [filter, setFilter] = useState<string>('all');
   const [logFilter, setLogFilter] = useState<'all' | 'CREDIT' | 'DEBIT' | 'LOCK' | 'COMMISSION'>('all');
   const [commissionFilter, setCommissionFilter] = useState<'all' | CommissionType>('all');
@@ -383,17 +383,6 @@ export default function WalletPage() {
                 >
                   <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Logs
-                </button>
-                <button
-                  onClick={() => setActiveTab('commissions')}
-                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${activeTab === 'commissions'
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
-                    }`}
-                >
-                  <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Commissions</span>
-                  <span className="sm:hidden">Comm</span>
                 </button>
               </div>
 
