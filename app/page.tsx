@@ -276,10 +276,10 @@ export default function LandingPage() {
             <div>
               <h4 className="font-bold text-slate-900 dark:text-white mb-4">Quick Links</h4>
               <ul className="space-y-3">
-                <li><button onClick={() => router.push('/about')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">About Us</button></li>
-                <li><button onClick={() => router.push('/faq')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">FAQ</button></li>
-                <li><button onClick={() => router.push('/rules')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Rules & Guidelines</button></li>
-                <li><button onClick={() => router.push('/support')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Support</button></li>
+                <li><button onClick={() => router.push('/info/about')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">About Us</button></li>
+                <li><button onClick={() => router.push('/info/faq')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">FAQ</button></li>
+                <li><button onClick={() => router.push('/info/rules')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Rules & Guidelines</button></li>
+                <li><button onClick={() => router.push('/info/support')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Support</button></li>
               </ul>
             </div>
 
@@ -287,10 +287,10 @@ export default function LandingPage() {
             <div>
               <h4 className="font-bold text-slate-900 dark:text-white mb-4">Legal</h4>
               <ul className="space-y-3">
-                <li><button onClick={() => router.push('/privacy-policy')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Privacy Policy</button></li>
-                <li><button onClick={() => router.push('/terms')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Terms of Service</button></li>
-                <li><button onClick={() => router.push('/cookies')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Cookie Policy</button></li>
-                <li><button onClick={() => router.push('/disclaimer')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Disclaimer</button></li>
+                <li><button onClick={() => router.push('/info/privacy-policy')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Privacy Policy</button></li>
+                <li><button onClick={() => router.push('/info/terms')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Terms of Service</button></li>
+                <li><button onClick={() => router.push('/info/cookies')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Cookie Policy</button></li>
+                <li><button onClick={() => router.push('/info/disclaimer')} className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm">Disclaimer</button></li>
               </ul>
             </div>
 
