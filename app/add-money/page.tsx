@@ -210,29 +210,7 @@ export default function AddMoneyPage() {
                 <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                 <span className="font-medium">Back to Wallet</span>
               </button>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => router.push('/my-add-money-requests')}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-semibold transition-colors border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
-                >
-                  <Clock className="w-4 h-4" />
-                  <span className="hidden sm:inline">My Add Money Requests</span>
-                </button>
-                <button
-                  onClick={() => router.push('/lend-requests')}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-semibold transition-colors border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
-                >
-                  <Clock className="w-4 h-4" />
-                  <span className="hidden sm:inline">Lending Requests</span>
-                </button>
-                <button
-                  onClick={() => router.push('/my-borrow-requests')}
-                  className="flex items-center gap-2 px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-white rounded-xl font-semibold transition-colors border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
-                >
-                  <Clock className="w-4 h-4" />
-                  <span className="hidden sm:inline">My Borrow Requests</span>
-                </button>
-              </div>
+             
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-2">
               Add Money to Wallet
