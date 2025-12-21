@@ -387,9 +387,9 @@ export default function KYCRequestsPage() {
 
       {/* KYC Details Modal */}
       {showDetailsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 w-full max-w-4xl my-8">
-            <div className="flex items-center justify-between mb-6">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
                 KYC Details
               </h3>
@@ -406,138 +406,140 @@ export default function KYCRequestsPage() {
                 <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
               </div>
             ) : selectedKYCDetails ? (
-              <div className="space-y-6">
-                {/* User Information */}
-                <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-3">User Information</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="text-slate-600 dark:text-slate-400">Name:</span>
-                      <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.userName}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-600 dark:text-slate-400">Email:</span>
-                      <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.email}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-600 dark:text-slate-400">Phone:</span>
-                      <span className="ml-2 text-slate-900 dark:text-white font-medium">
-                        {selectedKYCDetails.phone.startsWith('PENDING_') ? 'Not verified' : selectedKYCDetails.phone}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-slate-600 dark:text-slate-400">Referral Code:</span>
-                      <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.referralCode}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-600 dark:text-slate-400">Hierarchy Level:</span>
-                      <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.hierarchyLevel}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-600 dark:text-slate-400">Registered:</span>
-                      <span className="ml-2 text-slate-900 dark:text-white font-medium">{formatKYCDate(selectedKYCDetails.registeredAt)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Aadhaar Details */}
-                {selectedKYCDetails.documents.aadhaar && (
+              <>
+                <div className="overflow-y-auto p-6 space-y-6">
+                  {/* User Information */}
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
-                    <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Aadhaar Details</h4>
-                    <div className="mb-3">
-                      <span className="text-slate-600 dark:text-slate-400 text-sm">Aadhaar Number:</span>
-                      <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.aadhaar.number}</span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {selectedKYCDetails.documents.aadhaar.frontImage && (
-                        <div>
-                          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Front Image</p>
-                          <a
-                            href={selectedKYCDetails.documents.aadhaar.frontImage.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block relative group"
-                          >
-                            <img
-                              src={selectedKYCDetails.documents.aadhaar.frontImage.url}
-                              alt="Aadhaar Front"
-                              className="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
-                            />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                              <ExternalLink className="w-6 h-6 text-white" />
-                            </div>
-                          </a>
-                        </div>
-                      )}
-                      {selectedKYCDetails.documents.aadhaar.backImage && (
-                        <div>
-                          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Back Image</p>
-                          <a
-                            href={selectedKYCDetails.documents.aadhaar.backImage.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block relative group"
-                          >
-                            <img
-                              src={selectedKYCDetails.documents.aadhaar.backImage.url}
-                              alt="Aadhaar Back"
-                              className="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
-                            />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                              <ExternalLink className="w-6 h-6 text-white" />
-                            </div>
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Selfie */}
-                {selectedKYCDetails.documents.selfie && (
-                  <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
-                    <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Selfie</h4>
-                    <a
-                      href={selectedKYCDetails.documents.selfie.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block relative group w-full md:w-64"
-                    >
-                      <img
-                        src={selectedKYCDetails.documents.selfie.url}
-                        alt="Selfie"
-                        className="w-full h-64 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                        <ExternalLink className="w-6 h-6 text-white" />
-                      </div>
-                    </a>
-                  </div>
-                )}
-
-                {/* Bank Details */}
-                {selectedKYCDetails.documents.bankDetails && (
-                  <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
-                    <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Bank Details</h4>
+                    <h4 className="font-semibold text-slate-900 dark:text-white mb-3">User Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                       <div>
-                        <span className="text-slate-600 dark:text-slate-400">Account Number:</span>
-                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.bankDetails.accountNumber}</span>
+                        <span className="text-slate-600 dark:text-slate-400">Name:</span>
+                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.userName}</span>
                       </div>
                       <div>
-                        <span className="text-slate-600 dark:text-slate-400">IFSC Code:</span>
-                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.bankDetails.ifscCode}</span>
+                        <span className="text-slate-600 dark:text-slate-400">Email:</span>
+                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.email}</span>
                       </div>
-                      <div className="md:col-span-2">
-                        <span className="text-slate-600 dark:text-slate-400">Account Holder:</span>
-                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.bankDetails.accountHolderName}</span>
+                      <div>
+                        <span className="text-slate-600 dark:text-slate-400">Phone:</span>
+                        <span className="ml-2 text-slate-900 dark:text-white font-medium">
+                          {selectedKYCDetails.phone.startsWith('PENDING_') ? 'Not verified' : selectedKYCDetails.phone}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-600 dark:text-slate-400">Referral Code:</span>
+                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.referralCode}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-600 dark:text-slate-400">Hierarchy Level:</span>
+                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.hierarchyLevel}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-600 dark:text-slate-400">Registered:</span>
+                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{formatKYCDate(selectedKYCDetails.registeredAt)}</span>
                       </div>
                     </div>
                   </div>
-                )}
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+                  {/* Aadhaar Details */}
+                  {selectedKYCDetails.documents.aadhaar && (
+                    <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Aadhaar Details</h4>
+                      <div className="mb-3">
+                        <span className="text-slate-600 dark:text-slate-400 text-sm">Aadhaar Number:</span>
+                        <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.aadhaar.number}</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedKYCDetails.documents.aadhaar.frontImage && (
+                          <div>
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Front Image</p>
+                            <a
+                              href={selectedKYCDetails.documents.aadhaar.frontImage.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block relative group"
+                            >
+                              <img
+                                src={selectedKYCDetails.documents.aadhaar.frontImage.url}
+                                alt="Aadhaar Front"
+                                className="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                              />
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                <ExternalLink className="w-6 h-6 text-white" />
+                              </div>
+                            </a>
+                          </div>
+                        )}
+                        {selectedKYCDetails.documents.aadhaar.backImage && (
+                          <div>
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Back Image</p>
+                            <a
+                              href={selectedKYCDetails.documents.aadhaar.backImage.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block relative group"
+                            >
+                              <img
+                                src={selectedKYCDetails.documents.aadhaar.backImage.url}
+                                alt="Aadhaar Back"
+                                className="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                              />
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                <ExternalLink className="w-6 h-6 text-white" />
+                              </div>
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Selfie */}
+                  {selectedKYCDetails.documents.selfie && (
+                    <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Selfie</h4>
+                      <a
+                        href={selectedKYCDetails.documents.selfie.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block relative group w-full md:w-64"
+                      >
+                        <img
+                          src={selectedKYCDetails.documents.selfie.url}
+                          alt="Selfie"
+                          className="w-full h-64 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <ExternalLink className="w-6 h-6 text-white" />
+                        </div>
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Bank Details */}
+                  {selectedKYCDetails.documents.bankDetails && (
+                    <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-3">Bank Details</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="text-slate-600 dark:text-slate-400">Account Number:</span>
+                          <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.bankDetails.accountNumber}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-600 dark:text-slate-400">IFSC Code:</span>
+                          <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.bankDetails.ifscCode}</span>
+                        </div>
+                        <div className="md:col-span-2">
+                          <span className="text-slate-600 dark:text-slate-400">Account Holder:</span>
+                          <span className="ml-2 text-slate-900 dark:text-white font-medium">{selectedKYCDetails.documents.bankDetails.accountHolderName}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons - Fixed at bottom */}
+                <div className="flex gap-3 p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                   <button
                     onClick={() => {
                       closeDetailsModal();
@@ -561,7 +563,7 @@ export default function KYCRequestsPage() {
                     Reject KYC
                   </button>
                 </div>
-              </div>
+              </>
             ) : (
               <div className="text-center py-8 text-slate-600 dark:text-slate-400">
                 No details available
