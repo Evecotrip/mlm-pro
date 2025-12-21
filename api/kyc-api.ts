@@ -201,6 +201,30 @@ export interface ApiResponse<T = any> {
   error?: string;
 }
 
+/**
+ * KYC Details by User ID Response
+ */
+export interface KYCDetailsByUserId {
+  userId: string;
+  userName: string;
+  email: string;
+  phone: string;
+  referralCode: string;
+  kycStatus: KYCStatus;
+  documents: KYCDocuments;
+  documentsCount: number;
+  allDocumentsUploaded: boolean;
+  missingDocuments: DocumentType[];
+  submittedAt?: string;
+  canResubmit: boolean;
+  hierarchyLevel: number;
+  approvalStatus: string;
+  approvalRequestedAt?: string;
+  registeredAt: string;
+  verifiedAt?: string | null;
+  rejectionReason?: string | null;
+}
+
 // ============================================
 // API FUNCTIONS
 // ============================================
@@ -521,6 +545,30 @@ export async function reviewKYC(
     return {
       success: false,
       error: 'Failed to review KYC submission',
+    };
+  }
+}
+
+/**
+ * 12. Get KYC Details by User ID
+ */
+export async function getKYCDetailsByUserId(
+  userId: string
+): Promise<ApiResponse<KYCDetailsByUserId>> {
+  try {
+    const response = await fetch(`${BASE_URL}/api/v1/kyc/referrals/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getTokenFromCookies()}`,
+      },
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching KYC details by user ID');
+    return {
+      success: false,
+      error: 'Failed to fetch KYC details',
     };
   }
 }
