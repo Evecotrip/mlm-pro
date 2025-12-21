@@ -388,8 +388,8 @@ export default function KYCRequestsPage() {
       {/* KYC Details Modal */}
       {showDetailsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
                 KYC Details
               </h3>
@@ -407,7 +407,7 @@ export default function KYCRequestsPage() {
               </div>
             ) : selectedKYCDetails ? (
               <>
-                <div className="overflow-y-auto p-6 space-y-6">
+                <div className="overflow-y-auto p-4 space-y-4">
                   {/* User Information */}
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4">
                     <h4 className="font-semibold text-slate-900 dark:text-white mb-3">User Information</h4>
@@ -462,7 +462,7 @@ export default function KYCRequestsPage() {
                               <img
                                 src={selectedKYCDetails.documents.aadhaar.frontImage.url}
                                 alt="Aadhaar Front"
-                                className="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                                className="w-full h-40 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
                               />
                               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                 <ExternalLink className="w-6 h-6 text-white" />
@@ -482,7 +482,7 @@ export default function KYCRequestsPage() {
                               <img
                                 src={selectedKYCDetails.documents.aadhaar.backImage.url}
                                 alt="Aadhaar Back"
-                                className="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                                className="w-full h-40 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
                               />
                               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                                 <ExternalLink className="w-6 h-6 text-white" />
@@ -507,7 +507,7 @@ export default function KYCRequestsPage() {
                         <img
                           src={selectedKYCDetails.documents.selfie.url}
                           alt="Selfie"
-                          className="w-full h-64 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
+                          className="w-full h-48 object-cover rounded-lg border border-slate-200 dark:border-slate-700"
                         />
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                           <ExternalLink className="w-6 h-6 text-white" />
@@ -539,7 +539,7 @@ export default function KYCRequestsPage() {
                 </div>
 
                 {/* Action Buttons - Fixed at bottom */}
-                <div className="flex gap-3 p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <div className="flex gap-3 p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                   <button
                     onClick={() => {
                       closeDetailsModal();
