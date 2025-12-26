@@ -279,23 +279,6 @@ export default function WalletPage() {
               </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm dark:shadow-none">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-500/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3">
-                  <ArrowDownRight className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-500" />
-                </div>
-                <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mb-1">Total Credit</p>
-                <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{totalCredit.toLocaleString('en-IN')}</p>
-              </div>
-              <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-sm dark:shadow-none">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500/10 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3">
-                  <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-500" />
-                </div>
-                <p className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs mb-1">Total Debit</p>
-                <p className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">{totalDebit.toLocaleString('en-IN')}</p>
-              </div>
-            </div>
 
             {/* Wallet Breakdown */}
             {breakdown && (
