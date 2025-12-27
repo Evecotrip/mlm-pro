@@ -125,9 +125,12 @@ export async function getPendingApprovals(
 
 /**
  * Get count of pending approval requests for the current user (referrer)
+ * @param type - Optional filter by approval type
  * @returns Promise with count of pending approvals
  */
-export async function getPendingApprovalCount(): Promise<
+export async function getPendingApprovalCount(
+  type?: 'USER_REGISTRATION' | 'INVESTMENT' | 'KYC_VERIFICATION' | 'BORROW_REQUEST' | 'LEND_REQUEST'
+): Promise<
   ApiResponse<ApprovalCountResponse>
 > {
   try {
@@ -140,8 +143,10 @@ export async function getPendingApprovalCount(): Promise<
       };
     }
 
+    const queryParams = type ? `?type=${type}` : '';
+    
     const response = await fetch(
-      `${BASE_URL}/api/v1/approvals/pending/count`,
+      `${BASE_URL}/api/v1/approvals/pending/count${queryParams}`,
       {
         method: "GET",
         headers: {

@@ -34,6 +34,10 @@ interface UserState {
   userName: string;
   walletBalance: number;
   pendingRequestsCount: number;
+  investmentRequestsCount: number;
+  kycRequestsCount: number;
+  borrowRequestsCount: number;
+  lendRequestsCount: number;
   
   // Loading states
   isLoading: boolean;
@@ -42,6 +46,7 @@ interface UserState {
   // Actions
   fetchUserData: () => Promise<void>;
   fetchPendingCount: () => Promise<void>;
+  fetchApprovalCounts: () => Promise<void>;
   updateWalletBalance: (balance: number) => void;
   updatePendingCount: (count: number) => void;
   clearUserData: () => void;
@@ -53,6 +58,10 @@ const initialState = {
   userName: '',
   walletBalance: 0,
   pendingRequestsCount: 0,
+  investmentRequestsCount: 0,
+  kycRequestsCount: 0,
+  borrowRequestsCount: 0,
+  lendRequestsCount: 0,
   isLoading: false,
   error: null,
 };
@@ -104,13 +113,38 @@ export const useUserStore = create<UserState>((set, get) => ({
    */
   fetchPendingCount: async () => {
     try {
-      const response = await getPendingApprovalCount();
+      const response = await getPendingApprovalCount('USER_REGISTRATION');
       
       if (response.success && response.data) {
         set({ pendingRequestsCount: response.data.count });
       }
     } catch (error) {
       console.error('Error fetching pending count:', error);
+    }
+  },
+
+  /**
+   * Fetch all approval type counts
+   */
+  fetchApprovalCounts: async () => {
+    try {
+      const [userReg, investment, kyc, borrow, lend] = await Promise.all([
+        getPendingApprovalCount('USER_REGISTRATION'),
+        getPendingApprovalCount('INVESTMENT'),
+        getPendingApprovalCount('KYC_VERIFICATION'),
+        getPendingApprovalCount('BORROW_REQUEST'),
+        getPendingApprovalCount('LEND_REQUEST'),
+      ]);
+
+      set({
+        pendingRequestsCount: userReg.success && userReg.data ? userReg.data.count : 0,
+        investmentRequestsCount: investment.success && investment.data ? investment.data.count : 0,
+        kycRequestsCount: kyc.success && kyc.data ? kyc.data.count : 0,
+        borrowRequestsCount: borrow.success && borrow.data ? borrow.data.count : 0,
+        lendRequestsCount: lend.success && lend.data ? lend.data.count : 0,
+      });
+    } catch (error) {
+      console.error('Error fetching approval counts:', error);
     }
   },
 

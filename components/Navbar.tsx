@@ -40,9 +40,13 @@ export default function Navbar({
   // User store
   const userName = useUserStore((state) => state.userName);
   const pendingRequestsCount = useUserStore((state) => state.pendingRequestsCount);
+  const investmentRequestsCount = useUserStore((state) => state.investmentRequestsCount);
+  const kycRequestsCount = useUserStore((state) => state.kycRequestsCount);
+  const borrowRequestsCount = useUserStore((state) => state.borrowRequestsCount);
+  const lendRequestsCount = useUserStore((state) => state.lendRequestsCount);
   const isLoading = useUserStore((state) => state.isLoading);
   const fetchUserData = useUserStore((state) => state.fetchUserData);
-  const fetchPendingCount = useUserStore((state) => state.fetchPendingCount);
+  const fetchApprovalCounts = useUserStore((state) => state.fetchApprovalCounts);
 
   // Wallet store
   const balance = useWalletStore((state) => state.balance);
@@ -53,7 +57,7 @@ export default function Navbar({
     if (!hasFetchedData.current) {
       hasFetchedData.current = true;
       fetchUserData();
-      fetchPendingCount();
+      fetchApprovalCounts();
       fetchWallet();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,21 +117,27 @@ export default function Navbar({
             {/* Investment Requests */}
             <button
               onClick={() => router.push('/investment-requests')}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
+              className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
               title="Investment Requests"
             >
               <HandCoins className="w-5 h-5" />
+              {investmentRequestsCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              )}
             </button>
 
             {/* Borrow & Lend */}
             <button
               onClick={() => router.push('/borrow-lend')}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
+              className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
               title="Borrow & Lend"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
               </svg>
+              {(borrowRequestsCount > 0 || lendRequestsCount > 0) && (
+                <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              )}
             </button>
 
             {/* Transfers */}
@@ -142,10 +152,13 @@ export default function Navbar({
             {/* KYC Requests */}
             <button
               onClick={() => router.push('/kyc-requests')}
-              className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
+              className="relative p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
               title="KYC Requests"
             >
               <Users className="w-5 h-5" />
+              {kycRequestsCount > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              )}
             </button>
 
             {/* Divider */}
@@ -243,7 +256,12 @@ export default function Navbar({
               onClick={() => handleNavigation('/investment-requests')}
               className="w-full flex items-center gap-3 px-4 py-3 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
             >
-              <HandCoins className="w-5 h-5" />
+              <div className="relative">
+                <HandCoins className="w-5 h-5" />
+                {investmentRequestsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
+              </div>
               <span className="font-medium">Investment Requests</span>
             </button>
 
@@ -251,9 +269,14 @@ export default function Navbar({
               onClick={() => handleNavigation('/borrow-lend')}
               className="w-full flex items-center gap-3 px-4 py-3 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              </svg>
+              <div className="relative">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                {(borrowRequestsCount > 0 || lendRequestsCount > 0) && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
+              </div>
               <span className="font-medium">Borrow & Lend</span>
             </button>
 
@@ -263,6 +286,19 @@ export default function Navbar({
             >
               <Send className="w-5 h-5" />
               <span className="font-medium">Transfers</span>
+            </button>
+
+            <button
+              onClick={() => handleNavigation('/kyc-requests')}
+              className="w-full flex items-center gap-3 px-4 py-3 text-left text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
+            >
+              <div className="relative">
+                <Users className="w-5 h-5" />
+                {kycRequestsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
+              </div>
+              <span className="font-medium">KYC Requests</span>
             </button>
 
             {/* Logout Button */}
